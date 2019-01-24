@@ -1,0 +1,8 @@
+- div mare numit 'structure'
+- header care contine un Titlu si un buton in dreapta sus
+	- Butonul 'Change to Video Mode' care declanseaza generarea div-ului 'video' care contine scheletul meniului pentru Video Processing
+- Momentan un singur iframe / image tag in care o sa incarc o singura imagine
+	- In viitor, un div care se va expanda, afisand iframe-uri dupa un sablon stabilit
+- Un div 'information' care contine doua divuri:
+	- divul 'count' care afiseaza numarul de fisiere incarcate, printr-un eveniment pe document.ready care calculeaza numarul de fisiere incarcate in memorie (pe client)
+	- divul 'names' care afiseaza lista numelor fisierelor incarcate in memorie (pe client)
