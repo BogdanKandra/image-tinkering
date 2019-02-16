@@ -6,3 +6,4 @@
 - Un div 'information' care contine doua divuri:
 	- divul 'count' care afiseaza numarul de fisiere incarcate, printr-un eveniment pe document.ready care calculeaza numarul de fisiere incarcate in memorie (pe client)
 	- divul 'names' care afiseaza lista numelor fisierelor incarcate in memorie (pe client)
+	

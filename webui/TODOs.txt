@@ -34,3 +34,5 @@ Analog cu Imagini
 
 
 
+- Sa validez si pe server tipurile de fisiere upload-ate
+- url, method, data, success, error, dataType (processData, contentType)
