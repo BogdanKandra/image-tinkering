@@ -5,20 +5,23 @@
         <title>Image Tinkering</title>
         
         <link rel="stylesheet" href="/static/styles/style.css"/>
-        <script src="/static/scripts/jquery-3.3.1.js"></script>
+        <script src="/static/scripts/libs/jquery-3.3.1.js"></script>
         <script src="/static/scripts/test.js"></script>
     </head>
     <body>
         <h1>Interfata Lucrare de Licenta</h1>
+        
         <div class="input">
-			<h3>Input Image</h3>
-            <img id="imagesrc" alt="No Image Loaded" />
-            <div class="caption">Image src: <input type="file" id="fileInput" /></div>
+            <h3>Input Image</h3>
+            <img id="imagesrc" alt="No Image Loaded" height="200" width="200" />
+			<p>Image src:</p> <input type="file" id="fileInput" accept="image/*" multiple />
+            <input type="button" id="uploadInput" value="UPLOAD" onclick="uploadFiles()" disabled>
         </div>
-		<div class="output">
-			<h3>Output Image</h3>
-			<input type="button" value="Keep Red Channel" onclick="">
-			<img id="imagedest" alt="No Output Yet" />
-		</div>
+        
+        <div class="output">
+            <h3>Output Image</h3>
+            <input type="button" value="Keep Red Channel" onclick="">
+            <img id="imagedest" alt="No Output Yet" />
+        </div>
     </body>
 </html>
