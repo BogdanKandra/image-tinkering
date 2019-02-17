@@ -35,4 +35,5 @@ Analog cu Imagini
 
 
 - Sa validez si pe server tipurile de fisiere upload-ate
+- Sa afisez un progressbar pentru procesul de upload
 - url, method, data, success, error, dataType (processData, contentType)
