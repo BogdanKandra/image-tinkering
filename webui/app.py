@@ -8,6 +8,8 @@ from flask.templating import render_template
 from flask import request
 from werkzeug import secure_filename
 import sys, os
+import magic
+import copy
 
 # Paths management
 APP_ROOT = os.path.dirname(os.path.abspath(__name__))
@@ -35,11 +37,17 @@ def operation(name):
 def uploads():
 #    print(request, file=sys.stdout)
     filesDict = request.files
+    mime = magic.Magic(mime=True)
 
     for key in filesDict:
         file = filesDict[key]
-        uploadPath = os.path.join(APP_ROOT, IMAGES_UPLOAD_DIRECTORY, secure_filename(file.filename))
-        file.save(uploadPath)
+        mimeType = mime.from_buffer(file.stream.read(1024))
+        file.stream.seek(0) # Move the file pointer back to the start of buffer
+
+        if mimeType.startswith('image/') or mimeType.startswith('video/'):
+            # Only save the file if it is an image or a video
+            uploadPath = os.path.join(APP_ROOT, IMAGES_UPLOAD_DIRECTORY, secure_filename(file.filename))
+            file.save(uploadPath)
     return 'HAHAHA'
 
 @app.route('/redchannel', methods=['POST'])

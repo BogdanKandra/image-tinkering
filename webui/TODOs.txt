@@ -37,3 +37,8 @@ Analog cu Imagini
 - Sa validez si pe server tipurile de fisiere upload-ate
 - Sa afisez un progressbar pentru procesul de upload
 - url, method, data, success, error, dataType (processData, contentType)
+- salvarea fisierelor sa fie facuta pe baza tipului - imagine sau video in diferitele locatii
+- daca fisiere nu se salveaza, sa arunc eroare
+
+
+

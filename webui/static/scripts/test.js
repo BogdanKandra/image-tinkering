@@ -34,9 +34,23 @@ function uploadFiles() {
 		contentType: false,
 		success: function(data) {
 			console.log('Succeeded')
+			new Noty({
+				text: 'Success!',
+				type: 'success',
+				layout: 'top',
+				theme: 'relax',
+				timeout: 5000
+			}).show()
 			console.log('>>> Data', data)
 		},
 		error: function() {
+			new Noty({
+				text: 'File upload failed!',
+				type: 'error',
+				layout: 'top',
+				theme: 'relax',
+				timeout: 5000
+			})
 			console.log('Errored')
 		}
 	})
