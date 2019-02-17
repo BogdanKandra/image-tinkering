@@ -1,0 +1,44 @@
+Modul Imagini (default):
+=============================
+- Buton in dreapta sus "Change to Video Mode" care permite schimbarea modului de lucru la Video
+- Un cadru in care se vor afisa imaginile incarcate (cadru blank pentru 0 imagini)
+- O lista de valori:
+	- Files Loaded: <Number of files loaded in memory>
+	- 0 Files Loaded (If 0 files are in memory)
+	- Lista numelor fisierelor incarcate (blank daca 0)
+- Buton "Load Files" pentru a deschide fereastra de selectie multipla
+	- User-ul selecteaza una sau mai multe imagini din directorul "inputs"; acestea sunt:
+		- Incarcate in <img>-uri si afisate (cu File API)
+		- Puse intr-o lista de nume care va fi pasata serverului
+		- Serverul va cauta fisierele date in directorul "inputs" si le va prelucra
+		- Rezultatul / rezultatele sunt salvate intr-un director temp si prezentate clientului. Daca clientul vrea sa salveze, alege un nume si salveaza. Imaginile vor fi salvate in directorul "outputs"
+- Buton "Take Selfie" pentru a captura o fotografie prin webcam si a o salva pe disc pentru a putea fi incarcata ulterior.
+- Buton "Perform Operation" care deschide un modal cu operatiile posibile pe imagini
+	- Checkboxuri cu operatiile, user-ul selecteaza o lista de operatii si o paseaza butonului de "Run"
+		- "Keep Red Channel" - Care intoarce codul pentru operatia 'keep_red'
+		(Intoarce o imagine formata din canalul rosu al originalului)
+	- Butonul "Run" trimite un request la server cu lista de operatii, iar serverul va aplica succesiv operatiile din lista, producand un output
+		- Serverul are o ruta gen 'process/op1#op2#opn' care preia operatiile si le aplica succesiv pe imagine(ile) de input si trimita lista de output-uri
+	- Butonul "Cancel" care inchide modalul, revenind la meniul principal
+	- Outputul este trimis la client, pentru vizualizare, avand apoi doua optiuni:
+	"Save" si "Discard". "Discard" sterge din memorie output-ul operatiilor si revine la modalul de selectie. "Save" deschide fereastra de salvare fisier pe disc. Dupa oricare dintre aceste operatii, se inchide modalul.
+
+Modul Video:
+=============================
+Analog cu Imagini
+
+
+
+
+
+
+
+
+- Sa validez si pe server tipurile de fisiere upload-ate
+- Sa afisez un progressbar pentru procesul de upload
+- url, method, data, success, error, dataType (processData, contentType)
+- salvarea fisierelor sa fie facuta pe baza tipului - imagine sau video in diferitele locatii
+- daca fisiere nu se salveaza, sa arunc eroare
+
+
+
