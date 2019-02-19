@@ -3,8 +3,13 @@ import numpy as np
 import filtering as f
 
 # Read the input image
-imagePath = 'inputs/flag.jpg'
+imagePath = '../webui/static/testinputs/flag.jpg'
 image = cv2.imread(imagePath)
+b, g, r = cv2.split(image)
+
+#cv2.imshow('B', b)
+#cv2.imshow('G', g)
+#cv2.imshow('R', r)
 
 # Automatically compute the cutoff frequency
 imageH, imageW = image.shape[:2]
@@ -19,7 +24,7 @@ else:
 #lowFilteredImageGauss = f.low_pass(image, cutoff, 'gaussian')
 #highFilteredImageIdeal = f.high_pass(image, cutoff, 1, 1, 'ideal')
 #highFilteredImageButter = f.high_pass(image, cutoff, 1, 1, 'butterworth')
-highFilteredImageGauss = f.high_pass(image, cutoff, 1, 1, 'gaussian')
+#highFilteredImageGauss = f.high_pass(image, cutoff, 1, 1, 'gaussian')
 #f30 = f.high_pass(image, 30, 'gaussian')
 #f60 = f.high_pass(image, 60, 'gaussian')
 #f160 = f.high_pass(image, 160, 'gaussian')
@@ -38,13 +43,13 @@ highFilteredImageGauss = f.high_pass(image, cutoff, 1, 1, 'gaussian')
 #                diffImage.itemset((px, py, ch), diff)
 
 # Display results
-cv2.imshow('Original Image', image)
+#cv2.imshow('Original Image', image)
 #cv2.imshow('Ideal Low Pass Filtered Image', lowFilteredImageIdeal)
 #cv2.imshow('Butterworth Low Pass Filtered Image', lowFilteredImageButter)
 #cv2.imshow('Gaussian Low Pass Filtered Image', lowFilteredImageGauss)
 #cv2.imshow('Ideal High Pass Filtered Image', highFilteredImageIdeal)
 #cv2.imshow('Butterworth High Pass Filtered Image', highFilteredImageButter)
-cv2.imshow('Gaussian High Pass Filtered Image', highFilteredImageGauss)
+#cv2.imshow('Gaussian High Pass Filtered Image', highFilteredImageGauss)
 #cv2.imshow('f30', f30)
 #cv2.imshow('f60', f60)
 #cv2.imshow('f160', f160)
