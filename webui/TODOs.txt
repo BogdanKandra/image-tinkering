@@ -42,3 +42,11 @@ Analog cu Imagini
 
 
 
+- python os functions:
+	- os.access() -- determina daca user-ul are drepturi asupra path-ului
+	- os.chdir()  -- schimba cwd-ul pe path-ul dat
+	- os.getcwd() -- intoarce calea absoluta a directorului curent
+	
+	
+	
+	
