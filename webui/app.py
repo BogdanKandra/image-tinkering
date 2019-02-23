@@ -9,12 +9,11 @@ from flask import request
 from werkzeug import secure_filename
 import sys, os
 import magic
-import copy
 
 # Paths management
 APP_ROOT = os.path.dirname(os.path.abspath(__name__))
 IMAGES_UPLOAD_DIRECTORY = 'static\\uploads\\images'
-VIDEO_UPLOAD_DIRECTORY = 'static\\uploads\\videos'
+VIDEOS_UPLOAD_DIRECTORY = 'static\\uploads\\videos'
 
 app = Flask(__name__)
 #app.config['UPLOADED_FILES_DEST'] = UPLOAD_DIRECTORY
@@ -46,7 +45,12 @@ def uploads():
 
         if mimeType.startswith('image/') or mimeType.startswith('video/'):
             # Only save the file if it is an image or a video
-            uploadPath = os.path.join(APP_ROOT, IMAGES_UPLOAD_DIRECTORY, secure_filename(file.filename))
+            if mimeType.startswith('image/'):
+                uploadsDir = IMAGES_UPLOAD_DIRECTORY
+            else:
+                uploadsDir = VIDEOS_UPLOAD_DIRECTORY
+                
+            uploadPath = os.path.join(APP_ROOT, uploadsDir, secure_filename(file.filename))
             file.save(uploadPath)
     return 'HAHAHA'
 
