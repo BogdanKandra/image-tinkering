@@ -34,11 +34,13 @@ Analog cu Imagini
 
 
 
-- Sa validez si pe server tipurile de fisiere upload-ate
-- Sa afisez un progressbar pentru procesul de upload
 - url, method, data, success, error, dataType (processData, contentType)
-- salvarea fisierelor sa fie facuta pe baza tipului - imagine sau video in diferitele locatii
-- daca fisiere nu se salveaza, sa arunc eroare
+- fft, r, g, b:
+	- sunt calculate dupa upload
+	- serializate la murat intr-o locatie pe server
+	- clientul este notificat ca s-au terminat calculele
+	- in algoritmi, matricile se vor lua de la murat
+	- la al treilea pas, cand user-ul decide daca pastreaza sau discard, se da call la server sa se stearga matricile
 
 
 
