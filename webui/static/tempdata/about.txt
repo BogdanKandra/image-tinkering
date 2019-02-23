@@ -1,0 +1,2 @@
+The purpose of the 'tempdata' directory is to contain the Fourier transforms and R, G, B images of uploaded images. 
+Files contained in this directory are temporary, being used only while the user applies transformations to the images.
