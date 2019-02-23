@@ -1,3 +1,4 @@
 webui/static/uploads/images/*
 webui/static/uploads/videos/*
 webui/static/testinputs/*
+webui/static/tempdata/*
