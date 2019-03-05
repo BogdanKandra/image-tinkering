@@ -45,19 +45,22 @@ function uploadFiles() {
 				theme: 'relax',
 				timeout: 5000
 			}).show()
-			console.log('>>> Succeeded. Data received:', data)
+			console.log('>>> File Upload Succeeded. Data received:', data)
 			
 			// Enable the upload button back
 			$(uploadButton).prop('disabled', false)
 		},
-		error: function() {
+		error: function(request, status, error) {
 			new Noty({
 				text: 'File upload failed!',
 				type: 'error',
 				layout: 'top',
 				theme: 'relax',
 				timeout: 5000
-			})
+			}).show()
+			
+			// Enable the upload button back
+			$(uploadButton).prop('disabled', false)
 		}
 	})
 }
