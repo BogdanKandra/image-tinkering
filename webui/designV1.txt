@@ -15,7 +15,7 @@ Structura proiectului (Exemplu):
 	config.py  /// configurarea bazei de date, a securitatii si a environmentului de lucru (debug)
 	/webui
 		__init__.py     /// Aici se definesc aplicatia si baza de date, se adauga configurarile, bindings de error handling, inregistrarea blueprint-urilor (adica importarea modulelor)
-						/// This is the shit I was looking for
+						/// This is the shit I was looking for - eu o sa le pun in app.py si run.py n-o sa-l folosesc
 		/modul_autentificare
 			__init__.py     /// Ca sa inregistram directorul ca fiind un modul de Python (gen ca sa putem face from webui import ceva)
 			controllers.py  /// Aici se importa modelele, formularele de care avem nevoie; aici se fac si rutarile, cu Blueprint
