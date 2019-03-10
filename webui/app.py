@@ -9,7 +9,7 @@ from flask.json import jsonify
 from flask.templating import render_template
 from werkzeug import secure_filename
 from werkzeug.exceptions import abort, RequestEntityTooLarge
-from test_module.controllers import test_mod
+from modules.test.controllers import test_mod
 
 import sys, os
 import magic
