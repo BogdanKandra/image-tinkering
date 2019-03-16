@@ -48,11 +48,19 @@ Analog cu Imagini
 	- clientul este notificat ca s-au terminat calculele
 	- in algoritmi, matricile se vor lua de la murat
 	- la al treilea pas, cand user-ul decide daca pastreaza sau discard, se da call la server sa se stearga matricile
-- rutarea sa o fac separat de app.py
 - import dinamic
 - instantiere dinamica de module (clase)
 - apelare dinamica de metoda a unui obiect
 
+- modul Python care contine metode:
+	- compute_RBG(image) -- calculeaza matricile R, G, B ale unei imagini si intoarce lista [R, G, B]; daca imaginea nu e RGB, intoarce lista continand imaginea initiala
+	- compute_FFT(image) -- calculeaza transformata Fourier a unei imagini; daca imaginea are 3 canale, calculeaza pentru fiecare. Intoarce o lista de transformate Fourier
+
+- la initializare, trebuie sa se calculeze:
+	- R, G, B;
+	- paddedImage R, G, B;
+	- FFT pentru paddedImage R, G, B;
+	- serializate fiecare
 
 
 - Voi avea clase care fac anumite operatii;
