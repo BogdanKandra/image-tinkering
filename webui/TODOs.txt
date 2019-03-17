@@ -53,7 +53,7 @@ Analog cu Imagini
 - apelare dinamica de metoda a unui obiect
 
 - modul Python care contine metode:
-	- compute_RBG(image) -- calculeaza matricile R, G, B ale unei imagini si intoarce lista [R, G, B]; daca imaginea nu e RGB, intoarce lista continand imaginea initiala
+	- compute_RGB(image) -- calculeaza matricile R, G, B ale unei imagini si intoarce lista [R, G, B]; daca imaginea nu e RGB, intoarce lista continand imaginea initiala
 	- compute_FFT(image) -- calculeaza transformata Fourier a unei imagini; daca imaginea are 3 canale, calculeaza pentru fiecare. Intoarce o lista de transformate Fourier
 
 - la initializare, trebuie sa se calculeze:
