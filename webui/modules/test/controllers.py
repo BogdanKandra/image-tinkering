@@ -3,7 +3,6 @@ Created on Sun Mar 10 12:05:28 2019
 
 @author: Bogdan
 """
-
 from flask.blueprints import Blueprint
 from flask.helpers import make_response
 from flask.json import jsonify
