@@ -39,16 +39,31 @@ function uploadFiles() {
 		contentType: false,
 		success: function(data) {
 			new Noty({
-				text: 'Success!',
+				text: 'File Upload Succeeded!',
 				type: 'success',
 				layout: 'top',
 				theme: 'relax',
 				timeout: 5000
 			}).show()
-			console.log('>>> File Upload Succeeded. Data received:', data)
+			
+			console.log('>>> ', data)
 			
 			// Enable the upload button back
 			$(uploadButton).prop('disabled', false)
+			
+			// Launch the initialisations procedure
+			$.ajax({
+				url: '/initialisations/',
+				method: 'POST',
+				data: JSON.stringify({'files': data}),
+				contentType: 'application/json',
+				success: function(data) {
+					console.log('>>>>> Initialisations successful')
+				},
+				error: function(request, status, error) {
+
+				}
+			})
 		},
 		error: function(request, status, error) {
 			new Noty({
