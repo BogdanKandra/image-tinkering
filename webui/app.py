@@ -12,7 +12,7 @@ from werkzeug.exceptions import abort, RequestEntityTooLarge
 from modules.test.controllers import test_mod
 from modules.initialisations.controllers import init_mod
 
-import sys, os
+import sys, os, time
 import magic
 
 # Paths management
@@ -45,6 +45,7 @@ def uploads():
 #    print(request, file=sys.stdout)
     filesDict = request.files
     mime = magic.Magic(mime=True)
+    savedFiles = []
 
     for key in filesDict:
         file = filesDict[key]
@@ -58,13 +59,24 @@ def uploads():
             else:
                 uploadsDir = app.config['VIDEOS_DIR']
                 
-            uploadPath = os.path.join(uploadsDir, secure_filename(file.filename))
+            # Append the timestamp to the filename
+            timestamp = str(time.time())
+            if '.' in timestamp: # Also append the fractional part if available
+                timestamp = "".join(timestamp.split('.'))
+            
+            name = secure_filename(file.filename)
+            nameComponents = name.split('.')
+            name = nameComponents[0] + '_' + timestamp + '.' + nameComponents[1]
+                
+            uploadPath = os.path.join(uploadsDir, name)
             try:
                 file.save(uploadPath)
+                savedFiles.append(name)
             except RequestEntityTooLarge:
                 errorMessage = 'File could not be uploaded. Maximum size must be 50 MB'
                 abort(413, errorMessage)
-    return make_response(jsonify('Files were uploaded successfully'), 200)
+                
+    return make_response(jsonify(savedFiles), 200)
 
 @app.route('/redchannel', methods=['POST'])
 def redchannel():
