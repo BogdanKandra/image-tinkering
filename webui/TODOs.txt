@@ -57,10 +57,17 @@ Analog cu Imagini
 	- compute_FFT(image) -- calculeaza transformata Fourier a unei imagini; daca imaginea are 3 canale, calculeaza pentru fiecare. Intoarce o lista de transformate Fourier
 
 - la initializare, trebuie sa se calculeze:
-	- R, G, B;
-	- paddedImage R, G, B;
-	- FFT pentru paddedImage R, G, B;
-	- serializate fiecare
+	- daca imaginea este grayscale:
+		- calculeaza paddedImage
+		- FFT pentru paddedImage
+		- serializeaza paddedImage FFT
+	- daca imaginea este color:
+		- calculeaza paddedImage;
+		- calculeaza image R, G, B;
+		- calculeaza paddedImage R, G, B;
+		- FFT pentru paddedImage R, G, B;
+		- serializate image R, G, B + paddedImage FFT R, G, B;
+			- in tempdata -> image_r, image_g, image_b, image_fft_r, image_fft_g, image_fft_b
 
 
 - Voi avea clase care fac anumite operatii;
