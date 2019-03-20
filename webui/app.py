@@ -3,6 +3,9 @@ Created on Wed Jan 23 21:20:15 2019
 
 @author: Bogdan
 """
+import sys, os, time
+import magic
+
 from flask import Flask, request
 from flask.helpers import make_response, send_from_directory
 from flask.json import jsonify
@@ -12,18 +15,18 @@ from werkzeug.exceptions import abort, RequestEntityTooLarge
 from modules.test.controllers import test_mod
 from modules.initialisations.controllers import init_mod
 
-import sys, os, time
-import magic
 
 # Paths management
 APP_ROOT = os.path.dirname(os.path.abspath(__name__))
 IMAGES_UPLOAD_DIRECTORY = os.path.join('static', 'uploads', 'images')
 VIDEOS_UPLOAD_DIRECTORY = os.path.join('static', 'uploads', 'videos')
+TEMP_DATA_DIRECTORY = os.path.join('static', 'tempdata')
 
 # Application instantiation and configuration
 app = Flask(__name__)
 app.config['IMAGES_DIR'] = os.path.join(APP_ROOT, IMAGES_UPLOAD_DIRECTORY)
 app.config['VIDEOS_DIR'] = os.path.join(APP_ROOT, VIDEOS_UPLOAD_DIRECTORY)
+app.config['TEMP_DATA'] = os.path.join(APP_ROOT, TEMP_DATA_DIRECTORY)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
 # Blueprints Registration
@@ -45,7 +48,10 @@ def uploads():
 #    print(request, file=sys.stdout)
     filesDict = request.files
     mime = magic.Magic(mime=True)
-    savedFiles = []
+    savedFiles = {
+            'image': [],
+            'video': []
+            }
 
     for key in filesDict:
         file = filesDict[key]
@@ -56,8 +62,10 @@ def uploads():
             # Only save the file if it is an image or a video
             if mimeType.startswith('image/'):
                 uploadsDir = app.config['IMAGES_DIR']
+                filetype = 'image'
             else:
                 uploadsDir = app.config['VIDEOS_DIR']
+                filetype = 'video'
                 
             # Append the timestamp to the filename
             timestamp = str(time.time())
@@ -71,7 +79,7 @@ def uploads():
             uploadPath = os.path.join(uploadsDir, name)
             try:
                 file.save(uploadPath)
-                savedFiles.append(name)
+                savedFiles[filetype].append(name)
             except RequestEntityTooLarge:
                 errorMessage = 'File could not be uploaded. Maximum size must be 50 MB'
                 abort(413, errorMessage)
