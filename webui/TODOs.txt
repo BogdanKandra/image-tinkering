@@ -42,12 +42,6 @@ Analog cu Imagini
 
 
 
-- fft, r, g, b:
-	- sunt calculate dupa upload
-	- serializate la murat intr-o locatie pe server
-	- clientul este notificat ca s-au terminat calculele
-	- in algoritmi, matricile se vor lua de la murat
-	- la al treilea pas, cand user-ul decide daca pastreaza sau discard, se da call la server sa se stearga matricile
 - import dinamic
 - instantiere dinamica de module (clase)
 - apelare dinamica de metoda a unui obiect
