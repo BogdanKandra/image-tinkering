@@ -90,25 +90,13 @@ if __name__ == '__main__':
 #    testProcessingSpeed(impath3)
 #    testProcessingSpeed(impath4)
     
-#    ffts = getFFTs(image)
-#    for fft in ffts:
-#        fft_plot(fft)
-    
-    imageH, imageW = image.shape[:2]
-    paddedH, paddedW = 2 * imageH, 2 * imageW
-    paddedImage = np.zeros((paddedH, paddedW), np.uint8)
-    paddedImage[0:imageH, 0:imageW] = image
-    cv2.imshow('ttt', paddedImage)
+#    picklePath = 'brontosaur_15530789941596785_fft.pickle'
+#    f = open(picklePath, 'rb')
+#    im = pickle.load(f)
+#    f.close()
+#    fft_plot(im)
 
-#    f = open('test.pickle', 'wb')
-#    pickle.dump(im, f)
-#    f.close()
-#    
-#    f = open('test.pickle', 'rb')
-#    im2 = pickle.load(f)
-#    f.close()
-    
-#    cv2.imshow('Image', im2)    
+#    cv2.imshow('Image', image)
 
     cv2.waitKey()
     cv2.destroyAllWindows()
