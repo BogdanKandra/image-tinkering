@@ -34,11 +34,33 @@ Analog cu Imagini
 
 
 
-- Sa validez si pe server tipurile de fisiere upload-ate
-- Sa afisez un progressbar pentru procesul de upload
-- url, method, data, success, error, dataType (processData, contentType)
-- salvarea fisierelor sa fie facuta pe baza tipului - imagine sau video in diferitele locatii
-- daca fisiere nu se salveaza, sa arunc eroare
+- Ajax call properties: url, method, data, success, error, dataType (processData, contentType)
+- python os functions:
+	- os.access() -- determina daca user-ul are drepturi asupra path-ului
+	- os.chdir()  -- schimba cwd-ul pe path-ul dat
+	- os.getcwd() -- intoarce calea absoluta a directorului curent
 
 
 
+- fft, r, g, b:
+	- sunt calculate dupa upload
+	- serializate la murat intr-o locatie pe server
+	- clientul este notificat ca s-au terminat calculele
+	- in algoritmi, matricile se vor lua de la murat
+	- la al treilea pas, cand user-ul decide daca pastreaza sau discard, se da call la server sa se stearga matricile
+- import dinamic
+- instantiere dinamica de module (clase)
+- apelare dinamica de metoda a unui obiect
+
+
+
+- Voi avea clase care fac anumite operatii;
+- Fiecare clasa are metode de procesare care iau ca argument o imagine (image) si alti parametrii; deci cand vreau sa aplic o operatie asupra unei imagini, trebuie sa:
+	- import dinamic modulul in care se afla operatia (modulul corect e dedus pe baza unui json de configurare);
+	- instantiez dinamic clasa care contine operatia;
+	- apelez dinamic metoda corespunzatoare a clasei asupra imaginii;
+
+- Cand adaug o operatie noua in proiect, trebuie sa:
+	- Adaug o intrare in json-ul de mapare intre nume de operatii si modulul in care se afla
+	- Sa fac o clasa noua in care sa pun metoda sau sa o pun intr-o clasa existenta
+	- Sa adaug in interfata web buton pentru ea, acolo unde e necesar

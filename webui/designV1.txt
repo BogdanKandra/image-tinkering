@@ -6,4 +6,25 @@
 - Un div 'information' care contine doua divuri:
 	- divul 'count' care afiseaza numarul de fisiere incarcate, printr-un eveniment pe document.ready care calculeaza numarul de fisiere incarcate in memorie (pe client)
 	- divul 'names' care afiseaza lista numelor fisierelor incarcate in memorie (pe client)
+
 	
+Structura proiectului (Exemplu):
+================================
+/ImageTinkering
+	run.py     /// Aici se da drumul la aplicatie (app.run) - fisierul asta trebuie executat pentru a porni server-ul
+	config.py  /// configurarea bazei de date, a securitatii si a environmentului de lucru (debug)
+	/webui
+		__init__.py     /// Aici se definesc aplicatia si baza de date, se adauga configurarile, bindings de error handling, inregistrarea blueprint-urilor (adica importarea modulelor)
+						/// This is the shit I was looking for - eu o sa le pun in app.py si run.py n-o sa-l folosesc
+		/modul_autentificare
+			__init__.py     /// Ca sa inregistram directorul ca fiind un modul de Python (gen ca sa putem face from webui import ceva)
+			controllers.py  /// Aici se importa modelele, formularele de care avem nevoie; aici se fac si rutarile, cu Blueprint
+			models.py       /// Aici ar fi modelul legat de modulul curent - maparea tabelului intr-o clasa
+			forms.py        /// Aici se definesc formularele pe care le dorim in modul, ca clase
+		/templates
+			404.html     ???
+			/autentificare
+				signin.html
+				signout.html
+				forgotPass.html
+		/static
