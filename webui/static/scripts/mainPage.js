@@ -46,7 +46,7 @@ function uploadFiles() {
 				timeout: 5000
 			}).show()
 			
-			console.log('>>> ', data)
+			console.log('>>>>> Data:', data)
 			
 			// Enable the upload button back
 			$(uploadButton).prop('disabled', false)
