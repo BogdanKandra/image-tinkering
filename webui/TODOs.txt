@@ -52,22 +52,6 @@ Analog cu Imagini
 - instantiere dinamica de module (clase)
 - apelare dinamica de metoda a unui obiect
 
-- modul Python care contine metode:
-	- compute_RGB(image) -- calculeaza matricile R, G, B ale unei imagini si intoarce lista [R, G, B]; daca imaginea nu e RGB, intoarce lista continand imaginea initiala
-	- compute_FFT(image) -- calculeaza transformata Fourier a unei imagini; daca imaginea are 3 canale, calculeaza pentru fiecare. Intoarce o lista de transformate Fourier
-
-- la initializare, trebuie sa se calculeze:
-	- daca imaginea este grayscale:
-		- calculeaza paddedImage
-		- FFT pentru paddedImage
-		- serializeaza paddedImage FFT
-	- daca imaginea este color:
-		- calculeaza paddedImage;
-		- calculeaza image R, G, B;
-		- calculeaza paddedImage R, G, B;
-		- FFT pentru paddedImage R, G, B;
-		- serializate image R, G, B + paddedImage FFT R, G, B;
-			- in tempdata -> image_r, image_g, image_b, image_fft_r, image_fft_g, image_fft_b
 
 
 - Voi avea clase care fac anumite operatii;
@@ -80,9 +64,3 @@ Analog cu Imagini
 	- Adaug o intrare in json-ul de mapare intre nume de operatii si modulul in care se afla
 	- Sa fac o clasa noua in care sa pun metoda sau sa o pun intr-o clasa existenta
 	- Sa adaug in interfata web buton pentru ea, acolo unde e necesar
-	
-
-	
-	
-	
-	
