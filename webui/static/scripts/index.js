@@ -79,3 +79,14 @@ function uploadFiles() {
 		}
 	})
 }
+
+// This function switches the application mode between 'Image' and 'Video'
+// TODO - Change the page content accordingly
+function changeMode() {
+	let modeInput = $('#modeInput')
+	if ($(modeInput).text().includes('VIDEO')) {
+		$(modeInput).text('SWITCH TO IMAGE MODE')
+	} else {
+		$(modeInput).text('SWITCH TO VIDEO MODE')
+	}
+}

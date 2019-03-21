@@ -8,18 +8,24 @@
 		<link rel="stylesheet" type="text/css" href="/static/styles/libs/noty.css"/>
 		<link rel="stylesheet" href="/static/styles/libs/themes/sunset.css"/>
         <link rel="stylesheet" href="/static/styles/libs/themes/relax.css"/>
-        <link rel="stylesheet" href="/static/styles/libs/semantic.css"/>
+        <link rel="stylesheet" href="/static/styles/libs/semantic.min.css"/>
         <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
 		
         <script src="/static/scripts/libs/jquery-3.3.1.js"></script>
         <script src="/static/scripts/libs/noty.min.js"></script>
         <script src="/static/scripts/libs/semantic.js"></script>
 		<script src="/static/scripts/index.js"></script>
-		
     </head>
     <body>
-        <h1>Interfata Lucrare de Licenta</h1>
+        <h1 id="title">Image Tinkering</h1>
         
+        <div class="ui animated fade primary button" tabindex="0">
+            <div id="modeInput" class="visible content" onclick="changeMode()">SWITCH TO VIDEO MODE</div>
+            <div class="hidden content">
+                <i class="right arrow icon"></i>
+            </div>
+        </div>
+
         <div class="input">
             <h3>Input Image</h3>
             <img id="imagesrc" alt="No Image Loaded" height="200" width="200" />

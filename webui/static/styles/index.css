@@ -1,4 +1,8 @@
-body {
-    background: rebeccapurple;
-    color: yellowgreen;
+#title {
+    padding-top: 1em;
+    text-align: center;
+}
+
+#modeInput {
+    float: right;
 }
