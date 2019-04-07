@@ -29,7 +29,8 @@ Analog cu Imagini
 
 
 
-
+- Maybe use containers?
+- Use divider between buttons and selected images (vertical divider)
 
 
 
@@ -58,3 +59,19 @@ Analog cu Imagini
 	- Adaug o intrare in json-ul de mapare intre nume de operatii si modulul in care se afla
 	- Sa fac o clasa noua in care sa pun metoda sau sa o pun intr-o clasa existenta
 	- Sa adaug in interfata web buton pentru ea, acolo unde e necesar
+	
+	
+	
+TAKE SELFIE button
+-----------------------------
+- Apas SNAP
+	-> Se face screenshot
+	-> Se afiseaza screenshot in locul video tag-ului
+	-> Daca imi place, click Submit
+		-> Inchide modalul
+		-> Pune imaginea in div-ul care contine imaginile selectate
+	-> Daca nu imi place, click SNAP AGAIN (vechiul SNAP)
+		-> Porneste din nou stream-ul
+- Dupa ce se face poza, se pune intr=un img pentru afisare
+- Pe butonul de upload verific un flag (pentru o valoare iau din uploaded files, pentru cealalta valoare iau din img-ul unde am afisat imaginea capturata
+- Daca user-ul da click din nou pe TAKE SELFIE, se va sterge imaginea facuta anterior
