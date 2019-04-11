@@ -47,13 +47,10 @@ function openSelfieModal() {
 								if (imageCapture.track.readyState != 'ended') {
 									imageCapture.track.stop()
 								}
-								console.log('MODAL HIDDEN')
 							},
 							onApprove: function() {
-								console.log('>>> Modal SUBMIT Button Pressed')
 							},
 							onDeny: function() {
-								console.log('>>> Modal CANCEL Button Pressed')
 							}
 						}).modal('show')
 
@@ -72,6 +69,7 @@ function openSelfieModal() {
 function captureImage() {
 	let snapshot = $('#snapshot')
 	let cameraFeed = $('#cameraFeed')
+	let actionButtons = $('.actions').first().find('.ui')
 
 	if (snapshot.css('display') == 'none') {
 		// Capture image and display it
@@ -81,11 +79,33 @@ function captureImage() {
 						snapshot.toggle()
 						cameraFeed.toggle()
 					})
+
+		// Update the action buttons
+		actionButtons.first().html('DISCARD')
+		actionButtons.eq(1).removeClass('disabled')
 	} else {
 		// Redisplay the video feed
 		snapshot.css('display', 'none')
 		cameraFeed.toggle()
+
+		// Update the action buttons
+		actionButtons.first().html('SNAP')
+		actionButtons.eq(1).addClass('disabled')
 	}
+}
+
+// Confirms the currently captured image for uploading
+function submitImage() {
+	let filesContainer = $('#filesContainer')
+	let snapshot = $('#snapshot')
+	let uploadButton = $('#uploadInput')
+	let imageElement = $('<img>')
+
+	imageElement.prop('src', snapshot.prop('src'))
+	imageElement.prop('alt', 'Image Preview not Available')
+	imageElement.prop('height', '200')
+	filesContainer.append($('<div>').append(imageElement))
+	uploadButton.removeClass('disabled')
 }
 
 // Makes a POST request, uploading the selected files to the server
@@ -96,7 +116,7 @@ function uploadFiles() {
 	let uploadButton = $('#uploadInput')
 	$(uploadButton).addClass('disabled')
 
-	// Build the request data - a list of uploaded files
+	// Build the request data - a list of selected files
 	const files = $('#fileInput').prop('files')
 	let imageData = new FormData()
 	for (let i = 0; i < files.length; i++) {
