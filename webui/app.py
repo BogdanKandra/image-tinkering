@@ -86,13 +86,6 @@ def uploads():
                 
     return make_response(jsonify(savedFiles), 200)
 
-@app.route('/redchannel', methods=['POST'])
-def redchannel():
-    """ The user makes a POST request, sending the name of the file(s) to be
-    operated on. The proper function is applied, obtaining a new image, saving
-    it in the temp zone, and sending the path of the image to the client
-    """
-
 # Run the application
 if __name__ == '__main__':
     app.run(host='localhost', port=8080, debug=True)
