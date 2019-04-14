@@ -1,0 +1,71 @@
+html, body {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+
+#title {
+    margin-top: 1em;
+    text-align: center;
+}
+
+#switchMode {
+    float: right;
+    margin-right: 2em;
+}
+
+#actionButtons {
+    width: 70%;
+    margin-top: 6rem;
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+#uploadInput {
+    margin-left: 3em;
+}
+
+#filesInformation {
+    margin-top: 6em;
+    text-align: center;
+}
+
+#filesSource {
+    display: none;
+}
+
+#filesContainer {
+    margin-top: 3em;
+    display: inline-block;
+}
+
+#filesContainer > div {
+    height: 200px;
+    width: 400px;
+    display: inline-block;
+    background-color: whitesmoke;
+    overflow: hidden;
+    margin: .3em .8em;
+    text-align: center;
+}
+
+#snapshot {
+    display: none;
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+    margin-top: 3em;
+    min-height: 150px;
+    width: 100%;
+}
+
+#steps {
+    position: fixed;
+    bottom: 3em;
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+}

@@ -7,28 +7,112 @@
 		<link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon.ico"/>
 		<link rel="stylesheet" type="text/css" href="/static/styles/libs/noty.css"/>
 		<link rel="stylesheet" href="/static/styles/libs/themes/sunset.css"/>
-		<link rel="stylesheet" href="/static/styles/libs/themes/relax.css"/>
-        <link rel="stylesheet" type="text/css" href="/static/styles/style.css"/>
+        <link rel="stylesheet" href="/static/styles/libs/themes/relax.css"/>
+        <link rel="stylesheet" href="/static/styles/libs/semantic.min.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/styles/index.css"/>
 		
         <script src="/static/scripts/libs/jquery-3.3.1.js"></script>
         <script src="/static/scripts/libs/noty.min.js"></script>
-		<script src="/static/scripts/mainPage.js"></script>
-		
+        <script src="/static/scripts/libs/semantic.js"></script>
+        <script src="/static/scripts/utilityFunctions.js"></script>
+		<script src="/static/scripts/index.js"></script>
     </head>
     <body>
-        <h1>Interfata Lucrare de Licenta</h1>
+        <h1 id="title">Image Tinkering</h1>
         
-        <div class="input">
-            <h3>Input Image</h3>
-            <img id="imagesrc" alt="No Image Loaded" height="200" width="200" />
-			<p>Image src:</p> <input type="file" id="fileInput" accept="image/*, video/*" multiple />
-            <input type="button" id="uploadInput" value="UPLOAD" onclick="uploadFiles()" disabled>
+        <div id="switchMode" class="ui animated fade primary button" onclick="changeMode()">
+            <div class="visible content">SWITCH TO VIDEO MODE</div>
+            <div class="hidden content">
+                <i class="video icon"></i>
+            </div>
         </div>
-        
-        <div class="output">
-            <h3>Output Image</h3>
-            <input type="button" value="Keep Red Channel" onclick="">
-            <img id="imagedest" alt="No Output Yet" />
+        <div style="clear:both"></div>
+
+        <div id="actionButtons" class="ui massive primary buttons">
+            <label for="fileInput" class="ui labeled icon button">
+                <i class="file image icon"></i>
+                LOAD FILES
+            </label>
+            <input type="file" id="fileInput" accept="image/*" style="display:none" multiple>
+
+            <div class="or"></div>
+
+            <div class="ui right labeled icon button" onclick="openSelfieModal()">
+                <i class="camera icon"></i>
+                TAKE SELFIE
+            </div>
+
+            <div id="uploadInput" class="ui vertical animated disabled button" onclick="uploadFiles()">
+                <div class="visible content">UPLOAD</div>
+                <div class="hidden content">
+                    <i class="upload icon"></i>
+                </div>
+            </div>
         </div>
+
+        <div id="filesInformation">
+            <div>
+                <span id="filesCount">No Files loaded yet</span>
+                <div id="fileNames"></div>
+                <div id="filesSource"></div>
+            </div>
+
+            <div id="filesContainer"></div>
+        </div>
+
+        <div id="selfieModal" class="ui modal">
+            <i class="close icon"></i>
+            <div class="header">
+                Take Selfie
+            </div>
+            <div class="content">
+                <div class="description">
+                    <div class="ui header">
+                        Press Button to snap
+                    </div>
+                    <video id="cameraFeed" width="640" height="480" autoplay>
+                        YOUR BROWSER DOES NOT SUPPORT THE video TAG
+                    </video>
+                    <img id="snapshot" height="480">
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui primary disabled button" onclick="captureImage()">
+                    SNAP
+                </div>
+                <div class="ui approve primary disabled button" onclick="submitImage()">
+                    SUBMIT
+                </div>
+                <div class="ui deny button">
+                    CANCEL
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div id="steps" class="ui three steps">
+                <div class="active step">
+                  <i class="folder open icon"></i>
+                  <div class="content">
+                    <div class="title">Files</div>
+                    <div class="description">Select images to process</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <i class="cogs icon"></i>
+                  <div class="content">
+                    <div class="title">Operations</div>
+                    <div class="description">Select operations to be applied</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <i class="save icon"></i>
+                  <div class="content">
+                    <div class="title">Results</div>
+                    <div class="description">Save or discard processed files</div>
+                  </div>
+                </div>
+            </div>
+        </footer>
     </body>
 </html>

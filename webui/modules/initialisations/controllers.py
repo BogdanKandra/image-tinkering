@@ -57,9 +57,9 @@ def initialise():
             imageChannels = ops.getChannels(imageFile)
             
             # Compute the padded image
-            imageH, imageW = imageFile.shape[:2]
+            imageH, imageW, channels = imageFile.shape
             paddedH, paddedW = 2 * imageH, 2 * imageW
-            paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
+            paddedImage = np.zeros((paddedH, paddedW, channels), np.uint8)
             paddedImage[0:imageH, 0:imageW] = imageFile
             
             # Compute the R, G, B channels of the padded image
