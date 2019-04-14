@@ -51,8 +51,11 @@ $(document).ready(function() {
 // Initialises and opens the image capture modal
 function openSelfieModal() {
 
+	let actionButtons = $('.actions').first().find('.ui')
+
 	$('#selfieModal').modal({
 							onHide: function() {
+								actionButtons.first().addClass('disabled')
 								if (imageCapture !== undefined && imageCapture.track.readyState != 'ended') {
 									imageCapture.track.stop()
 								}
@@ -70,6 +73,7 @@ function openSelfieModal() {
 								document.querySelector('video').srcObject = mediaStream;
 								const track = mediaStream.getVideoTracks()[0]
 								imageCapture = new ImageCapture(track)
+								actionButtons.first().removeClass('disabled')
 							})
 	}
 }
@@ -198,6 +202,8 @@ function uploadAjax(imageData) {
 					console.log('>>>>> Error during initialisations process')
 				}
 			})
+
+
 		},
 		error: function(request, status, error) {
 			new Noty({
