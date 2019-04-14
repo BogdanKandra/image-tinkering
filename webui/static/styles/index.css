@@ -1,3 +1,10 @@
+html, body {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+
 #title {
     margin-top: 1em;
     text-align: center;
@@ -24,6 +31,10 @@
     text-align: center;
 }
 
+#filesSource {
+    display: none;
+}
+
 #filesContainer {
     margin-top: 3em;
     display: inline-block;
@@ -41,4 +52,20 @@
 
 #snapshot {
     display: none;
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+    margin-top: 3em;
+    min-height: 150px;
+    width: 100%;
+}
+
+#steps {
+    position: fixed;
+    bottom: 3em;
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
