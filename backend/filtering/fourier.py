@@ -1,6 +1,12 @@
+import os, sys
 import numpy as np
 from matplotlib import pyplot as plt
 import cv2
+projectPath = os.getcwd()
+while os.path.basename(projectPath) != 'ImageTinkering':
+    projectPath = os.path.dirname(projectPath)
+sys.path.append(os.path.join(projectPath))
+from backend import basic_operations as ops
 
 def fft_plot(image, cmap=None):
     """Takes a frequency domain image and displays its spectrum.
@@ -172,19 +178,20 @@ def low_pass(image, cutoff, type):
         NumPy array uint8 -- the filtered image
     """
     
-    imageH, imageW = image.shape[:2] # Take image dimensions
+    imageH, imageW = image.shape[:2]          # Take image dimensions
     paddedH, paddedW = 2 * imageH, 2 * imageW # Obtain the padding parameters
 
-    # Create padded image and split into channels
-    paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
-    paddedImage[0:imageH, 0:imageW, :] = image
-    paddedImageB, paddedImageG, paddedImageR = cv2.split(paddedImage)
+    # Create padded image
+    if ops.isColor(image):
+        paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
+        paddedImage[0:imageH, 0:imageW, :] = image
+    else:
+        paddedImage = np.zeros((paddedH, paddedW), np.uint8)
+        paddedImage[0:imageH, 0:imageW] = image
+        
+    # Take the FFTs of the padded image channels
+    paddedImageFFTs = ops.getFFTs(paddedImage)
     
-    # Take the FFT of the image
-    paddedImageBFFT = np.fft.fftshift(np.fft.fft2(paddedImageB))
-    paddedImageGFFT = np.fft.fftshift(np.fft.fft2(paddedImageG))
-    paddedImageRFFT = np.fft.fftshift(np.fft.fft2(paddedImageR))
-
     # Compute the filter image
     if type == 'ideal':
         filterImage = ideal_filter('low', (paddedH, paddedW), cutoff)
@@ -193,31 +200,44 @@ def low_pass(image, cutoff, type):
     elif type == 'gaussian':
         filterImage = gaussian_filter('low', (paddedH, paddedW), cutoff)
 
-    # Apply the filter to the images
-    filteredBFFT = np.multiply(paddedImageBFFT, filterImage)
-    filteredGFFT = np.multiply(paddedImageGFFT, filterImage)
-    filteredRFFT = np.multiply(paddedImageRFFT, filterImage)
+    # Apply the filter to the FFTs
+    filteredFFTs = [np.multiply(channelFFT, filterImage) for channelFFT in paddedImageFFTs]
     
-    # Take the inverse FFT of the image components
-    resultB = np.real(np.fft.ifft2(np.fft.ifftshift(filteredBFFT)))
-    resultG = np.real(np.fft.ifft2(np.fft.ifftshift(filteredGFFT)))
-    resultR = np.real(np.fft.ifft2(np.fft.ifftshift(filteredRFFT)))
+    # Take the inverse FFT of the filtered padded image FFT components
+    resultComponents = [np.real(np.fft.ifft2(np.fft.ifftshift(filteredComponent))) 
+                        for filteredComponent in filteredFFTs]
     
-    resultImage = cv2.merge([resultB, resultG, resultR])
+    # Obtain the result image
+    if len(resultComponents) == 3:
+        resultImage = cv2.merge(resultComponents)
+    else:
+        resultImage = resultComponents[0]
 
     # Trim values lower than 0 or higher than 255
-    for px in range(0, paddedH):
-        for py in range(0, paddedW):
-            for ch in range(0, 3):
-                currentItem = resultImage.item((px,py,ch))
-                if currentItem > 255:
-                    resultImage.itemset((px,py,ch), 255)
-                elif currentItem < 0:
-                    resultImage.itemset((px,py,ch), 0)
+    if len(resultComponents) == 3:
+        for px in range(0, paddedH):
+            for py in range(0, paddedW):
+                for ch in range(0, 3):
+                    currentPixel = resultImage.item((px,py,ch))
+                    if currentPixel > 255:
+                        resultImage.itemset((px,py,ch), 255)
+                    elif currentPixel < 0:
+                        resultImage.itemset((px,py,ch), 0)
+    else:
+        for px in range(0, paddedH):
+            for py in range(0, paddedW):
+                currentPixel = resultImage.item((px,py))
+                if currentPixel > 255:
+                    resultImage.itemset((px,py), 255)
+                elif currentPixel < 0:
+                    resultImage.itemset((px,py), 0)
     
     # Round the values and unpad the image
     resultImage = np.uint8(np.rint(resultImage))
-    resultImage = resultImage[0:imageH, 0:imageW, :]
+    if len(resultComponents) == 3:
+        resultImage = resultImage[0:imageH, 0:imageW, :]
+    else:
+        resultImage = resultImage[0:imageH, 0:imageW]
 
     # Compute the difference between the original and transformed images
 #    diff = cv2.absdiff(image, resultImage)
@@ -254,18 +274,19 @@ def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian'):
         NumPy array uint8 -- the filtered image
     """
     
-    imageH, imageW = image.shape[:2] # Take image dimensions
+    imageH, imageW = image.shape[:2]          # Take image dimensions
     paddedH, paddedW = 2 * imageH, 2 * imageW # Obtain the padding parameters
 
-    # Create padded image and split into channels
-    paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
-    paddedImage[0:imageH, 0:imageW, :] = image
-    paddedImageB, paddedImageG, paddedImageR = cv2.split(paddedImage)
-    
-    # Take the FFT of the image
-    paddedImageBFFT = np.fft.fftshift(np.fft.fft2(paddedImageB))
-    paddedImageGFFT = np.fft.fftshift(np.fft.fft2(paddedImageG))
-    paddedImageRFFT = np.fft.fftshift(np.fft.fft2(paddedImageR))
+    # Create padded image
+    if ops.isColor(image):
+        paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
+        paddedImage[0:imageH, 0:imageW, :] = image
+    else:
+        paddedImage = np.zeros((paddedH, paddedW), np.uint8)
+        paddedImage[0:imageH, 0:imageW] = image
+        
+    # Take the FFTs of the padded image channels
+    paddedImageFFTs = ops.getFFTs(paddedImage)
 
     # Compute the filter image
     if type == 'ideal':
@@ -274,39 +295,51 @@ def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian'):
         filterImage = butterworth_filter('high', (paddedH, paddedW), cutoff)
     elif type == 'gaussian':
         filterImage = gaussian_filter('high', (paddedH, paddedW), cutoff)
-    elif type == 'laplacian':
-        filterImage = laplacian_filter((paddedH, paddedW))
 
+	# Perform High-frequency emphasis
     if multiplier == 1:
         filterImage = offset + filterImage
     else:
         filterImage = offset + np.multiply(multiplier, filterImage)
 
-    # Apply the filter to the images
-    filteredBFFT = np.multiply(paddedImageBFFT, filterImage)
-    filteredGFFT = np.multiply(paddedImageGFFT, filterImage)
-    filteredRFFT = np.multiply(paddedImageRFFT, filterImage)
+    # Apply the filter to the FFTs
+    filteredFFTs = [np.multiply(channelFFT, filterImage) for channelFFT in paddedImageFFTs]
     
-    # Take the inverse FFT of the image components
-    resultB = np.real(np.fft.ifft2(np.fft.ifftshift(filteredBFFT)))
-    resultG = np.real(np.fft.ifft2(np.fft.ifftshift(filteredGFFT)))
-    resultR = np.real(np.fft.ifft2(np.fft.ifftshift(filteredRFFT)))
+    # Take the inverse FFT of the filtered padded image FFT components
+    resultComponents = [np.real(np.fft.ifft2(np.fft.ifftshift(filteredComponent))) 
+                        for filteredComponent in filteredFFTs]
     
-    resultImage = cv2.merge([resultB, resultG, resultR])
+    # Obtain the result image
+    if len(resultComponents) == 3:
+        resultImage = cv2.merge(resultComponents)
+    else:
+        resultImage = resultComponents[0]
 
     # Trim values lower than 0 or higher than 255
-    for px in range(0, paddedH):
-        for py in range(0, paddedW):
-            for ch in range(0, 3):
-                currentItem = resultImage.item((px,py,ch))
-                if currentItem > 255:
-                    resultImage.itemset((px,py,ch), 255)
-                elif currentItem < 0:
-                    resultImage.itemset((px,py,ch), 0)
+    if len(resultComponents) == 3:
+        for px in range(0, paddedH):
+            for py in range(0, paddedW):
+                for ch in range(0, 3):
+                    currentPixel = resultImage.item((px,py,ch))
+                    if currentPixel > 255:
+                        resultImage.itemset((px,py,ch), 255)
+                    elif currentPixel < 0:
+                        resultImage.itemset((px,py,ch), 0)
+    else:
+        for px in range(0, paddedH):
+            for py in range(0, paddedW):
+                currentPixel = resultImage.item((px,py))
+                if currentPixel > 255:
+                    resultImage.itemset((px,py), 255)
+                elif currentPixel < 0:
+                    resultImage.itemset((px,py), 0)
     
     # Round the values and unpad the image
     resultImage = np.uint8(np.rint(resultImage))
-    resultImage = resultImage[0:imageH, 0:imageW, :]
+    if len(resultComponents) == 3:
+        resultImage = resultImage[0:imageH, 0:imageW, :]
+    else:
+        resultImage = resultImage[0:imageH, 0:imageW]
 
     # Compute the difference between the original and transformed images
 #    diff = cv2.absdiff(image, resultImage)
