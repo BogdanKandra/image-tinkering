@@ -1,7 +1,7 @@
 import os, sys
+import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-import cv2
 projectPath = os.getcwd()
 while os.path.basename(projectPath) != 'ImageTinkering':
     projectPath = os.path.dirname(projectPath)
@@ -30,12 +30,9 @@ def fft_plot(image, cmap=None):
 def ideal_filter(mode, size, cutoff):
     """Generates an **Ideal Filter** which filters out frequencies 
     higher (*low-pass*) or lower (*high-pass*) than the cutoff frequency\n
-    The transfer function for low-pass filtering is:
-        H(u,v) = 1, if D(u,v) <= cutoff \n
-               = 0, otherwise\n
-    for high-pass filtering:
-        H(u,v) = 0, if D(u,v) <= cutoff \n
-               = 1, otherwise
+    It has the following transfer function:\n
+        *low-pass mode:* H(u,v) = 1, if D(u,v) <= cutoff; 0, otherwise\n
+        *high-pass mode:* H(u,v) = 0, if D(u,v) <= cutoff; 1, otherwise\n
     
     Arguments:
         *mode* (str) -- specifies whether low-pass or high-pass filtering is desired
@@ -48,14 +45,13 @@ def ideal_filter(mode, size, cutoff):
         NumPy array uint8 -- the filter image
     """
     filterImage = np.zeros(size, np.uint8)
-    v = np.asarray([size[0] // 2, size[1] // 2])
+    v = np.asarray([size[0] // 2, size[1] // 2])  # Center of the filter
 
     for px in range(0, size[0]):
         for py in range(0, size[1]):
             u = np.asarray([px, py])
-            if np.linalg.norm(u - v) <= cutoff and mode == 'low':
-                filterImage.itemset((px, py), 1)
-            elif np.linalg.norm(u - v) > cutoff and mode == 'high':
+            Duv = np.linalg.norm(u - v)
+            if (Duv <= cutoff and mode == 'low') or (Duv > cutoff and mode == 'high'):
                 filterImage.itemset((px, py), 1)
     
     return filterImage
@@ -83,7 +79,6 @@ def butterworth_filter(mode, size, cutoff, order=2):
         NumPy array float64 -- the filter image
     """
     filterImage = np.zeros(size, np.float64)
-    # Compute constants
     orderTerm = 2 * order
     v = np.asarray([size[0] // 2, size[1] // 2])
 
@@ -91,12 +86,11 @@ def butterworth_filter(mode, size, cutoff, order=2):
         for py in range(0, size[1]):
             u = np.asarray([px, py])
             Duv = np.linalg.norm(u - v)
-            resultLow = 1 / (1 + pow(Duv / cutoff, 2 * orderTerm))
-            resultHigh = 1 / (1 + pow(cutoff / Duv, 2 * orderTerm))
             if mode == 'low':
-                filterImage.itemset((px, py), resultLow)
+                result = 1 / (1 + pow(Duv / cutoff, orderTerm))
             elif mode == 'high':
-                filterImage.itemset((px, py), resultHigh)
+                result = 1 / (1 + pow(cutoff / Duv, orderTerm))
+            filterImage.itemset((px, py), result)
 
     return filterImage
 
@@ -118,7 +112,6 @@ def gaussian_filter(mode, size, cutoff):
         NumPy array float64 -- the filter image
     """
     filterImage = np.zeros(size, np.float64)    
-    # Compute constants
     cutoffTerm = 2 * (cutoff ** 2)
     v = np.asarray([size[0] // 2, size[1] // 2])
 
@@ -160,7 +153,7 @@ def laplacian_filter(size):
     
     return filterImage
 
-def low_pass(image, cutoff, type):
+def low_pass(image, cutoff, type='gaussian', order=2):
     """Applies a **Low Pass Filter** on an image. \n
     The image is converted into the frequency domain (using the *Fast Fourier
     Transform*) and only the frequencies smaller than the cutoff frequency are
@@ -173,6 +166,8 @@ def low_pass(image, cutoff, type):
         
         *type* (str) -- the type of low-pass filter to be applied;
         possible values are: *ideal*, *butterworth*, *gaussian*
+        
+        *order* (int) -- the order used for Butterworth filtering
 
     Returns:
         NumPy array uint8 -- the filtered image
@@ -196,7 +191,7 @@ def low_pass(image, cutoff, type):
     if type == 'ideal':
         filterImage = ideal_filter('low', (paddedH, paddedW), cutoff)
     elif type == 'butterworth':
-        filterImage = butterworth_filter('low', (paddedH, paddedW), cutoff)
+        filterImage = butterworth_filter('low', (paddedH, paddedW), cutoff, order)
     elif type == 'gaussian':
         filterImage = gaussian_filter('low', (paddedH, paddedW), cutoff)
 
@@ -249,7 +244,7 @@ def low_pass(image, cutoff, type):
 
     return resultImage
 
-def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian'):
+def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2):
     """Applies a **High Pass Filter** on an image. \n
     The image is converted into the frequency domain (using the *Fast Fourier
     Transform*) and only the frequencies higher than the cutoff frequency are
@@ -292,7 +287,7 @@ def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian'):
     if type == 'ideal':
         filterImage = ideal_filter('high', (paddedH, paddedW), cutoff)
     elif type == 'butterworth':
-        filterImage = butterworth_filter('high', (paddedH, paddedW), cutoff)
+        filterImage = butterworth_filter('high', (paddedH, paddedW), cutoff, order)
     elif type == 'gaussian':
         filterImage = gaussian_filter('high', (paddedH, paddedW), cutoff)
 
