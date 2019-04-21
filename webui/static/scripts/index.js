@@ -186,9 +186,6 @@ function uploadAjax(imageData) {
 			
 			console.log('>>>>> Data:', data)
 			
-			// Re-enable the upload button
-			uploadButton.removeClass('disabled')
-			
 			// Launch the initialisations procedure
 			$.ajax({
 				url: '/initialisations/',
@@ -203,7 +200,14 @@ function uploadAjax(imageData) {
 				}
 			})
 
+			// Direct the user to the Operation Selection step
+			$('#fileSelectionContent').css('display', 'none')
+			$('#operationSelectionContent').css('display', 'block')
+			$('#steps').first().removeClass('active')
+			$('#steps').children('.step').eq(1).addClass('active')
 
+			// Populate the container holding uploaded images
+			populateFilesAndOperationsContainer(data)
 		},
 		error: function(request, status, error) {
 			new Noty({
@@ -235,4 +239,32 @@ function changeMode() {
 
 	hiddenContentIcon.toggleClass('image')
 	hiddenContentIcon.toggleClass('video')
+}
+
+// For each uploaded file, creates a container holding the uploaded file and an accordion displaying
+// selected operations and parameters
+function populateFilesAndOperationsContainer(data) {
+
+	let imageNames = data['image']
+	let filesAndOperationsContainer = $('#filesAndOperationsContainer')
+
+	for (const name of imageNames) {
+
+		// Build the img element to be displayed
+		let path = '../static/uploads/images/' + name
+		let image = $('<img>')
+		image.prop('src', path)
+		image.prop('alt', 'Image Preview not Available')
+		image.prop('height', '200')
+
+		// Build the accordion element to be displayed under the img
+		// TODO
+
+		filesAndOperationsContainer.append(image)
+	}
+}
+
+// Function called on pressing the PROCESS button on second screen
+function test() {
+	console.log('PRESSED BUTTON IN SECOND SCREEN --- PROCESSING...')
 }
