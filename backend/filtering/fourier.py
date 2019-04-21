@@ -1,4 +1,5 @@
 import os, sys
+import pickle
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -7,6 +8,7 @@ while os.path.basename(projectPath) != 'ImageTinkering':
     projectPath = os.path.dirname(projectPath)
 sys.path.append(os.path.join(projectPath))
 from backend import basic_operations as ops
+import time
 
 def fft_plot(image, cmap=None):
     """Takes a frequency domain image and displays its spectrum.
@@ -128,32 +130,7 @@ def gaussian_filter(mode, size, cutoff):
     
     return filterImage
 
-def laplacian_filter(size):
-    """Generates a **Laplacian Filter** which has the transfer function:\n
-    H(u,v) = -4 * pi^2 * Duv^2
-    
-    Arguments:
-        *size* (2-tuple) -- a tuple specifying the size of the filter to be
-        generated
-    
-    Returns:
-        NumPy array float64 -- the Laplacian image
-    """
-    filterImage = np.zeros(size, np.float64)
-    # Compute constants
-    v = np.asarray([size[0] // 2, size[1] // 2])
-    piSquaredTimesFour = -4 * (np.pi ** 2)
-
-    for px in range(0, size[0]):
-        for py in range(0, size[1]):
-            u = np.asarray([px, py])
-            Duv = np.linalg.norm(u - v)
-            Huv = piSquaredTimesFour * (Duv ** 2)
-            filterImage.itemset((px, py), Huv)
-    
-    return filterImage
-
-def low_pass(image, cutoff, type='gaussian', order=2):
+def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
     """Applies a **Low Pass Filter** on an image. \n
     The image is converted into the frequency domain (using the *Fast Fourier
     Transform*) and only the frequencies smaller than the cutoff frequency are
@@ -168,6 +145,9 @@ def low_pass(image, cutoff, type='gaussian', order=2):
         possible values are: *ideal*, *butterworth*, *gaussian*
         
         *order* (int) -- the order used for Butterworth filtering
+        
+        *filename* (str) -- the name of the image file to be filtered, used for 
+        checking whether the corresponding FFT(s) are serialized on the server or not
 
     Returns:
         NumPy array uint8 -- the filtered image
@@ -176,17 +156,49 @@ def low_pass(image, cutoff, type='gaussian', order=2):
     imageH, imageW = image.shape[:2]          # Take image dimensions
     paddedH, paddedW = 2 * imageH, 2 * imageW # Obtain the padding parameters
 
-    # Create padded image
-    if ops.isColor(image):
-        paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
-        paddedImage[0:imageH, 0:imageW, :] = image
-    else:
-        paddedImage = np.zeros((paddedH, paddedW), np.uint8)
-        paddedImage[0:imageH, 0:imageW] = image
-        
-    # Take the FFTs of the padded image channels
-    paddedImageFFTs = ops.getFFTs(paddedImage)
+    # Check whether the FFTs of the image have been serialized or not
+    start = time.time()
+    deserializing, file_not_found = False, False
+    pickles_path = os.path.join(projectPath, 'webui', 'static', 'tempdata')
+
+    if filename != '':
+        filename, extension = filename.split('.')
+        if ops.isColor(image):
+            files_to_check = [filename + '_' + c + '_fft.pickle' for c in 'bgr']
+        else:
+            files_to_check = [filename + '_fft.pickle']
+        for file in files_to_check:
+            if not os.path.isfile(os.path.join(pickles_path, file)):
+                file_not_found = True
+        if file_not_found == False:
+            deserializing = True
     
+    # Deserialize the FFTs if possible
+    if deserializing:
+        paddedImageFFTs = []
+        for file in files_to_check:
+            f = open(os.path.join(pickles_path, file), 'rb')
+            paddedImageFFTs.append(pickle.load(f))
+            f.close()
+            print('Deserialized', file)
+            end = time.time()
+            print('Deserializing:', end - start)
+    else:
+        start = time.time()
+        # Create padded image
+        if ops.isColor(image):
+            paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
+            paddedImage[0:imageH, 0:imageW, :] = image
+        else:
+            paddedImage = np.zeros((paddedH, paddedW), np.uint8)
+            paddedImage[0:imageH, 0:imageW] = image
+
+        # Take the FFTs of the padded image channels
+        paddedImageFFTs = ops.getFFTs(paddedImage)
+        end = time.time()
+        print('Padding and FFT:', end - start)
+    
+    start = time.time()
     # Compute the filter image
     if type == 'ideal':
         filterImage = ideal_filter('low', (paddedH, paddedW), cutoff)
@@ -194,6 +206,8 @@ def low_pass(image, cutoff, type='gaussian', order=2):
         filterImage = butterworth_filter('low', (paddedH, paddedW), cutoff, order)
     elif type == 'gaussian':
         filterImage = gaussian_filter('low', (paddedH, paddedW), cutoff)
+    end = time.time()
+    print('Computing filter image:', end - start)
 
     # Apply the filter to the FFTs
     filteredFFTs = [np.multiply(channelFFT, filterImage) for channelFFT in paddedImageFFTs]
@@ -209,23 +223,8 @@ def low_pass(image, cutoff, type='gaussian', order=2):
         resultImage = resultComponents[0]
 
     # Trim values lower than 0 or higher than 255
-    if len(resultComponents) == 3:
-        for px in range(0, paddedH):
-            for py in range(0, paddedW):
-                for ch in range(0, 3):
-                    currentPixel = resultImage.item((px,py,ch))
-                    if currentPixel > 255:
-                        resultImage.itemset((px,py,ch), 255)
-                    elif currentPixel < 0:
-                        resultImage.itemset((px,py,ch), 0)
-    else:
-        for px in range(0, paddedH):
-            for py in range(0, paddedW):
-                currentPixel = resultImage.item((px,py))
-                if currentPixel > 255:
-                    resultImage.itemset((px,py), 255)
-                elif currentPixel < 0:
-                    resultImage.itemset((px,py), 0)
+    resultImage = np.where(resultImage > 255, 255, resultImage)
+    resultImage = np.where(resultImage < 0, 0, resultImage)
     
     # Round the values and unpad the image
     resultImage = np.uint8(np.rint(resultImage))
@@ -244,7 +243,7 @@ def low_pass(image, cutoff, type='gaussian', order=2):
 
     return resultImage
 
-def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2):
+def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2, filename=''):
     """Applies a **High Pass Filter** on an image. \n
     The image is converted into the frequency domain (using the *Fast Fourier
     Transform*) and only the frequencies higher than the cutoff frequency are
@@ -264,6 +263,9 @@ def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2):
         
         *type* (str) -- the type of high-pass filter to be applied;
         possible values are: *ideal*, *butterworth*, *gaussian*
+        
+        *filename* (str) -- the name of the image file to be filtered, used for 
+        checking whether the corresponding FFT(s) are serialized on the server or not
 
     Returns:
         NumPy array uint8 -- the filtered image
@@ -272,16 +274,41 @@ def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2):
     imageH, imageW = image.shape[:2]          # Take image dimensions
     paddedH, paddedW = 2 * imageH, 2 * imageW # Obtain the padding parameters
 
-    # Create padded image
-    if ops.isColor(image):
-        paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
-        paddedImage[0:imageH, 0:imageW, :] = image
+    # Check whether the FFTs of the image have been serialized or not
+    deserializing, file_not_found = False, False
+    pickles_path = os.path.join(projectPath, 'webui', 'static', 'tempdata')
+
+    if filename != '':
+        filename, extension = filename.split('.')
+        if ops.isColor(image):
+            files_to_check = [filename + '_' + c + '_fft.pickle' for c in 'bgr']
+        else:
+            files_to_check = [filename + '_fft.pickle']
+        for file in files_to_check:
+            if not os.path.isfile(os.path.join(pickles_path, file)):
+                file_not_found = True
+        if file_not_found == False:
+            deserializing = True
+
+    # Deserialize the FFTs if possible
+    if deserializing:
+        paddedImageFFTs = []
+        for file in files_to_check:
+            f = open(os.path.join(pickles_path, file), 'rb')
+            paddedImageFFTs.append(pickle.load(f))
+            f.close()
+            print('Deserialized', file)
     else:
-        paddedImage = np.zeros((paddedH, paddedW), np.uint8)
-        paddedImage[0:imageH, 0:imageW] = image
+        # Create padded image
+        if ops.isColor(image):
+            paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
+            paddedImage[0:imageH, 0:imageW, :] = image
+        else:
+            paddedImage = np.zeros((paddedH, paddedW), np.uint8)
+            paddedImage[0:imageH, 0:imageW] = image
         
-    # Take the FFTs of the padded image channels
-    paddedImageFFTs = ops.getFFTs(paddedImage)
+        # Take the FFTs of the padded image channels
+        paddedImageFFTs = ops.getFFTs(paddedImage)
 
     # Compute the filter image
     if type == 'ideal':
@@ -311,23 +338,8 @@ def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2):
         resultImage = resultComponents[0]
 
     # Trim values lower than 0 or higher than 255
-    if len(resultComponents) == 3:
-        for px in range(0, paddedH):
-            for py in range(0, paddedW):
-                for ch in range(0, 3):
-                    currentPixel = resultImage.item((px,py,ch))
-                    if currentPixel > 255:
-                        resultImage.itemset((px,py,ch), 255)
-                    elif currentPixel < 0:
-                        resultImage.itemset((px,py,ch), 0)
-    else:
-        for px in range(0, paddedH):
-            for py in range(0, paddedW):
-                currentPixel = resultImage.item((px,py))
-                if currentPixel > 255:
-                    resultImage.itemset((px,py), 255)
-                elif currentPixel < 0:
-                    resultImage.itemset((px,py), 0)
+    resultImage = np.where(resultImage > 255, 255, resultImage)
+    resultImage = np.where(resultImage < 0, 0, resultImage)
     
     # Round the values and unpad the image
     resultImage = np.uint8(np.rint(resultImage))
