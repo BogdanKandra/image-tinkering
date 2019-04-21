@@ -6,8 +6,6 @@ Created on Sun Mar 10 15:12:37 2019
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
-import pickle
-import time
 
 
 def isGrayscale(image):
@@ -34,34 +32,11 @@ def getFFTs(image):
     """
     return [np.fft.fftshift(np.fft.fft2(channel)) for channel in getChannels(image)]
 
-def testProcessingSpeed(path):
-    image = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-
-    start = time.time()
-    gray = isGrayscale(image)
-    end = time.time()
-    print('Gray:', end - start)
-
-    start = time.time()
-    color = isColor(image)
-    end = time.time()
-    print('Color:', end - start)
-
-    start = time.time()
-    channels = getChannels(image)
-    end = time.time()
-    print('Channels:', end - start)
-
-    start = time.time()
-    ffts = getFFTs(image)
-    end = time.time()
-    print('FFTs:', end - start, '\n')
-
 def fft_plot(image, cmap=None):
-    """Takes an image, computes its FFT and displays both using pyplot.
+    """Takes a frequency domain image and displays its spectrum.
 
     Arguments:
-        image (numPy array) -- the image to be transformed
+        image (numPy array) -- the image to be displayed
         
         cmap (str) -- optional, the color map to be used; default value is None
 
@@ -69,6 +44,7 @@ def fft_plot(image, cmap=None):
         Nothing
     """
     
+    # Take the magnitudes and reduce values by logarithming
     magnitudes = np.log(np.abs(image) + 1)
     
     plt.figure()
@@ -79,22 +55,11 @@ def fft_plot(image, cmap=None):
 if __name__ == '__main__':
     
     impath1 = '../webui/static/testinputs/flag.jpg'
-    impath2 = '../webui/static/testinputs/elaine.tiff'
-    impath3 = '../webui/static/testinputs/brontosaur.jpg'
-    impath4 = '../webui/static/testinputs/lena.tiff'
+    impath2 = '../webui/static/testinputs/brontosaur.jpg'
+    impath3 = '../webui/static/testinputs/lena.tiff'
+    impath4 = '../webui/static/testinputs/bars.png'
 
     image = cv2.imread(impath3, cv2.IMREAD_UNCHANGED)
-
-#    testProcessingSpeed(impath1)
-#    testProcessingSpeed(impath2)
-#    testProcessingSpeed(impath3)
-#    testProcessingSpeed(impath4)
-    
-#    picklePath = 'brontosaur_15530789941596785_fft.pickle'
-#    f = open(picklePath, 'rb')
-#    im = pickle.load(f)
-#    f.close()
-#    fft_plot(im)
 
 #    cv2.imshow('Image', image)
 

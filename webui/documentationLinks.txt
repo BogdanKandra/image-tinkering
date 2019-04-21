@@ -1,2 +1,4 @@
 01. https://semantic-ui.com/
-02. 
+02. http://flask.pocoo.org/docs/1.0/
+03. Despre serializare (pickle)
+04. Cartea de image processing
