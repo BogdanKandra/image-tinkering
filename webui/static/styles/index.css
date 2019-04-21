@@ -69,3 +69,8 @@ footer {
     margin-left: 5%;
     margin-right: 5%;
 }
+
+img {
+    max-width: 100%;
+    border-radius: .5em;
+}
