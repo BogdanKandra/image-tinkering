@@ -17,16 +17,20 @@
         <script src="/static/scripts/utilityFunctions.js"></script>
 		<script src="/static/scripts/index.js"></script>
     </head>
+    
     <body>
-        <h1 id="title">Image Tinkering</h1>
-        
-        <div id="switchMode" class="ui animated fade primary button" onclick="changeMode()">
-            <div class="visible content">SWITCH TO VIDEO MODE</div>
-            <div class="hidden content">
-                <i class="video icon"></i>
+        <header>
+            <div id="title">
+                <h1>Image Tinkering</h1>
             </div>
-        </div>
-        <div style="clear:both"></div>
+
+            <div id="switchMode" class="ui animated fade button" onclick="changeMode()">
+                <div class="visible content">SWITCH TO VIDEO MODE</div>
+                <div class="hidden content">
+                    <i class="video icon"></i>
+                </div>
+            </div>
+        </header>
 
         <div id="actionButtons" class="ui massive primary buttons">
             <label for="fileInput" class="ui labeled icon button">
