@@ -2,32 +2,12 @@ import os, sys
 import pickle
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 projectPath = os.getcwd()
 while os.path.basename(projectPath) != 'ImageTinkering':
     projectPath = os.path.dirname(projectPath)
 sys.path.append(os.path.join(projectPath))
 from backend import basic_operations as ops
-import time
 
-def fft_plot(image, cmap=None):
-    """Takes a frequency domain image and displays its spectrum.
-
-    Arguments:
-        image (numPy array) -- the image to be displayed
-        
-        cmap (str) -- optional, the color map to be used; default value is None
-
-    Returns:
-        Nothing
-    """
-    
-    # Take the magnitudes and reduce values by logarithming
-    magnitudes = np.log(np.abs(image) + 1)
-    
-    plt.figure()
-    plt.imshow(magnitudes, cmap)
-    plt.show()
     
 def ideal_filter(mode, size, cutoff):
     """Generates an **Ideal Filter** which filters out frequencies 
@@ -46,15 +26,16 @@ def ideal_filter(mode, size, cutoff):
     Returns:
         NumPy array uint8 -- the filter image
     """
-    filterImage = np.zeros(size, np.uint8)
     v = np.asarray([size[0] // 2, size[1] // 2])  # Center of the filter
+    
+    I, J = np.ogrid[:size[0], :size[1]]
+    p, q = I - v[0], J - v[1]
+    Duvs = np.sqrt(p**2 + q**2)
 
-    for px in range(0, size[0]):
-        for py in range(0, size[1]):
-            u = np.asarray([px, py])
-            Duv = np.linalg.norm(u - v)
-            if (Duv <= cutoff and mode == 'low') or (Duv > cutoff and mode == 'high'):
-                filterImage.itemset((px, py), 1)
+    if mode == 'low':
+        filterImage = np.where(Duvs <= cutoff, 1, 0)
+    else:
+        filterImage = np.where(Duvs > cutoff, 1, 0)
     
     return filterImage
 
@@ -80,20 +61,17 @@ def butterworth_filter(mode, size, cutoff, order=2):
     Returns:
         NumPy array float64 -- the filter image
     """
-    filterImage = np.zeros(size, np.float64)
     orderTerm = 2 * order
     v = np.asarray([size[0] // 2, size[1] // 2])
-
-    for px in range(0, size[0]):
-        for py in range(0, size[1]):
-            u = np.asarray([px, py])
-            Duv = np.linalg.norm(u - v)
-            if mode == 'low':
-                result = 1 / (1 + pow(Duv / cutoff, orderTerm))
-            elif mode == 'high':
-                result = 1 / (1 + pow(cutoff / Duv, orderTerm))
-            filterImage.itemset((px, py), result)
-
+    
+    I, J = np.ogrid[:size[0], :size[1]]
+    p, q = I - v[0], J - v[1]
+    Duvs = np.sqrt(p**2 + q**2)
+    if mode == 'low':
+        filterImage = np.divide(1, np.add(1, np.power(Duvs / cutoff, orderTerm)))
+    else:
+        filterImage = np.divide(1, np.add(1, np.power(cutoff / Duvs, orderTerm)))
+        
     return filterImage
 
 def gaussian_filter(mode, size, cutoff):
@@ -113,22 +91,18 @@ def gaussian_filter(mode, size, cutoff):
     Returns:
         NumPy array float64 -- the filter image
     """
-    filterImage = np.zeros(size, np.float64)    
     cutoffTerm = 2 * (cutoff ** 2)
     v = np.asarray([size[0] // 2, size[1] // 2])
-
-    for px in range(0, size[0]):
-        for py in range(0, size[1]):
-            u = np.asarray([px, py])
-            Duv = np.linalg.norm(u - v)
-            distance = -1 * (Duv ** 2)
-            result = pow(np.e, distance / cutoffTerm)
-            if mode == 'low':
-                filterImage.itemset((px, py), result)
-            elif mode == 'high':
-                filterImage.itemset((px, py), 1 - result)
     
-    return filterImage
+    I, J = np.ogrid[:size[0], :size[1]]
+    p, q = I - v[0], J - v[1]
+    Duvs_squared = p**2 + q**2
+    distances = -1 * Duvs_squared
+    filterImage = np.power(np.e, distances / cutoffTerm)
+    if mode == 'low':
+        return filterImage
+    else:
+        return 1 - filterImage
 
 def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
     """Applies a **Low Pass Filter** on an image. \n
@@ -157,7 +131,6 @@ def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
     paddedH, paddedW = 2 * imageH, 2 * imageW # Obtain the padding parameters
 
     # Check whether the FFTs of the image have been serialized or not
-    start = time.time()
     deserializing, file_not_found = False, False
     pickles_path = os.path.join(projectPath, 'webui', 'static', 'tempdata')
 
@@ -180,11 +153,7 @@ def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
             f = open(os.path.join(pickles_path, file), 'rb')
             paddedImageFFTs.append(pickle.load(f))
             f.close()
-            print('Deserialized', file)
-            end = time.time()
-            print('Deserializing:', end - start)
     else:
-        start = time.time()
         # Create padded image
         if ops.isColor(image):
             paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
@@ -195,10 +164,7 @@ def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
 
         # Take the FFTs of the padded image channels
         paddedImageFFTs = ops.getFFTs(paddedImage)
-        end = time.time()
-        print('Padding and FFT:', end - start)
     
-    start = time.time()
     # Compute the filter image
     if type == 'ideal':
         filterImage = ideal_filter('low', (paddedH, paddedW), cutoff)
@@ -206,8 +172,6 @@ def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
         filterImage = butterworth_filter('low', (paddedH, paddedW), cutoff, order)
     elif type == 'gaussian':
         filterImage = gaussian_filter('low', (paddedH, paddedW), cutoff)
-    end = time.time()
-    print('Computing filter image:', end - start)
 
     # Apply the filter to the FFTs
     filteredFFTs = [np.multiply(channelFFT, filterImage) for channelFFT in paddedImageFFTs]
@@ -232,14 +196,6 @@ def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
         resultImage = resultImage[0:imageH, 0:imageW, :]
     else:
         resultImage = resultImage[0:imageH, 0:imageW]
-
-    # Compute the difference between the original and transformed images
-#    diff = cv2.absdiff(image, resultImage)
-#    for px in range(imageH):
-#        for py in range(imageW):
-#            for ch in range(3):
-#                if diff.item(px, py, ch) > 0:   # if there is a difference, augment it
-#                    diff.itemset((px, py, ch), diff.item(px,py,ch) + 150)
 
     return resultImage
 
@@ -347,13 +303,5 @@ def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2, f
         resultImage = resultImage[0:imageH, 0:imageW, :]
     else:
         resultImage = resultImage[0:imageH, 0:imageW]
-
-    # Compute the difference between the original and transformed images
-#    diff = cv2.absdiff(image, resultImage)
-#    for px in range(imageH):
-#        for py in range(imageW):
-#            for ch in range(3):
-#                if diff.item(px, py, ch) > 0:   # if there is a difference, augment it
-#                    diff.itemset((px, py, ch), diff.item(px,py,ch) + 150)
 
     return resultImage
