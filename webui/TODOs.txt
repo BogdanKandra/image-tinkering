@@ -27,3 +27,46 @@ Modul Imagini (default):
 	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
 	- Sa adaptez interfata web pentru ea, acolo unde e necesar
 
+
+
+- Operation selection screen:
+	- Datele intoarse de upload AJAX call sunt de forma
+		{
+			'image': [numele fisierelor urcate],
+			'video': [],
+		}
+	- Pentru fiecare nume de fisier, creez un img avand src = "../static/uploads/images/nume"
+	- Pentru fiecare img am un editable select asociat care contine operatiile posibile de aplicat
+	- User-ul alege operatii si parametri pentru ele si apoi apasa submit
+	- Se face un AJAX call care are ca date un obiect de forma:
+		{
+			'numeImg_i': [ob1, ob2, ob3, etc]
+		}
+		unde ob_i are forma
+			'numeOp_i': {
+							'param1': 'val'
+							'param2': 'val'
+						}
+
+	- Pe server, pentru fiecare cheie din obiect, citesc imaginea corespunzatoare si aplic asupra ei toate operatiile selectate, succesiv
+	- Functiile de aplicat sunt alese pe baza unui json de mapare intre nume de operatii si functia de apelat
+	- Functia primeste ca parametri imaginea citita si un dictionar de argumente
+	
+	
+	
+- Exemplu:
+	- Vreau blur pe imaginea 'flag.png'
+	- Selectez din dropdown optiunea 'Blur'
+	- Selectez parametrul type ca fiind 'Gaussian'
+	- Apoi selectez parametrul de cutoff ca fiind 20% din dimensiunea mai mare a imaginii
+	- Dau submit
+	- Pe server ajunge un call care are datele
+		{
+			'flag.png': [{
+							'name': 'blur',
+							'params': {
+								'type': 'gaussian',
+								'cutoff': n
+							}
+						}]
+		}
