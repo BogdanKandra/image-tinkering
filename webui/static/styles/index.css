@@ -40,7 +40,7 @@ html, body {
     display: inline-block;
 }
 
-#filesContainer > div {
+#filesContainer > div, #filesAndOperationsContainer > div {
     height: 200px;
     width: 400px;
     display: inline-block;
@@ -77,6 +77,8 @@ img {
 
 #operationSelectionContent {
     display: none;
+    margin-top: 6em;
+    text-align: center;
 }
 
 #processButton {
@@ -84,4 +86,31 @@ img {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+}
+
+.hoverable_container {
+    position: relative;
+}
+
+.hoverable_container:hover .hoverable_image {
+    opacity: .3;
+}
+
+.hoverable_container:hover .configure_container {
+    opacity: 1;
+}
+
+.hoverable_image {
+    opacity: 1;
+    transition: .5s ease;
+}
+
+.configure_container {
+    opacity: 0;
+    transition: .5s ease;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
 }
