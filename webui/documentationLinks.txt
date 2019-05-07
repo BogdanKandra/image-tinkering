@@ -2,3 +2,9 @@
 02. http://flask.pocoo.org/docs/1.0/
 03. Despre serializare (pickle)
 04. Cartea de image processing
+
+
+
+
+- Sa vorbesc despre serializarea fisierelor FFT si RGB
+- Sa vorbesc despre json-ul operations.json, structura lui
