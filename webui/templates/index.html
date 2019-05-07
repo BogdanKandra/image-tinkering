@@ -44,7 +44,7 @@
 
                 <div class="or"></div>
 
-                <div class="ui right labeled icon button" onclick="openSelfieModal()">
+                <div class="ui right labeled icon button" onclick="displaySelfieModal()">
                     <i class="camera icon"></i>
                     TAKE SELFIE
                 </div>
@@ -101,6 +101,28 @@
             <div id="filesAndOperationsContainer"></div>
             <div id="processButton">
                 <button class="ui button" onclick="test()">PROCESS</button>
+            </div>
+
+            <div id="configurationModal" class="ui modal">
+                <i class="close icon"></i>
+                <div class="header">
+                    Select Operations and Parameters
+                </div>
+                <div class="content">
+                    <div class="description">
+                        <div class="ui header">
+                            Something bla bla header
+                        </div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <div class="ui approve primary disabled button" onclick="TODO()">
+                        ACCEPT
+                    </div>
+                    <div class="ui deny button">
+                        CANCEL
+                    </div>
+                </div>
             </div>
         </div>
 
