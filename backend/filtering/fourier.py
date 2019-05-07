@@ -220,6 +220,8 @@ def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2, f
         *type* (str) -- the type of high-pass filter to be applied;
         possible values are: *ideal*, *butterworth*, *gaussian*
         
+        *order* (int) -- the order used for Butterworth filtering
+        
         *filename* (str) -- the name of the image file to be filtered, used for 
         checking whether the corresponding FFT(s) are serialized on the server or not
 
