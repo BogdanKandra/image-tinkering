@@ -1,0 +1,19 @@
+operations.json
+=============================
+This JSON file contains keys pointing to JSON objects representing operation configurations
+Each operation configuration must contain the "function", "parameters" and "description" fields
+- "function" field specifies the fully qualified name of the function to be called;
+	- its structure is "package.module.function"
+- "description" field specifies a description of the operation, to be used in the Web UI
+- "parameters" field is a JSON Array containing objects representing each parameter configuration
+	- The elements of the "parameters" field give indications to the Web UI on how to render the parameter configuration section; they have the following structure:
+	- "name": string specifying the name of the parameter, as it appears in the function prototype
+	- "type": one of ["range", "lookup"]
+		if "type": "range":
+		- "minimum": value specifying the minimum value this parameter can take
+		- "maximum": value specifying the maximum value this parameter can take
+		if "type": "lookup":
+		- "values": list containing possible values user can choose from
+	- "default": optional, value specifying the default value of the parameter if the user does not provide any
+	- "presentIf": optional, value specifying a condition which dictates whether this parameter will be displayed or not -> if encountered, an event should be bound to the parameter in the condition
+	- "description": string specifying a description of the parameter, to be used in the Web UI
