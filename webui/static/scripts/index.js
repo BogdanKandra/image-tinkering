@@ -82,15 +82,18 @@ function displaySelfieModal() {
 // Initialises and opens the operation configuration modal
 function displayConfigurationModal() {
 
+	populateOperationsSelect()
+	let operationsSelect = $("[name='operations']")
+
 	$('#configurationModal').modal({
-								onHide: function() {
-									console.log('MODAL HIDDEN')
+								onHide: function() {    // Called whenever modal is closed
+									operationsSelect.dropdown('clear')
 								},
-								onApprove: function() {
+								onApprove: function() { // ACCEPT button
 									console.log('MODAL APPROVED')
 								},
-								onDeny: function() {
-									console.log('MODAL DENIED')
+								onDeny: function() {    // CANCEL button
+
 								}
 							}).modal('show')
 }
