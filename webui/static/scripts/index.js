@@ -49,13 +49,14 @@ $(document).ready(function() {
 })
 
 // Initialises and opens the image capture modal
-function openSelfieModal() {
+function displaySelfieModal() {
 
 	let actionButtons = $('.actions').first().find('.ui')
 
 	$('#selfieModal').modal({
 							onHide: function() {
 								actionButtons.first().addClass('disabled')
+								// Stop the camera feed if necessary
 								if (imageCapture !== undefined && imageCapture.track.readyState != 'ended') {
 									imageCapture.track.stop()
 								}
@@ -76,6 +77,22 @@ function openSelfieModal() {
 								actionButtons.first().removeClass('disabled')
 							})
 	}
+}
+
+// Initialises and opens the operation configuration modal
+function displayConfigurationModal() {
+
+	$('#configurationModal').modal({
+								onHide: function() {
+									console.log('MODAL HIDDEN')
+								},
+								onApprove: function() {
+									console.log('MODAL APPROVED')
+								},
+								onDeny: function() {
+									console.log('MODAL DENIED')
+								}
+							}).modal('show')
 }
 
 // Captures an image from the camera feed
@@ -203,7 +220,8 @@ function uploadAjax(imageData) {
 			// Direct the user to the Operation Selection step
 			$('#fileSelectionContent').css('display', 'none')
 			$('#operationSelectionContent').css('display', 'block')
-			$('#steps').first().removeClass('active')
+			$('#steps').children('.step').first().removeClass('active')
+			$('#steps').children('.step').first().addClass('completed')
 			$('#steps').children('.step').eq(1).addClass('active')
 
 			// Populate the container holding uploaded images
@@ -256,11 +274,26 @@ function populateFilesAndOperationsContainer(data) {
 		image.prop('src', path)
 		image.prop('alt', 'Image Preview not Available')
 		image.prop('height', '200')
+		image.addClass('hoverable_image')
+
+		// Build the div holding the revealing "CONFIGURE" button
+		let configureDiv = $('<div>')
+		configureDiv.addClass('configure_container')
+		let configureButton = $('<button>')
+		configureButton.addClass('ui primary button')
+		configureButton.html('CONFIGURE')
+		configureButton.click(displayConfigurationModal)
+		configureDiv.append(configureButton)
 
 		// Build the accordion element to be displayed under the img
 		// TODO
 
-		filesAndOperationsContainer.append(image)
+		// Build the containing div
+		let container = $('<div>')
+		container.addClass('hoverable_container')
+		container.append(image).append(configureDiv)
+
+		filesAndOperationsContainer.append(container)
 	}
 }
 
