@@ -114,3 +114,7 @@ img {
     transform: translate(-50%, -50%);
     text-align: center;
 }
+
+#paramCfgAccordion {
+    margin-top: 2em;
+}
