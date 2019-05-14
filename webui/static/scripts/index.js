@@ -84,10 +84,13 @@ function displayConfigurationModal() {
 
 	populateOperationsSelect()
 	let operationsSelect = $("[name='operations']")
+	let parameterConfigurationAccordion = $('#paramCfgAccordion')
+	parameterConfigurationAccordion.accordion()
 
 	$('#configurationModal').modal({
 								onHide: function() {    // Called whenever modal is closed
 									operationsSelect.dropdown('clear')
+									parameterConfigurationAccordion.empty()
 								},
 								onApprove: function() { // ACCEPT button
 									console.log('MODAL APPROVED')
@@ -204,8 +207,6 @@ function uploadAjax(imageData) {
 				timeout: 5000
 			}).show()
 			
-			console.log('>>>>> Data:', data)
-			
 			// Launch the initialisations procedure
 			$.ajax({
 				url: '/initialisations/',
@@ -302,5 +303,5 @@ function populateFilesAndOperationsContainer(data) {
 
 // Function called on pressing the PROCESS button on second screen
 function test() {
-	console.log('PRESSED BUTTON IN SECOND SCREEN --- PROCESSING...')
+	console.log('PRESSED PROCESS BUTTON')
 }
