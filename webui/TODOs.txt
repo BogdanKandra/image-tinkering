@@ -38,24 +38,6 @@
 	
 	
 	
-- Exemplu:
-	- Vreau blur pe imaginea 'flag.png'
-	- Selectez din dropdown optiunea 'Blur'
-	- Selectez parametrul type ca fiind 'Gaussian'
-	- Apoi selectez parametrul de cutoff ca fiind 20% din dimensiunea mai mare a imaginii
-	- Dau submit
-	- Pe server ajunge un call care are datele
-		{
-			'flag.png': [{
-							'name': 'blur',
-							'params': {
-								'type': 'gaussian',
-								'cutoff': n
-							}
-						}]
-		}
-
-
 TODOs:
 =======================================
 - index.html: sa pun functie pe butonul de ACCEPT
