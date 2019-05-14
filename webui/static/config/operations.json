@@ -72,5 +72,23 @@
       }
     ],
     "description": "Sharpens an image using the FFT"
+  },
+  "A": {
+    "function": "x",
+    "parameters": [
+      {
+        "name": "nimic",
+        "type": "ceva"
+      }
+    ]
+  },
+  "B": {
+    "function": "y",
+    "parameters": [
+      {
+        "name": "totul",
+        "type": "altceva"
+      }
+    ]
   }
 }
