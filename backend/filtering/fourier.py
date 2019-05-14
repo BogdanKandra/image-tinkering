@@ -104,7 +104,7 @@ def gaussian_filter(mode, size, cutoff):
     else:
         return 1 - filterImage
 
-def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
+def low_pass(image, parameters):
     """Applies a **Low Pass Filter** on an image. \n
     The image is converted into the frequency domain (using the *Fast Fourier
     Transform*) and only the frequencies smaller than the cutoff frequency are
@@ -113,19 +113,41 @@ def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
     Arguments:
         *image* (NumPy array) -- the image on which the filter is to be applied
 
-        *cutoff* (int) -- the maximum frequency to be let through by the filter
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *cutoff* (int) -- the maximum frequency to be let through by the filter
         
-        *type* (str) -- the type of low-pass filter to be applied;
-        possible values are: *ideal*, *butterworth*, *gaussian*
+            *type* (str, optional) -- the type of low-pass filter to be applied;
+            possible values are: *ideal*, *butterworth*, *gaussian* and default
+            value is *gaussian*
         
-        *order* (int) -- the order used for Butterworth filtering
+            *order* (int, optional) -- the order used for Butterworth filtering;
+            default value is 2
         
-        *filename* (str) -- the name of the image file to be filtered, used for 
-        checking whether the corresponding FFT(s) are serialized on the server or not
+            *filename* (str, optional) -- the name of the image file to be filtered, 
+            used for checking whether the corresponding FFT(s) are serialized on the server or not
 
     Returns:
         NumPy array uint8 -- the filtered image
     """
+    
+    # Parameter validation and assignment
+    cutoff = parameters['cutoff']
+    
+    if 'type' in parameters:
+        type = parameters['type']
+    else:
+        type = 'gaussian'
+    
+    if 'order' in parameters:
+        order = parameters['order']
+    else:
+        order = 2
+        
+    if 'filename' in parameters:
+        filename = parameters['filename']
+    else:
+        filename = ''
     
     imageH, imageW = image.shape[:2]          # Take image dimensions
     paddedH, paddedW = 2 * imageH, 2 * imageW # Obtain the padding parameters
@@ -199,7 +221,7 @@ def low_pass(image, cutoff, type='gaussian', order=2, filename=''):
 
     return resultImage
 
-def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2, filename=''):
+def high_pass(image, parameters):
     """Applies a **High Pass Filter** on an image. \n
     The image is converted into the frequency domain (using the *Fast Fourier
     Transform*) and only the frequencies higher than the cutoff frequency are
@@ -210,24 +232,60 @@ def high_pass(image, cutoff, offset=0, multiplier=1, type='gaussian', order=2, f
     
     Arguments:
         *image* (NumPy array) -- the image on which the filter is to be applied
+        
+        *parameters* (dictionary) -- a dictionary containing following keys:
 
-        *cutoff* (int) -- the minimum frequency to be let through by the filter
-        
-        *offset* (int) -- number used for avoiding the reduction of the dc term to 0
-        
-        *multiplier* (int) -- number used for emphasizing frequencies
-        
-        *type* (str) -- the type of high-pass filter to be applied;
-        possible values are: *ideal*, *butterworth*, *gaussian*
-        
-        *order* (int) -- the order used for Butterworth filtering
-        
-        *filename* (str) -- the name of the image file to be filtered, used for 
-        checking whether the corresponding FFT(s) are serialized on the server or not
+            *cutoff* (int) -- the minimum frequency to be let through by the filter
+            
+            *offset* (int, optional) -- number used for avoiding the reduction 
+            of the DC term to 0; default value is 0, which does not prevent
+            reduction of the DC term
+            
+            *multiplier* (int, optional) -- number used for emphasizing 
+            frequencies; default value is 1, which does not have any effect
+            
+            *type* (str, optional) -- the type of high-pass filter to be applied;
+            possible values are: *ideal*, *butterworth*, *gaussian*; default
+            value is *gaussian*
+            
+            *order* (int, optional) -- the order used for Butterworth filtering;
+            default value is 2
+            
+            *filename* (str, optional) -- the name of the image file to be 
+            filtered, used for checking whether the corresponding FFT(s) are 
+            serialized on the server or not
 
     Returns:
         NumPy array uint8 -- the filtered image
     """
+    
+    # Parameter validation and assignment
+    cutoff = parameters['cutoff']
+    
+    if 'offset' in parameters:
+        offset = parameters['offset']
+    else:
+        offset = 0
+        
+    if 'multiplier' in parameters:
+        multiplier = parameters['multiplier']
+    else:
+        multiplier = 1
+    
+    if 'type' in parameters:
+        type = parameters['type']
+    else:
+        type = 'gaussian'
+    
+    if 'order' in parameters:
+        order = parameters['order']
+    else:
+        order = 2
+        
+    if 'filename' in parameters:
+        filename = parameters['filename']
+    else:
+        filename = ''
     
     imageH, imageW = image.shape[:2]          # Take image dimensions
     paddedH, paddedW = 2 * imageH, 2 * imageW # Obtain the padding parameters
