@@ -86,6 +86,7 @@ img {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    margin-top: 5em;
 }
 
 .hoverable_container {
