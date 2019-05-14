@@ -2,8 +2,8 @@
 02. http://flask.pocoo.org/docs/1.0/
 03. Despre serializare (pickle)
 04. Cartea de image processing
-
-
+05. https://stackoverflow.com/questions/55780834/using-numpy-for-more-efficient-filter-generation
+06. https://github.com/tyleryasaka/semantic-ui-range
 
 
 - Sa vorbesc despre serializarea fisierelor FFT si RGB

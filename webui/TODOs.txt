@@ -23,12 +23,16 @@
 		{
 			'numeImg_i': [
 				{
-					'function': 'nume functie de apelat, luat pe baza numelui operatiei alese,
-					'param_i': 'val_i'
+					'function_j': 'nume functie de apelat, luat pe baza numelui operatiei alese,
+					'params': {
+						'par_i': val_i
+					}
 				},
 				{
-					'function_j': 'Nume',
-					'param_i': 'val_i'
+					'function_k': 'Nume',
+					'params': {
+						'par_i': val_i
+					}
 				}
 			]
 		}
@@ -41,7 +45,8 @@
 TODOs:
 =======================================
 - index.html: sa pun functie pe butonul de ACCEPT
-
+- Activarea butonului de ACCEPT
+- Setarea default-urilor in params acolo unde e nevoie
 
 
 
