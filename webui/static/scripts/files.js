@@ -136,8 +136,7 @@ function submitImage() {
 // Builds the request data and sends it to the AJAX call
 function uploadFiles() {
 	// Disable the upload button, while the upload is being performed
-	let uploadButton = $('#uploadInput')
-	uploadButton.addClass('disabled')
+	let uploadButton = $('#uploadInput').addClass('disabled')
 
 	// Build the request data - a list of selected files
 	let imageData = new FormData()
@@ -149,7 +148,7 @@ function uploadFiles() {
 		for (let i = 0; i < files.length; i++) {
 			imageData.append('files-' + (i + 1), files[i])
 		}
-		uploadAjax(imageData)
+		uploadFilesAjax(imageData)
 	} else {
 		// File source is the webcam feed
 		let snapshotImg = $('#snapshot')[0]
@@ -160,13 +159,13 @@ function uploadFiles() {
 		context.drawImage(snapshotImg, 0, 0)
 		canvas.toBlob(function(blob) {
 			imageData.append('files-1', blob, 'Selfie.jpg')
-			uploadAjax(imageData)
+			uploadFilesAjax(imageData)
 		})
 	}
 }
 
 // Actually performs the AJAX call which saves the files and initialises its channel and FFT images
-function uploadAjax(imageData) {
+function uploadFilesAjax(imageData) {
 
 	let uploadButton = $('#uploadButton')
 
