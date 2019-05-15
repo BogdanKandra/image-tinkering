@@ -2,6 +2,7 @@
 
 let operationConfigurations = [] // List of objects each describing the configuration of an operation
 let dataToProcess = {}           // Object to be sent to AJAX call when the user clicks the PROCESS button
+let configuredImages = 0         // Counter for keeping track of number of images configured
 
 // For each uploaded file, creates a container holding the uploaded file, 
 // a revealing "CONFIGURE" button over the file and an accordion displaying selected operations and parameters
@@ -23,7 +24,9 @@ function populateFilesAndOperationsContainer(data) {
 		let configureDiv = $('<div>').addClass('configure_container')
 		let configureButton = $('<button>').addClass('ui primary button')
 		configureButton.html('CONFIGURE')
-		configureButton.click(displayConfigurationModal)
+		configureButton.click(function() {
+            displayConfigurationModal(name)
+        })
 		configureDiv.append(configureButton)
 
 		// Build the containing div
@@ -35,7 +38,7 @@ function populateFilesAndOperationsContainer(data) {
 }
 
 // Initialises and opens the operation configuration modal
-function displayConfigurationModal() {
+function displayConfigurationModal(imageName) {
 
 	populateOperationsSelect()
 	let operationsSelect = $("[name='operations']")
@@ -50,6 +53,10 @@ function displayConfigurationModal() {
                                 onApprove: function() { // ACCEPT button
                                     // Add the configuration of this image to the call data
                                     dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations))
+
+                                    // Reevaluate the state of the PROCESS button
+                                    configuredImages++
+                                    checkProcessCondition()
 								},
 								onDeny: function() {    // CANCEL button
 
@@ -85,7 +92,7 @@ function populateOperationsSelect() {
                 createAccordion(addedValue, data)
 
                 // Reevaluate the state of the ACCEPT button
-                validateConfiguration()
+                checkAcceptCondition()
             },
             onRemove: function(removedValue) {
                 // When removing a selected item, the corresponding parameter configuration accordion and operation configuration entry are also removed
@@ -100,7 +107,7 @@ function populateOperationsSelect() {
                 }
 
                 // Reevaluate the state of the ACCEPT button
-                validateConfiguration()
+                checkAcceptCondition()
             }
         })
 
@@ -200,7 +207,7 @@ function createMenuEntry(parameterObject, functionName) {
             }
         },
         onHide: function() {
-            validateConfiguration() // Reevaluate the state of the ACCEPT button
+            checkAcceptCondition() // Reevaluate the state of the ACCEPT button
         }
     })
     dropdownDiv.popup()
@@ -211,7 +218,7 @@ function createMenuEntry(parameterObject, functionName) {
 // Checks whether the currently selected operations are correctly configured and decides whether the ACCEPT button must be enabled or not
 // If no operations have been selected or there are params which do not have a default value and have not been set, disable the ACCEPT button
 // Else, enable it
-function validateConfiguration() {
+function checkAcceptCondition() {
 
     // Locate and disable the button; only enable it if conditions are met
     let acceptButton = $('#configurationActions div.ui.approve.primary.button')
@@ -260,7 +267,48 @@ function validateConfiguration() {
     }
 }
 
+// Checks the number of input images which have been configured. If at least one, the PROCESS button is enabled; else, it stays disabled
+function checkProcessCondition() {
+
+    let processButton = $('#configurationButtons .ui.button').addClass('disabled')
+
+    if (configuredImages > 0) {
+        processButton.removeClass('disabled')
+    }
+}
+
 // Function called on pressing the PROCESS button on second screen
 function processFiles() {
-	console.log('PROCESSING...')
+
+    let totalImages = $('#filesAndOperationsContainer').children().length
+
+    if (configuredImages != totalImages) {
+        let notificationText = 'You have configured ' + configuredImages + ' out of ' + totalImages + 
+                               ' images. Unconfigured images will not be processed in any way. Proceed?'
+        
+        new Noty({
+            text: notificationText,
+            layout: 'top',
+            theme: 'sunset',
+            closeWith: [],
+            buttons: [
+                Noty.button('YES', 'ui button positive tiny', function($noty) {
+                    // If clicked 'YES', launch the AJAX call
+                    $noty.close()
+                    processFilesAjax()
+                }),
+                Noty.button('NO', 'ui button negative tiny', function($noty) {
+                    // If clicked 'NO', do nothing and display a notification
+                    $noty.close()
+                    // Display noty
+                })
+            ]
+        }).show()
+    } else {
+        processFilesAjax()
+    }
+}
+
+function processFilesAjax() {
+    
 }
