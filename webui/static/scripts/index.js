@@ -51,7 +51,7 @@ $(document).ready(function() {
 // Initialises and opens the image capture modal
 function displaySelfieModal() {
 
-	let actionButtons = $('.actions').first().find('.ui')
+	let actionButtons = $('#selfieActions').find('.ui')
 
 	$('#selfieModal').modal({
 							onHide: function() {
@@ -106,7 +106,7 @@ function captureImage() {
 
 	let snapshot = $('#snapshot')
 	let cameraFeed = $('#cameraFeed')
-	let actionButtons = $('.actions').first().find('.ui')
+	let actionButtons = $('#selfieActions').find('.ui.button')
 
 	if (snapshot.css('display') == 'none') {
 		// Capture image and display it
