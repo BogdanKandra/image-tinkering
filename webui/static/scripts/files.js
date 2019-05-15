@@ -79,28 +79,6 @@ function displaySelfieModal() {
 	}
 }
 
-// Initialises and opens the operation configuration modal
-function displayConfigurationModal() {
-
-	populateOperationsSelect()
-	let operationsSelect = $("[name='operations']")
-	let parameterConfigurationAccordion = $('#paramCfgAccordion')
-	parameterConfigurationAccordion.accordion()
-
-	$('#configurationModal').modal({
-								onHide: function() {    // Called whenever modal is closed
-									operationsSelect.dropdown('clear')
-									parameterConfigurationAccordion.empty()
-								},
-								onApprove: function() { // ACCEPT button
-									console.log('MODAL APPROVED')
-								},
-								onDeny: function() {    // CANCEL button
-
-								}
-							}).modal('show')
-}
-
 // Captures an image from the camera feed
 function captureImage() {
 
@@ -261,47 +239,4 @@ function changeMode() {
 
 	hiddenContentIcon.toggleClass('image')
 	hiddenContentIcon.toggleClass('video')
-}
-
-// For each uploaded file, creates a container holding the uploaded file and an accordion displaying
-// selected operations and parameters
-function populateFilesAndOperationsContainer(data) {
-
-	let imageNames = data['image']
-	let filesAndOperationsContainer = $('#filesAndOperationsContainer')
-
-	for (const name of imageNames) {
-
-		// Build the img element to be displayed
-		let path = '../static/uploads/images/' + name
-		let image = $('<img>')
-		image.prop('src', path)
-		image.prop('alt', 'Image Preview not Available')
-		image.prop('height', '200')
-		image.addClass('hoverable_image')
-
-		// Build the div holding the revealing "CONFIGURE" button
-		let configureDiv = $('<div>')
-		configureDiv.addClass('configure_container')
-		let configureButton = $('<button>')
-		configureButton.addClass('ui primary button')
-		configureButton.html('CONFIGURE')
-		configureButton.click(displayConfigurationModal)
-		configureDiv.append(configureButton)
-
-		// Build the accordion element to be displayed under the img
-		// TODO
-
-		// Build the containing div
-		let container = $('<div>')
-		container.addClass('hoverable_container')
-		container.append(image).append(configureDiv)
-
-		filesAndOperationsContainer.append(container)
-	}
-}
-
-// Function called on pressing the PROCESS button on second screen
-function test() {
-	console.log('PRESSED PROCESS BUTTON')
 }
