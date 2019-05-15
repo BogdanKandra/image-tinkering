@@ -81,7 +81,7 @@ img {
     text-align: center;
 }
 
-#processButton {
+#configurationButtons {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
