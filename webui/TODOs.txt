@@ -44,10 +44,6 @@
 	
 TODOs:
 =======================================
-- index.html: sa pun functie pe butonul de ACCEPT
-- Activarea butonului de ACCEPT
-- Setarea default-urilor in params acolo unde e nevoie
-
 
 
 
