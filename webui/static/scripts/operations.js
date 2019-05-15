@@ -1,10 +1,10 @@
 "use strict";
 
 let operationConfigurations = [] // List of objects each describing the configuration of an operation
+let dataToProcess = {}           // Object to be sent to AJAX call when the user clicks the PROCESS button
 
 // For each uploaded file, creates a container holding the uploaded file, 
 // a revealing "CONFIGURE" button over the file and an accordion displaying selected operations and parameters
-// TODO - Build the accordion
 function populateFilesAndOperationsContainer(data) {
 
 	let imageNames = data['image']
@@ -14,27 +14,20 @@ function populateFilesAndOperationsContainer(data) {
 
 		// Build the img element to be displayed
 		let path = '../static/uploads/images/' + name
-		let image = $('<img>')
+		let image = $('<img>').addClass('hoverable_image')
 		image.prop('src', path)
 		image.prop('alt', 'Image Preview not Available')
 		image.prop('height', '200')
-		image.addClass('hoverable_image')
 
 		// Build the div holding the revealing "CONFIGURE" button
-		let configureDiv = $('<div>')
-		configureDiv.addClass('configure_container')
-		let configureButton = $('<button>')
-		configureButton.addClass('ui primary button')
+		let configureDiv = $('<div>').addClass('configure_container')
+		let configureButton = $('<button>').addClass('ui primary button')
 		configureButton.html('CONFIGURE')
 		configureButton.click(displayConfigurationModal)
 		configureDiv.append(configureButton)
 
-		// Build the accordion element to be displayed under the img
-		// TODO
-
 		// Build the containing div
-		let container = $('<div>')
-		container.addClass('hoverable_container')
+		let container = $('<div>').addClass('hoverable_container')
 		container.append(image).append(configureDiv)
 
 		filesAndOperationsContainer.append(container)
@@ -52,10 +45,11 @@ function displayConfigurationModal() {
 	$('#configurationModal').modal({
 								onHide: function() {    // Called whenever modal is closed
 									operationsSelect.dropdown('clear')
-									parameterConfigurationAccordion.empty()
+                                    parameterConfigurationAccordion.empty()
 								},
-								onApprove: function() { // ACCEPT button
-									console.log('MODAL APPROVED')
+                                onApprove: function() { // ACCEPT button
+                                    // Add the configuration of this image to the call data
+                                    dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations))
 								},
 								onDeny: function() {    // CANCEL button
 
@@ -81,14 +75,14 @@ function populateOperationsSelect() {
         // Initialise the Semantic Dropdown and attach event handlers
         operationsSelect.dropdown({
             onAdd: function(addedValue) {
-                // When selecting an item, the corresponding parameter configuration accordion is also added
-                createAccordion(addedValue, data)
-
-                // And a new operation configuration is stored in the list of configurations
+                // When selecting an item, a new operation configuration is stored in the list of configurations
                 let opConfig = {}
                 opConfig['function'] = data[addedValue]['function']
                 opConfig['params'] = {}
                 operationConfigurations.push(opConfig)
+
+                // And the corresponding parameter configuration accordion is also added
+                createAccordion(addedValue, data)
 
                 // Reevaluate the state of the ACCEPT button
                 validateConfiguration()
@@ -164,6 +158,13 @@ function createMenuEntry(parameterObject, functionName) {
 
     let paramType = parameterObject['type']
     let paramDefault = (parameterObject.hasOwnProperty('default')) ? parameterObject['default'] : undefined
+
+    // Store the default parameter value in the list of configurations as well
+    for (let j = 0; j < operationConfigurations.length; j++) {
+        if (operationConfigurations[j]['function'] == functionName && paramDefault != undefined) {
+            operationConfigurations[j]['params'][dropdownText.toLowerCase()] = paramDefault
+        }
+    }
 
     if (paramType == 'range') {
         for (let i = parameterObject['minimum']; i <= parameterObject['maximum']; i++) {
