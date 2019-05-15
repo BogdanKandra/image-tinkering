@@ -14,8 +14,8 @@
         <script src="/static/scripts/libs/jquery-3.3.1.js"></script>
         <script src="/static/scripts/libs/noty.min.js"></script>
         <script src="/static/scripts/libs/semantic.js"></script>
-        <script src="/static/scripts/utilityFunctions.js"></script>
-		<script src="/static/scripts/index.js"></script>
+        <script src="/static/scripts/operations.js"></script>
+        <script src="/static/scripts/files.js"></script>
     </head>
 
     <body>
@@ -100,7 +100,7 @@
         <div id="operationSelectionContent">
             <div id="filesAndOperationsContainer"></div>
             <div id="processButton">
-                <button class="ui button" onclick="test()">PROCESS</button>
+                <button class="ui button" onclick="processFiles()">PROCESS</button>
             </div>
 
             <div id="configurationModal" class="ui modal">
@@ -118,7 +118,7 @@
                     </div>
                 </div>
                 <div id="configurationActions" class="actions">
-                    <div class="ui approve primary disabled button" onclick="TODO()">
+                    <div class="ui approve primary disabled button">
                         ACCEPT
                     </div>
                     <div class="ui deny button">
