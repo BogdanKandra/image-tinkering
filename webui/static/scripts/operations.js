@@ -1,3 +1,5 @@
+"use strict";
+
 let operationConfigurations = [] // List of objects each describing the configuration of an operation
 
 // For each uploaded file, creates a container holding the uploaded file, 
