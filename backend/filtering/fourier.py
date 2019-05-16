@@ -132,8 +132,6 @@ def low_pass(image, parameters):
     """
     
     # Parameter validation and assignment
-    cutoff = parameters['cutoff']
-    
     if 'type' in parameters:
         type = parameters['type']
     else:
@@ -150,6 +148,11 @@ def low_pass(image, parameters):
         filename = ''
     
     imageH, imageW = image.shape[:2]          # Take image dimensions
+
+    # Compute the cutoff frequency as a percentage from the smaller dimension of the image
+    cutoff_dimension = imageH if imageH < imageW else imageW
+    cutoff = parameters['cutoff'] / 100 * cutoff_dimension
+    
     paddedH, paddedW = 2 * imageH, 2 * imageW # Obtain the padding parameters
 
     # Check whether the FFTs of the image have been serialized or not
@@ -178,7 +181,7 @@ def low_pass(image, parameters):
     else:
         # Create padded image
         if ops.isColor(image):
-            paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
+            paddedImage = np.zeros((paddedH, paddedW, len(ops.getChannels(image))), np.uint8)
             paddedImage[0:imageH, 0:imageW, :] = image
         else:
             paddedImage = np.zeros((paddedH, paddedW), np.uint8)
@@ -203,10 +206,10 @@ def low_pass(image, parameters):
                         for filteredComponent in filteredFFTs]
     
     # Obtain the result image
-    if len(resultComponents) == 3:
-        resultImage = cv2.merge(resultComponents)
-    else:
+    if len(resultComponents) == 1:
         resultImage = resultComponents[0]
+    else:
+        resultImage = cv2.merge(resultComponents)
 
     # Trim values lower than 0 or higher than 255
     resultImage = np.where(resultImage > 255, 255, resultImage)
@@ -214,10 +217,10 @@ def low_pass(image, parameters):
     
     # Round the values and unpad the image
     resultImage = np.uint8(np.rint(resultImage))
-    if len(resultComponents) == 3:
-        resultImage = resultImage[0:imageH, 0:imageW, :]
-    else:
+    if len(resultComponents) == 1:
         resultImage = resultImage[0:imageH, 0:imageW]
+    else:
+        resultImage = resultImage[0:imageH, 0:imageW, :]
 
     return resultImage
 
@@ -260,8 +263,6 @@ def high_pass(image, parameters):
     """
     
     # Parameter validation and assignment
-    cutoff = parameters['cutoff']
-    
     if 'offset' in parameters:
         offset = parameters['offset']
     else:
@@ -288,6 +289,11 @@ def high_pass(image, parameters):
         filename = ''
     
     imageH, imageW = image.shape[:2]          # Take image dimensions
+    
+    # Compute the cutoff frequency as a percentage from the smaller dimension of the image
+    cutoff_dimension = imageH if imageH < imageW else imageW
+    cutoff = parameters['cutoff'] / 100 * cutoff_dimension
+    
     paddedH, paddedW = 2 * imageH, 2 * imageW # Obtain the padding parameters
 
     # Check whether the FFTs of the image have been serialized or not
@@ -317,7 +323,7 @@ def high_pass(image, parameters):
     else:
         # Create padded image
         if ops.isColor(image):
-            paddedImage = np.zeros((paddedH, paddedW, 3), np.uint8)
+            paddedImage = np.zeros((paddedH, paddedW, len(ops.getChannels(image))), np.uint8)
             paddedImage[0:imageH, 0:imageW, :] = image
         else:
             paddedImage = np.zeros((paddedH, paddedW), np.uint8)
@@ -348,10 +354,10 @@ def high_pass(image, parameters):
                         for filteredComponent in filteredFFTs]
     
     # Obtain the result image
-    if len(resultComponents) == 3:
-        resultImage = cv2.merge(resultComponents)
-    else:
+    if len(resultComponents) == 1:
         resultImage = resultComponents[0]
+    else:
+        resultImage = cv2.merge(resultComponents)
 
     # Trim values lower than 0 or higher than 255
     resultImage = np.where(resultImage > 255, 255, resultImage)
@@ -359,9 +365,9 @@ def high_pass(image, parameters):
     
     # Round the values and unpad the image
     resultImage = np.uint8(np.rint(resultImage))
-    if len(resultComponents) == 3:
-        resultImage = resultImage[0:imageH, 0:imageW, :]
-    else:
+    if len(resultComponents) == 1:
         resultImage = resultImage[0:imageH, 0:imageW]
+    else:
+        resultImage = resultImage[0:imageH, 0:imageW, :]
 
     return resultImage
