@@ -6,11 +6,6 @@
 
 
 
-- Voi avea module care fac anumite operatii;
-- Fiecare modul are functii de procesare care iau ca argument o imagine si alti parametrii;
-- Ca sa aplic o functie asupra unei imagini, trebuie sa:
-	- Import dinamic modulul in care se afla functia; (modulul corect e dedus pe baza unui json de configurare);
-	- Apelez modul.functie;
 - Ca sa adaug o operatie noua in proiect, trebuie sa:
 	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
 	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
@@ -18,35 +13,5 @@
 
 
 
-- Operation selection screen:
-	- La submit, se face un AJAX call care are ca date un obiect de forma:
-		{
-			'numeImg_i': [
-				{
-					'function_j': 'nume functie de apelat, luat pe baza numelui operatiei alese,
-					'params': {
-						'par_i': val_i
-					}
-				},
-				{
-					'function_k': 'Nume',
-					'params': {
-						'par_i': val_i
-					}
-				}
-			]
-		}
-
-	- Pe server, pentru fiecare cheie din obiect, citesc imaginea corespunzatoare si aplic asupra ei toate operatiile selectate, succesiv
-	- Functia primeste ca parametri imaginea citita si un dictionar de argumente
-	
-	
-	
 TODOs:
 =======================================
-
-
-
-
-
-

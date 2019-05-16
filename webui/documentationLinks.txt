@@ -7,3 +7,20 @@
 
 
 - Sa vorbesc despre json-ul operations.json, structura lui
+- La submit, se face un AJAX call care are ca date un obiect de forma:
+	{
+		'numeImg_i': [
+			{
+				'function_j': 'nume functie de apelat, luat pe baza numelui operatiei alese,
+				'params': {
+					'par_i': val_i
+				}
+			},
+			{
+				'function_k': 'Nume',
+				'params': {
+					'par_i': val_i
+				}
+			}
+		]
+	}
