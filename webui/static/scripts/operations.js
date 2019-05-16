@@ -202,7 +202,8 @@ function createMenuEntry(parameterObject, functionName) {
             // When selecting an item, update the parameter value in the list of configurations as well
             for (let i = 0; i < operationConfigurations.length; i++) {
                 if (operationConfigurations[i]['function'] == functionName) {
-                    operationConfigurations[i]['params'][dropdownText.toLowerCase()] = value
+                    // The value will be converted to number if it is numeric
+                    operationConfigurations[i]['params'][dropdownText.toLowerCase()] = Number.isNaN(Number(value)) ? value : Number(value)
                 }
             }
         },
