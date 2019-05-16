@@ -270,7 +270,8 @@ function checkAcceptCondition() {
 // Checks the number of input images which have been configured. If at least one, the PROCESS button is enabled; else, it stays disabled
 function checkProcessCondition() {
 
-    let processButton = $('#configurationButtons .ui.button').addClass('disabled')
+    let processButton = $('#configurationButtons .ui.button')
+    processButton.addClass('disabled')
 
     if (configuredImages > 0) {
         processButton.removeClass('disabled')
@@ -280,6 +281,8 @@ function checkProcessCondition() {
 // Checks how many files have been configured from the total uploaded and starts the processing if the user agrees
 function processFiles() {
 
+    let processButton = $('#configurationButtons .ui.button')
+    processButton.addClass('disabled')
     let totalImages = $('#filesAndOperationsContainer').children().length
 
     if (configuredImages != totalImages) {
@@ -300,6 +303,7 @@ function processFiles() {
                 Noty.button('NO', 'ui button negative tiny', function($noty) {
                     // If clicked 'NO', do nothing and display a notification
                     $noty.close()
+                    processButton.removeClass('disabled')
                     displayNotification({'text': 'File Processing was Canceled', 'type': 'info', 'theme': 'sunset'})
                 })
             ]
@@ -310,5 +314,21 @@ function processFiles() {
 }
 
 function processFilesAjax() {
-    console.log('PROCESSING...')
+
+    let processButton = $('#configurationButtons .ui.button')
+
+    $.ajax({
+        url: '/process/',
+        method: 'POST',
+        data: dataToProcess,
+        success: function(data) {
+            processButton.removeClass('disabled')
+            // Display notification
+            // Send the user to the third screen - results
+        },
+        error: function(request, status, error) {
+            // Display notification
+            processButton.removeClass('disabled')
+        }
+    })
 }
