@@ -1,0 +1,76 @@
+{
+  "Blur (Frequency Domain)": {
+    "function": "filtering.fourier.low_pass",
+    "parameters": [
+      {
+        "name": "cutoff",
+        "type": "range",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "The cutoff frequency, as a percentage from the maximum dimension of the input image"
+      },
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["ideal", "butterworth", "gaussian"],
+        "default": "gaussian",
+        "description": "The type of filter to be used for filtering the input image"
+      },
+      {
+        "name": "order",
+        "type": "range",
+        "minimum": 0,
+        "maximum": 10,
+        "default": 2,
+        "presentIf": "type=butterworth",
+        "description": "Describes the smoothness of the generated filter; lower values mean smoother filter"
+      }
+    ],
+    "description": "Blurs an image using the FFT"
+  },
+  "Sharpen (Frequency Domain)": {
+    "function": "filtering.fourier.high_pass",
+    "parameters": [
+      {
+        "name": "cutoff",
+        "type": "range",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "The cutoff frequency, as a percentage from the maximum dimension of the input image"
+      },
+      {
+        "name": "offset",
+        "type": "range",
+        "minimum": 0,
+        "maximum": 255,
+        "default": 0,
+        "description": "Value used for avoiding the reduction of the DC term to 0"
+      },
+      {
+        "name": "multiplier",
+        "type": "range",
+        "minimum": 1,
+        "maximum": 10,
+        "default": 1,
+        "description": "Value used for emphasizing edges"
+      },
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["ideal", "butterworth", "gaussian"],
+        "default": "gaussian",
+        "description": "The type of filter to be used for filtering the input image"
+      },
+      {
+        "name": "order",
+        "type": "range",
+        "minimum": 0,
+        "maximum": 10,
+        "default": 2,
+        "presentIf": "type=butterworth",
+        "description": "Describes the smoothness of the generated filter; lower values mean smoother filter"
+      }
+    ],
+    "description": "Sharpens an image using the FFT"
+  }
+}

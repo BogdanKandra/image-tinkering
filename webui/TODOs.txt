@@ -1,14 +1,3 @@
-Modul Imagini (default):
-=============================
-- Rezultatul / rezultatele sunt salvate intr-un director temp si prezentate clientului. Daca clientul vrea sa salveze, alege un nume si salveaza. Imaginile vor fi salvate in directorul "outputs"
-- Buton "Perform Operation" care deschide un modal cu operatiile posibile pe imagini
-	- Butonul "Run" trimite un request la server cu lista de operatii, iar serverul va aplica succesiv operatiile din lista, producand un output
-		- Serverul are o ruta gen 'process/op1#op2#opn' care preia operatiile si le aplica succesiv pe imagine(ile) de input si trimite lista de output-uri
-	- Outputul este trimis la client, pentru vizualizare, avand apoi doua optiuni:
-	"Save" si "Discard". "Discard" sterge din memorie output-ul operatiilor si revine la modalul de selectie. "Save" deschide fereastra de salvare fisier pe disc. Dupa oricare dintre aceste operatii, se inchide modalul.
-
-
-
 - Ajax call properties: url, method, data, success, error, dataType (processData, contentType)
 - python os functions:
 	- os.access() -- determina daca user-ul are drepturi asupra path-ului
@@ -17,56 +6,12 @@ Modul Imagini (default):
 
 
 
-- Voi avea module care fac anumite operatii;
-- Fiecare modul are functii de procesare care iau ca argument o imagine si alti parametrii;
-- Ca sa aplic o functie asupra unei imagini, trebuie sa:
-	- Import dinamic modulul in care se afla functia; (modulul corect e dedus pe baza unui json de configurare);
-	- Apelez modul.functie;
 - Ca sa adaug o operatie noua in proiect, trebuie sa:
-	- Adaug o intrare in json-ul de mapare intre nume de operatii si modulul in care se afla
+	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
 	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
-	- Sa adaptez interfata web pentru ea, acolo unde e necesar
+	- Sa adaptez interfata web pentru ea, acolo unde e necesar (nu va fi nevoie, daca proiectez atent)
 
 
 
-- Operation selection screen:
-	- Datele intoarse de upload AJAX call sunt de forma
-		{
-			'image': [numele fisierelor urcate],
-			'video': [],
-		}
-	- Pentru fiecare nume de fisier, creez un img avand src = "../static/uploads/images/nume"
-	- Pentru fiecare img am un editable select asociat care contine operatiile posibile de aplicat
-	- User-ul alege operatii si parametri pentru ele si apoi apasa submit
-	- Se face un AJAX call care are ca date un obiect de forma:
-		{
-			'numeImg_i': [ob1, ob2, ob3, etc]
-		}
-		unde ob_i are forma
-			'numeOp_i': {
-							'param1': 'val'
-							'param2': 'val'
-						}
-
-	- Pe server, pentru fiecare cheie din obiect, citesc imaginea corespunzatoare si aplic asupra ei toate operatiile selectate, succesiv
-	- Functiile de aplicat sunt alese pe baza unui json de mapare intre nume de operatii si functia de apelat
-	- Functia primeste ca parametri imaginea citita si un dictionar de argumente
-	
-	
-	
-- Exemplu:
-	- Vreau blur pe imaginea 'flag.png'
-	- Selectez din dropdown optiunea 'Blur'
-	- Selectez parametrul type ca fiind 'Gaussian'
-	- Apoi selectez parametrul de cutoff ca fiind 20% din dimensiunea mai mare a imaginii
-	- Dau submit
-	- Pe server ajunge un call care are datele
-		{
-			'flag.png': [{
-							'name': 'blur',
-							'params': {
-								'type': 'gaussian',
-								'cutoff': n
-							}
-						}]
-		}
+TODOs:
+=======================================

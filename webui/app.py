@@ -3,17 +3,16 @@ Created on Wed Jan 23 21:20:15 2019
 
 @author: Bogdan
 """
-import sys, os, time
-import magic
+import os
 
-from flask import Flask, request
-from flask.helpers import make_response, send_from_directory
+from flask import Flask
+from flask.helpers import make_response
 from flask.json import jsonify
 from flask.templating import render_template
-from werkzeug import secure_filename
-from werkzeug.exceptions import abort, RequestEntityTooLarge
 from modules.test.controllers import test_mod
+from modules.uploads.controllers import upload_mod
 from modules.initialisations.controllers import init_mod
+from modules.processing.controllers import processing_mod
 
 
 # Paths management
@@ -31,7 +30,9 @@ app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
 # Blueprints Registration
 app.register_blueprint(test_mod)
+app.register_blueprint(upload_mod)
 app.register_blueprint(init_mod)
+app.register_blueprint(processing_mod)
 
 # Error handling
 @app.errorhandler(413)
@@ -42,49 +43,6 @@ def file_too_large(err):
 @app.route('/')
 def index():
     return make_response(render_template('index.html'), 200)
-
-@app.route('/uploads', methods=['POST'])
-def uploads():
-#    print(request, file=sys.stdout)
-    filesDict = request.files
-    mime = magic.Magic(mime=True)
-    savedFiles = {
-            'image': [],
-            'video': []
-            }
-
-    for key in filesDict:
-        file = filesDict[key]
-        mimeType = mime.from_buffer(file.stream.read(1024))
-        file.stream.seek(0) # Move the file pointer back to the start of buffer
-
-        if mimeType.startswith('image/') or mimeType.startswith('video/'):
-            # Only save the file if it is an image or a video
-            if mimeType.startswith('image/'):
-                uploadsDir = app.config['IMAGES_DIR']
-                filetype = 'image'
-            else:
-                uploadsDir = app.config['VIDEOS_DIR']
-                filetype = 'video'
-                
-            # Append the timestamp to the filename
-            timestamp = str(time.time())
-            if '.' in timestamp: # Also append the fractional part if available
-                timestamp = "".join(timestamp.split('.'))
-            
-            name = secure_filename(file.filename)
-            nameComponents = name.split('.')
-            name = nameComponents[0] + '_' + timestamp + '.' + nameComponents[1]
-                
-            uploadPath = os.path.join(uploadsDir, name)
-            try:
-                file.save(uploadPath)
-                savedFiles[filetype].append(name)
-            except RequestEntityTooLarge:
-                errorMessage = 'File could not be uploaded. Maximum size must be 50 MB'
-                abort(413, errorMessage)
-                
-    return make_response(jsonify(savedFiles), 200)
 
 # Run the application
 if __name__ == '__main__':

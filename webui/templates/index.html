@@ -14,77 +14,117 @@
         <script src="/static/scripts/libs/jquery-3.3.1.js"></script>
         <script src="/static/scripts/libs/noty.min.js"></script>
         <script src="/static/scripts/libs/semantic.js"></script>
-        <script src="/static/scripts/utilityFunctions.js"></script>
-		<script src="/static/scripts/index.js"></script>
+        <script src="/static/scripts/utils.js"></script>
+        <script src="/static/scripts/operations.js"></script>
+        <script src="/static/scripts/files.js"></script>
     </head>
+
     <body>
-        <h1 id="title">Image Tinkering</h1>
-        
-        <div id="switchMode" class="ui animated fade primary button" onclick="changeMode()">
-            <div class="visible content">SWITCH TO VIDEO MODE</div>
-            <div class="hidden content">
-                <i class="video icon"></i>
-            </div>
-        </div>
-        <div style="clear:both"></div>
-
-        <div id="actionButtons" class="ui massive primary buttons">
-            <label for="fileInput" class="ui labeled icon button">
-                <i class="file image icon"></i>
-                LOAD FILES
-            </label>
-            <input type="file" id="fileInput" accept="image/*" style="display:none" multiple>
-
-            <div class="or"></div>
-
-            <div class="ui right labeled icon button" onclick="openSelfieModal()">
-                <i class="camera icon"></i>
-                TAKE SELFIE
+        <header>
+            <div id="title">
+                <h1>Image Tinkering</h1>
             </div>
 
-            <div id="uploadInput" class="ui vertical animated disabled button" onclick="uploadFiles()">
-                <div class="visible content">UPLOAD</div>
+            <div id="switchMode" class="ui animated fade button" onclick="changeMode()">
+                <div class="visible content">SWITCH TO VIDEO MODE</div>
                 <div class="hidden content">
-                    <i class="upload icon"></i>
+                    <i class="video icon"></i>
                 </div>
             </div>
-        </div>
 
-        <div id="filesInformation">
-            <div>
-                <span id="filesCount">No Files loaded yet</span>
-                <div id="fileNames"></div>
-                <div id="filesSource"></div>
-            </div>
+            <div style="clear:both"></div>
+        </header>
 
-            <div id="filesContainer"></div>
-        </div>
+        <div id="fileSelectionContent">
+            <div id="actionButtons" class="ui massive primary buttons">
+                <label for="fileInput" class="ui labeled icon button">
+                    <i class="file image icon"></i>
+                    LOAD FILES
+                </label>
+                <input type="file" id="fileInput" accept="image/*" style="display:none" multiple>
 
-        <div id="selfieModal" class="ui modal">
-            <i class="close icon"></i>
-            <div class="header">
-                Take Selfie
-            </div>
-            <div class="content">
-                <div class="description">
-                    <div class="ui header">
-                        Press Button to snap
+                <div class="or"></div>
+
+                <div class="ui right labeled icon button" onclick="displaySelfieModal()">
+                    <i class="camera icon"></i>
+                    TAKE SELFIE
+                </div>
+
+                <div id="uploadInput" class="ui vertical animated disabled button" onclick="uploadFiles()">
+                    <div class="visible content">UPLOAD</div>
+                    <div class="hidden content">
+                        <i class="upload icon"></i>
                     </div>
-                    <video id="cameraFeed" width="640" height="480" autoplay>
-                        YOUR BROWSER DOES NOT SUPPORT THE video TAG
-                    </video>
-                    <img id="snapshot" height="480">
                 </div>
             </div>
-            <div class="actions">
-                <div class="ui primary disabled button" onclick="captureImage()">
-                    SNAP
+
+            <div id="filesInformation">
+                <div>
+                    <span id="filesCount">No Files loaded yet</span>
+                    <div id="fileNames"></div>
+                    <div id="filesSource"></div>
                 </div>
-                <div class="ui approve primary disabled button" onclick="submitImage()">
-                    SUBMIT
+
+                <div id="filesContainer"></div>
+            </div>
+
+            <div id="selfieModal" class="ui modal">
+                <i class="close icon"></i>
+                <div class="header">
+                    Take Selfie
                 </div>
-                <div class="ui deny button">
-                    CANCEL
+                <div class="content">
+                    <div class="description">
+                        <div class="ui header">
+                            Press Button to snap
+                        </div>
+                        <video id="cameraFeed" width="640" height="480" autoplay>
+                            YOUR BROWSER DOES NOT SUPPORT THE video TAG
+                        </video>
+                        <img id="snapshot" height="480">
+                    </div>
+                </div>
+                <div id="selfieActions" class="actions">
+                    <div class="ui primary disabled button" onclick="captureImage()">
+                        SNAP
+                    </div>
+                    <div class="ui approve primary disabled button" onclick="submitImage()">
+                        ACCEPT
+                    </div>
+                    <div class="ui deny button">
+                        CANCEL
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="operationSelectionContent">
+            <div id="filesAndOperationsContainer"></div>
+            <div id="configurationButtons">
+                <button class="ui disabled button" onclick="processFiles()">PROCESS</button>
+            </div>
+
+            <div id="configurationModal" class="ui modal">
+                <i class="close icon"></i>
+                <div class="header">
+                    Select Operations to Apply and Their Parameters
+                </div>
+                <div class="content">
+                    <div class="description">
+                        <select name="operations" multiple="" class="ui dropdown">
+                            <option value="">Select the operation(s) to be performed...</option>
+                        </select>
+
+                        <div id="paramCfgAccordion" class="ui styled accordion"></div>
+                    </div>
+                </div>
+                <div id="configurationActions" class="actions">
+                    <div class="ui approve primary disabled button">
+                        ACCEPT
+                    </div>
+                    <div class="ui deny button">
+                        CANCEL
+                    </div>
                 </div>
             </div>
         </div>

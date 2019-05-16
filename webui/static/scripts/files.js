@@ -49,13 +49,14 @@ $(document).ready(function() {
 })
 
 // Initialises and opens the image capture modal
-function openSelfieModal() {
+function displaySelfieModal() {
 
-	let actionButtons = $('.actions').first().find('.ui')
+	let actionButtons = $('#selfieActions').find('.ui')
 
 	$('#selfieModal').modal({
 							onHide: function() {
 								actionButtons.first().addClass('disabled')
+								// Stop the camera feed if necessary
 								if (imageCapture !== undefined && imageCapture.track.readyState != 'ended') {
 									imageCapture.track.stop()
 								}
@@ -83,7 +84,7 @@ function captureImage() {
 
 	let snapshot = $('#snapshot')
 	let cameraFeed = $('#cameraFeed')
-	let actionButtons = $('.actions').first().find('.ui')
+	let actionButtons = $('#selfieActions').find('.ui.button')
 
 	if (snapshot.css('display') == 'none') {
 		// Capture image and display it
@@ -135,8 +136,7 @@ function submitImage() {
 // Builds the request data and sends it to the AJAX call
 function uploadFiles() {
 	// Disable the upload button, while the upload is being performed
-	let uploadButton = $('#uploadInput')
-	uploadButton.addClass('disabled')
+	$('#uploadInput').addClass('disabled')
 
 	// Build the request data - a list of selected files
 	let imageData = new FormData()
@@ -148,7 +148,7 @@ function uploadFiles() {
 		for (let i = 0; i < files.length; i++) {
 			imageData.append('files-' + (i + 1), files[i])
 		}
-		uploadAjax(imageData)
+		uploadFilesAjax(imageData)
 	} else {
 		// File source is the webcam feed
 		let snapshotImg = $('#snapshot')[0]
@@ -159,35 +159,22 @@ function uploadFiles() {
 		context.drawImage(snapshotImg, 0, 0)
 		canvas.toBlob(function(blob) {
 			imageData.append('files-1', blob, 'Selfie.jpg')
-			uploadAjax(imageData)
+			uploadFilesAjax(imageData)
 		})
 	}
 }
 
 // Actually performs the AJAX call which saves the files and initialises its channel and FFT images
-function uploadAjax(imageData) {
-
-	let uploadButton = $('#uploadButton')
+function uploadFilesAjax(imageData) {
 
 	$.ajax({
-		url: '/uploads',
+		url: '/uploads/',
 		method: 'POST',
 		data: imageData,
 		processData: false,
 		contentType: false,
 		success: function(data) {
-			new Noty({
-				text: 'File Upload Succeeded!',
-				type: 'success',
-				layout: 'top',
-				theme: 'relax',
-				timeout: 5000
-			}).show()
-			
-			console.log('>>>>> Data:', data)
-			
-			// Re-enable the upload button
-			uploadButton.removeClass('disabled')
+			displayNotification({'text': 'File Upload Succeeded!'})
 			
 			// Launch the initialisations procedure
 			$.ajax({
@@ -203,19 +190,21 @@ function uploadAjax(imageData) {
 				}
 			})
 
+			// Direct the user to the Operation Selection step
+			$('#fileSelectionContent').css('display', 'none')
+			$('#operationSelectionContent').css('display', 'block')
+			$('#steps').children('.step').first().removeClass('active')
+			$('#steps').children('.step').first().addClass('completed')
+			$('#steps').children('.step').eq(1).addClass('active')
 
+			// Populate the container holding uploaded images
+			populateFilesAndOperationsContainer(data)
 		},
 		error: function(request, status, error) {
-			new Noty({
-				text: 'File upload failed!',
-				type: 'error',
-				layout: 'top',
-				theme: 'relax',
-				timeout: 5000
-			}).show()
+			displayNotification({'text': 'File Upload failed!', 'type': 'error'})
 			
 			// Enable the upload button back
-			uploadButton.removeClass('disabled')
+			$('#uploadButton').removeClass('disabled')
 		}
 	})
 }
