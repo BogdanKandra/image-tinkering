@@ -320,9 +320,11 @@ function processFilesAjax() {
     $.ajax({
         url: '/process/',
         method: 'POST',
-        data: dataToProcess,
+        data: JSON.stringify({'data': dataToProcess}),
+        contentType: 'application/json',
         success: function(data) {
             processButton.removeClass('disabled')
+            console.log(data)
             // Display notification
             // Send the user to the third screen - results
         },
