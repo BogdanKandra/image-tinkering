@@ -12,6 +12,7 @@ from flask.templating import render_template
 from modules.test.controllers import test_mod
 from modules.uploads.controllers import upload_mod
 from modules.initialisations.controllers import init_mod
+from modules.processing.controllers import processing_mod
 
 
 # Paths management
@@ -31,6 +32,7 @@ app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 app.register_blueprint(test_mod)
 app.register_blueprint(upload_mod)
 app.register_blueprint(init_mod)
+app.register_blueprint(processing_mod)
 
 # Error handling
 @app.errorhandler(413)
