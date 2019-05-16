@@ -190,7 +190,7 @@ function uploadFilesAjax(imageData) {
 				}
 			})
 
-			// Direct the user to the Operation Selection step
+			// Direct the user to the Operation Selection Step
 			$('#fileSelectionContent').css('display', 'none')
 			$('#operationSelectionContent').css('display', 'block')
 			$('#steps').children('.step').first().removeClass('active')
@@ -201,9 +201,7 @@ function uploadFilesAjax(imageData) {
 			populateFilesAndOperationsContainer(data)
 		},
 		error: function(request, status, error) {
-			displayNotification({'text': 'File Upload failed!', 'type': 'error'})
-			
-			// Enable the upload button back
+			displayNotification({'text': 'File Upload failed!', 'type': 'error'})			
 			$('#uploadButton').removeClass('disabled')
 		}
 	})
