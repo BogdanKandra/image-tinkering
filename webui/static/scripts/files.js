@@ -136,7 +136,7 @@ function submitImage() {
 // Builds the request data and sends it to the AJAX call
 function uploadFiles() {
 	// Disable the upload button, while the upload is being performed
-	let uploadButton = $('#uploadInput').addClass('disabled')
+	$('#uploadInput').addClass('disabled')
 
 	// Build the request data - a list of selected files
 	let imageData = new FormData()
@@ -167,10 +167,8 @@ function uploadFiles() {
 // Actually performs the AJAX call which saves the files and initialises its channel and FFT images
 function uploadFilesAjax(imageData) {
 
-	let uploadButton = $('#uploadButton')
-
 	$.ajax({
-		url: '/uploads',
+		url: '/uploads/',
 		method: 'POST',
 		data: imageData,
 		processData: false,
@@ -206,7 +204,7 @@ function uploadFilesAjax(imageData) {
 			displayNotification({'text': 'File Upload failed!', 'type': 'error'})
 			
 			// Enable the upload button back
-			uploadButton.removeClass('disabled')
+			$('#uploadButton').removeClass('disabled')
 		}
 	})
 }
