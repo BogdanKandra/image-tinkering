@@ -176,13 +176,7 @@ function uploadFilesAjax(imageData) {
 		processData: false,
 		contentType: false,
 		success: function(data) {
-			new Noty({
-				text: 'File Upload Succeeded!',
-				type: 'success',
-				layout: 'top',
-				theme: 'relax',
-				timeout: 5000
-			}).show()
+			displayNotification({'text': 'File Upload Succeeded!'})
 			
 			// Launch the initialisations procedure
 			$.ajax({
@@ -209,13 +203,7 @@ function uploadFilesAjax(imageData) {
 			populateFilesAndOperationsContainer(data)
 		},
 		error: function(request, status, error) {
-			new Noty({
-				text: 'File upload failed!',
-				type: 'error',
-				layout: 'top',
-				theme: 'relax',
-				timeout: 5000
-			}).show()
+			displayNotification({'text': 'File Upload failed!', 'type': 'error'})
 			
 			// Enable the upload button back
 			uploadButton.removeClass('disabled')

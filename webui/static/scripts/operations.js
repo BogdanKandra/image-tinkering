@@ -277,7 +277,7 @@ function checkProcessCondition() {
     }
 }
 
-// Function called on pressing the PROCESS button on second screen
+// Checks how many files have been configured from the total uploaded and starts the processing if the user agrees
 function processFiles() {
 
     let totalImages = $('#filesAndOperationsContainer').children().length
@@ -300,7 +300,7 @@ function processFiles() {
                 Noty.button('NO', 'ui button negative tiny', function($noty) {
                     // If clicked 'NO', do nothing and display a notification
                     $noty.close()
-                    // Display noty
+                    displayNotification({'text': 'File Processing was Canceled', 'type': 'info', 'theme': 'sunset'})
                 })
             ]
         }).show()
@@ -310,5 +310,5 @@ function processFiles() {
 }
 
 function processFilesAjax() {
-    
+    console.log('PROCESSING...')
 }
