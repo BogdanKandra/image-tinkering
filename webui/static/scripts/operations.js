@@ -4,8 +4,7 @@ let operationConfigurations = [] // List of objects each describing the configur
 let dataToProcess = {}           // Object to be sent to AJAX call when the user clicks the PROCESS button
 let configuredImages = 0         // Counter for keeping track of number of images configured
 
-// For each uploaded file, creates a container holding the uploaded file, 
-// a revealing "CONFIGURE" button over the file and an accordion displaying selected operations and parameters
+// For each uploaded file, creates a container holding the uploaded file and a revealing "CONFIGURE" button over the file
 function populateFilesAndOperationsContainer(data) {
 
 	let imageNames = data['image']
@@ -327,8 +326,15 @@ function processFilesAjax() {
             processButton.removeClass('disabled')
             displayNotification({'text': 'Processing Complete!', 'type': 'success', 'theme': 'sunset'})
 
-            // Send the user to the third screen - results
-            console.log(data)
+            // Direct the user to the Results Step
+			$('#operationSelectionContent').css('display', 'none')
+			$('#resultsContent').css('display', 'block')
+			$('#steps').children('.step').eq(1).removeClass('active')
+			$('#steps').children('.step').eq(1).addClass('completed')
+            $('#steps').children('.step').eq(2).addClass('active')
+            
+            // Populate the container holding resulting images
+			populateResultsContainer(data)
         },
         error: function(request, status, error) {
             displayNotification({'text': 'An error occured during processing', 'type': 'error', 'theme': 'sunset'})
