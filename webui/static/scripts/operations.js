@@ -325,12 +325,13 @@ function processFilesAjax() {
         contentType: 'application/json',
         success: function(data) {
             processButton.removeClass('disabled')
-            console.log(data)
-            // Display notification
+            displayNotification({'text': 'Processing Complete!', 'type': 'success', 'theme': 'sunset'})
+
             // Send the user to the third screen - results
+            console.log(data)
         },
         error: function(request, status, error) {
-            // Display notification
+            displayNotification({'text': 'An error occured during processing', 'type': 'error', 'theme': 'sunset'})
             processButton.removeClass('disabled')
         }
     })
