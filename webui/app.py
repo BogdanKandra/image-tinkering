@@ -13,6 +13,7 @@ from modules.test.controllers import test_mod
 from modules.uploads.controllers import upload_mod
 from modules.initialisations.controllers import init_mod
 from modules.processing.controllers import processing_mod
+from modules.cleanup.controllers import cleanup_mod
 
 
 # Paths management
@@ -33,6 +34,7 @@ app.register_blueprint(test_mod)
 app.register_blueprint(upload_mod)
 app.register_blueprint(init_mod)
 app.register_blueprint(processing_mod)
+app.register_blueprint(cleanup_mod)
 
 # Error handling
 @app.errorhandler(413)
