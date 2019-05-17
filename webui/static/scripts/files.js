@@ -38,11 +38,14 @@ $(document).ready(function() {
 
 				filesContainer.append($('<div>').append(imageElement))
 			}
-
-			steps.css('position', 'absolute')
 		} else {
 			uploadButton.addClass('disabled')
 			countParagraph.html('No Files loaded yet')
+		}
+
+		if (filesCount > 1) {
+			steps.css('position', 'absolute')
+		} else {
 			steps.css('position', 'fixed')
 		}
 	})
