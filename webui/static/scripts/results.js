@@ -100,8 +100,19 @@ function resetProgress() {
 	configuredImages = 0
 }
 
-//
+// Performs an AJAX call which deletes all input and result files
 function deleteResultsAjax(fileNamesList) {
 
-	
+	$.ajax({
+        url: '/cleanup/',
+        method: 'POST',
+        data: JSON.stringify({'filenames': fileNamesList}),
+        contentType: 'application/json',
+        success: function(data) {
+			console.log(data)
+        },
+        error: function(request, status, error) {
+			console.log('An error occured during deletion of files')
+        }
+    })
 }
