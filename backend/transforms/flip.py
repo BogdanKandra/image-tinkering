@@ -15,8 +15,8 @@ def flip(image, parameters):
         *parameters* (dictionary) -- a dictionary containing following keys:
             
             *axis* (str, optional) -- the axis along which to flip the image;
-            possible values are *horizontal* and *vertical*; default value is 
-            *horizontal*
+            possible values are *horizontal*, *vertical* and *both*; default 
+            value is *horizontal*
     
     Returns:
         NumPy array uint8 -- the flipped image
@@ -31,10 +31,22 @@ def flip(image, parameters):
     if axis == 'horizontal':
         for i in range(image.shape[0]):
             resultImage[i] = image[image.shape[0] - i - 1]
-        #resultImage = np.flipud(image)
-    else:
+#        resultImage = np.flipud(image)
+    elif axis == 'vertical':
         for j in range(image.shape[1]):
             resultImage[:,j] = image[:,image.shape[1] - j - 1]
-        #resultImage = np.fliplr(image)
+#        resultImage = np.fliplr(image)
+    else:
+        # Flip horizontally
+        resultTemp = np.zeros(image.shape, dtype=np.uint8)
+        for i in range(image.shape[0]):
+            resultTemp[i] = image[image.shape[0] - i - 1]
+
+        # Flip vertically
+        for j in range(image.shape[1]):
+            resultImage[:,j] = resultTemp[:,image.shape[1] - j - 1]
+        
+#        resultImage = np.fliplr(image)
+#        resultImage = np.flipud(resultImage)
     
     return resultImage
