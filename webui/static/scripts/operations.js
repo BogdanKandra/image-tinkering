@@ -313,6 +313,7 @@ function processFiles() {
     }
 }
 
+// Performs the AJAX call which processes the files and the directs the user to the results step
 function processFilesAjax() {
 
     let processButton = $('#configurationButtons .ui.button')
