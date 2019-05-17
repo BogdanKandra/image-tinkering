@@ -25,7 +25,6 @@ init_mod = Blueprint('initialisations', __name__, url_prefix='/initialisations')
 
 @init_mod.route('/', methods=['POST'])
 def initialise():
-
     files = request.get_json()['files']
     images = files['image']
     videos = files['video']
