@@ -40,7 +40,7 @@ html, body {
     display: inline-block;
 }
 
-#filesContainer > div, #filesAndOperationsContainer > div {
+#filesContainer > div, #filesAndOperationsContainer > div, #resultsContainer > div {
     height: 200px;
     width: 400px;
     display: inline-block;
@@ -81,7 +81,7 @@ img {
     text-align: center;
 }
 
-#configurationButtons {
+#configurationButtons, #resultsButtons {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -118,4 +118,10 @@ img {
 
 #paramCfgAccordion {
     margin-top: 2em;
+}
+
+#resultsContent {
+    display: none;
+    margin-top: 6em;
+    text-align: center;
 }

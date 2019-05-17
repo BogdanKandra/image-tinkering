@@ -38,11 +38,14 @@ $(document).ready(function() {
 
 				filesContainer.append($('<div>').append(imageElement))
 			}
-
-			steps.css('position', 'absolute')
 		} else {
 			uploadButton.addClass('disabled')
 			countParagraph.html('No Files loaded yet')
+		}
+
+		if (filesCount > 1) {
+			steps.css('position', 'absolute')
+		} else {
 			steps.css('position', 'fixed')
 		}
 	})
@@ -183,14 +186,14 @@ function uploadFilesAjax(imageData) {
 				data: JSON.stringify({'files': data}),
 				contentType: 'application/json',
 				success: function(data) {
-					console.log('>>>>> Initialisations successful')
+					console.log('>>>>> Initialisations process completed successfully')
 				},
 				error: function(request, status, error) {
 					console.log('>>>>> Error during initialisations process')
 				}
 			})
 
-			// Direct the user to the Operation Selection step
+			// Direct the user to the Operation Selection Step
 			$('#fileSelectionContent').css('display', 'none')
 			$('#operationSelectionContent').css('display', 'block')
 			$('#steps').children('.step').first().removeClass('active')
@@ -201,9 +204,7 @@ function uploadFilesAjax(imageData) {
 			populateFilesAndOperationsContainer(data)
 		},
 		error: function(request, status, error) {
-			displayNotification({'text': 'File Upload failed!', 'type': 'error'})
-			
-			// Enable the upload button back
+			displayNotification({'text': 'File Upload failed!', 'type': 'error'})			
 			$('#uploadButton').removeClass('disabled')
 		}
 	})

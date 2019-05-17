@@ -15,3 +15,5 @@
 
 TODOs:
 =======================================
+- Bug: daca configurez o imagine, apoi o reconfigurez, se considera doua configurari separate
+	- Da peste cap calculul numarului de imagini configurate

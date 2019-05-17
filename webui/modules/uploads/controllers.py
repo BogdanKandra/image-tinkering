@@ -31,8 +31,8 @@ def upload():
         mimeType = mime.from_buffer(file.stream.read(1024))
         file.stream.seek(0) # Move the file pointer back to the start of buffer
 
+        # Only save the file if it is an image or a video
         if mimeType.startswith('image/') or mimeType.startswith('video/'):
-            # Only save the file if it is an image or a video
             if mimeType.startswith('image/'):
                 uploadsDir = app.config['IMAGES_DIR']
                 filetype = 'image'

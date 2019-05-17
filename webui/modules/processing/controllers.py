@@ -16,7 +16,6 @@ processing_mod = Blueprint('processing', __name__, url_prefix='/process')
 
 @processing_mod.route('/', methods=['POST'])
 def process():
-    
     data = request.get_json()['data']
     results_names = []  # Will contain the names of the resulting files
 
