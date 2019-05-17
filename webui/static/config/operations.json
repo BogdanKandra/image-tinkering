@@ -72,5 +72,17 @@
       }
     ],
     "description": "Sharpens an image using the FFT"
+  },
+  "Flip": {
+    "function": "transforms.flip.flip",
+    "parameters": [
+      {
+        "name": "axis",
+        "type": "lookup",
+        "values": ["horizontal", "vertical"],
+        "default": "horizontal",
+        "description": "The axis along which to flip the image"
+      }
+    ]
   }
 }
