@@ -79,7 +79,7 @@
       {
         "name": "axis",
         "type": "lookup",
-        "values": ["horizontal", "vertical"],
+        "values": ["horizontal", "vertical", "both"],
         "default": "horizontal",
         "description": "The axis along which to flip the image"
       }
