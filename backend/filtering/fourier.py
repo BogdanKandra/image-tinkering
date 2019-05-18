@@ -5,10 +5,10 @@ import numpy as np
 projectPath = os.getcwd()
 while os.path.basename(projectPath) != 'ImageTinkering':
     projectPath = os.path.dirname(projectPath)
-sys.path.append(os.path.join(projectPath))
-from backend import basic_operations as ops
+sys.path.append(projectPath)
+from backend import utils
 
-    
+
 def ideal_filter(mode, size, cutoff):
     """Generates an **Ideal Filter** which filters out frequencies 
     higher (*low-pass*) or lower (*high-pass*) than the cutoff frequency\n
@@ -161,7 +161,7 @@ def low_pass(image, parameters):
 
     if filename != '':
         filename, extension = filename.split('.')
-        if ops.isColor(image):
+        if utils.isColor(image):
             files_to_check = [filename + '_' + c + '_fft.pickle' for c in 'bgr']
         else:
             files_to_check = [filename + '_fft.pickle']
@@ -180,15 +180,15 @@ def low_pass(image, parameters):
             f.close()
     else:
         # Create padded image
-        if ops.isColor(image):
-            paddedImage = np.zeros((paddedH, paddedW, len(ops.getChannels(image))), np.uint8)
+        if utils.isColor(image):
+            paddedImage = np.zeros((paddedH, paddedW, len(utils.getChannels(image))), np.uint8)
             paddedImage[0:imageH, 0:imageW, :] = image
         else:
             paddedImage = np.zeros((paddedH, paddedW), np.uint8)
             paddedImage[0:imageH, 0:imageW] = image
 
         # Take the FFTs of the padded image channels
-        paddedImageFFTs = ops.getFFTs(paddedImage)
+        paddedImageFFTs = utils.getFFTs(paddedImage)
     
     # Compute the filter image
     if type == 'ideal':
@@ -302,7 +302,7 @@ def high_pass(image, parameters):
 
     if filename != '':
         filename, extension = filename.split('.')
-        if ops.isColor(image):
+        if utils.isColor(image):
             files_to_check = [filename + '_' + c + '_fft.pickle' for c in 'bgr']
         else:
             files_to_check = [filename + '_fft.pickle']
@@ -322,15 +322,15 @@ def high_pass(image, parameters):
             print('Deserialized', file)
     else:
         # Create padded image
-        if ops.isColor(image):
-            paddedImage = np.zeros((paddedH, paddedW, len(ops.getChannels(image))), np.uint8)
+        if utils.isColor(image):
+            paddedImage = np.zeros((paddedH, paddedW, len(utils.getChannels(image))), np.uint8)
             paddedImage[0:imageH, 0:imageW, :] = image
         else:
             paddedImage = np.zeros((paddedH, paddedW), np.uint8)
             paddedImage[0:imageH, 0:imageW] = image
         
         # Take the FFTs of the padded image channels
-        paddedImageFFTs = ops.getFFTs(paddedImage)
+        paddedImageFFTs = utils.getFFTs(paddedImage)
 
     # Compute the filter image
     if type == 'ideal':
