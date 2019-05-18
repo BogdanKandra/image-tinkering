@@ -73,6 +73,10 @@
     ],
     "description": "Sharpens an image using the FFT"
   },
+  "Grayscale": {
+    "function": "filtering.spatial.grayscale",
+    "parameters": []
+  },
   "Flip": {
     "function": "transforms.flip.flip",
     "parameters": [
