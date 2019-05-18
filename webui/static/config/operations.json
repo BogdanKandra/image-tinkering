@@ -77,6 +77,10 @@
     "function": "filtering.spatial.grayscale",
     "parameters": []
   },
+  "Negative": {
+    "function": "filtering.spatial.negative",
+    "parameters": []
+  },
   "Flip": {
     "function": "transforms.flip.flip",
     "parameters": [
