@@ -1,5 +1,7 @@
 "use strict";
 
+let attachedResetButtonClick = false
+
 // For each result file, creates a container holding the file and a revealing "SAVE" button over the file
 function populateResultsContainer(data) {
 
@@ -29,10 +31,13 @@ function populateResultsContainer(data) {
 
 		resultsContainer.append(container)
 
-		// Bind click event for the "RESET" button
-		$('#resultsButtons .ui.button').click(function() {
-			openResetDialog(data)
-		})
+		// Bind click event for the "DISCARD" button
+		if (!attachedResetButtonClick) {
+			$('#resultsButtons .ui.button').click(function() {
+				openResetDialog(data)
+			})
+			attachedResetButtonClick = true
+		}
 	}
 }
 
