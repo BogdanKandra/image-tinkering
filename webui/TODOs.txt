@@ -17,3 +17,12 @@ TODOs:
 =======================================
 - Bug: daca configurez o imagine, apoi o reconfigurez, se considera doua configurari separate
 	- Da peste cap calculul numarului de imagini configurate
+
+
+- Rotation:
+	https://stackoverflow.com/questions/11764575/python-2-7-3-opencv-2-4-after-rotation-window-doesnt-fit-image
+	https://stackoverflow.com/questions/22041699/rotate-an-image-without-cropping-in-opencv-in-c
+	https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
+	https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html?highlight=getrotationmatrix2d
+	https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html?highlight=getrotationmatrix2d#void%20warpAffine(InputArray%20src,%20OutputArray%20dst,%20InputArray%20M,%20Size%20dsize,%20int%20flags,%20int%20borderMode,%20const%20Scalar&%20borderValue)
+	
