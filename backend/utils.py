@@ -50,18 +50,3 @@ def fft_plot(image, cmap=None):
     plt.figure()
     plt.imshow(magnitudes, cmap)
     plt.show()
-
-
-if __name__ == '__main__':
-    
-    impath1 = '../webui/static/testinputs/flag.jpg'
-    impath2 = '../webui/static/testinputs/brontosaur.jpg'
-    impath3 = '../webui/static/testinputs/lena.tiff'
-    impath4 = '../webui/static/testinputs/bars.png'
-
-    image = cv2.imread(impath3, cv2.IMREAD_UNCHANGED)
-
-#    cv2.imshow('Image', image)
-
-    cv2.waitKey()
-    cv2.destroyAllWindows()
