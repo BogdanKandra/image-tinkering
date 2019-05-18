@@ -12,11 +12,9 @@ imagePath = '../webui/static/testinputs/chocolate.png' # Alpha channel
 #imagePath = '../webui/static/testinputs/wide.jpg' # 4K image
 
 image = cv2.imread(imagePath, cv2.IMREAD_UNCHANGED)
-gray = f.grayscale(image)
 
 # Display results
 cv2.imshow('Original Image', image)
-cv2.imshow('Gray', gray)
 
 cv2.waitKey()
 cv2.destroyAllWindows()
