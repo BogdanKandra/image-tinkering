@@ -18,7 +18,7 @@ projectPath = os.getcwd()
 while os.path.basename(projectPath) != 'ImageTinkering':
     projectPath = os.path.dirname(projectPath)
 sys.path.append(os.path.join(projectPath))
-import backend.basic_operations as ops
+import backend.utils as utils
 
 
 init_mod = Blueprint('initialisations', __name__, url_prefix='/initialisations')
@@ -35,7 +35,7 @@ def initialise():
         imageFile = cv2.imread(filePath, cv2.IMREAD_UNCHANGED)
         imageNameComponents = image.split('.')
 
-        if ops.isGrayscale(imageFile):
+        if utils.isGrayscale(imageFile):
             # Compute the padded image
             imageH, imageW = imageFile.shape[:2]
 #            paddedH, paddedW = 2 * imageH, 2 * imageW
@@ -53,7 +53,7 @@ def initialise():
 #            file.close()
         else:
             # Compute the R, G, B channels of the image
-            imageChannels = ops.getChannels(imageFile)
+            imageChannels = utils.getChannels(imageFile)
             
 #            # Compute the padded image
 #            imageH, imageW, channels = imageFile.shape
@@ -62,7 +62,7 @@ def initialise():
 #            paddedImage[0:imageH, 0:imageW] = imageFile
 #            
 #            # Compute the R, G, B channels of the padded image
-#            paddedImageChannels = ops.getChannels(paddedImage)
+#            paddedImageChannels = utils.getChannels(paddedImage)
 #            
 #            # Compute the FFT of the padded image channels
 #            paddedImageFFTs = [np.fft.fftshift(np.fft.fft2(channel)) for channel in paddedImageChannels]
