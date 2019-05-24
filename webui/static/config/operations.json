@@ -81,6 +81,10 @@
     "function": "filtering.spatial.negative",
     "parameters": []
   },
+  "Sepia": {
+    "function": "filtering.spatial.sepia",
+    "parameters": []
+  },
   "Flip": {
     "function": "transforms.flip.flip",
     "parameters": [
