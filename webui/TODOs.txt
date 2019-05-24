@@ -1,15 +1,6 @@
-- Ajax call properties: url, method, data, success, error, dataType (processData, contentType)
-- python os functions:
-	- os.access() -- determina daca user-ul are drepturi asupra path-ului
-	- os.chdir()  -- schimba cwd-ul pe path-ul dat
-	- os.getcwd() -- intoarce calea absoluta a directorului curent
-
-
-
 - Ca sa adaug o operatie noua in proiect, trebuie sa:
 	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
 	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
-	- Sa adaptez interfata web pentru ea, acolo unde e necesar (nu va fi nevoie, daca proiectez atent)
 
 
 
@@ -25,4 +16,3 @@ TODOs:
 	https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
 	https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html?highlight=getrotationmatrix2d
 	https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html?highlight=getrotationmatrix2d#void%20warpAffine(InputArray%20src,%20OutputArray%20dst,%20InputArray%20M,%20Size%20dsize,%20int%20flags,%20int%20borderMode,%20const%20Scalar&%20borderValue)
-	
