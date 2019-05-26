@@ -85,6 +85,10 @@
     "function": "filtering.spatial.sepia",
     "parameters": []
   },
+  "ASCII Art": {
+    "function": "filtering.spatial.ascii_art",
+    "parameters": []
+  },
   "Flip": {
     "function": "transforms.flip.flip",
     "parameters": [
