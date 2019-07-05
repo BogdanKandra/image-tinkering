@@ -26,3 +26,9 @@
 			}
 		]
 	}
+
+
+
+- Negative Filter: Pagina 108 din carte
+- Grayscale Filter: Vezi referintele 07 si 08
+- Sepia Filter: 
