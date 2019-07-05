@@ -24,6 +24,7 @@ def negative(image, parameters={}):
     Returns:
         NumPy array uint8 -- the filtered image
     """
+    # Negative is defined as complementary to maximum intensity value
     negative_image = 255 - image
     
     return negative_image
@@ -78,9 +79,9 @@ def sepia(image, parameters={}):
     result_green = np.uint8(np.rint(result_green))
     result_blue = np.uint8(np.rint(result_blue))
     
-    sepia = cv2.merge((result_blue, result_green, result_red))
+    sepia_image = cv2.merge((result_blue, result_green, result_red))
     
-    return sepia
+    return sepia_image
 
 def ascii_art(image, parameters={}):
     """Applies an **ASCII Art Filter** on an image. \n
