@@ -1,9 +1,3 @@
-- Ca sa adaug o operatie noua in proiect, trebuie sa:
-	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
-	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
-
-
-
 TODOs:
 =======================================
 - Bug: daca configurez o imagine, apoi o reconfigurez, se considera doua configurari separate
@@ -48,3 +42,5 @@ TODOs:
 	
 - Filters:
 	https://www.cs.umb.edu/~jreyes/csit114-fall-2007/project4/filters.html?fbclid=IwAR1hZ8WyEed71uNX9ChRXm6noZIrgvsdGldKkWRjWE6ihmHIjT2jYhbH9_E#blur
+
+- Sa implementez functia resize din utils altfel (de mana)

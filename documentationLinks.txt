@@ -36,3 +36,10 @@
 - Grayscale Filter: Vezi referintele 07 si 08
 - Sepia Filter: Vezi referinta 09
 - ASCII Filter: Vezi referintele 10 si 11
+
+
+
+- Ca sa adaug o operatie noua in proiect, trebuie sa:
+	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
+	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
+	
