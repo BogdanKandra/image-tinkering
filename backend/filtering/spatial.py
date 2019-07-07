@@ -83,7 +83,7 @@ def sepia(image, parameters={}):
     
     return sepia_image
 
-def ascii_art(image, parameters={}):
+def ascii_art(image, parameters):
     """Applies an **ASCII Art Filter** on an image. \n
     
     Arguments:
@@ -91,20 +91,39 @@ def ascii_art(image, parameters={}):
         
         *parameters* (dictionary) -- a dictionary containing following keys:
             
-            *TBD*
+            *charset* (str, optional) -- the character set to use when rendering
+            ASCII art image; possible values are *standard*, *alternate* and *full*
             
     Returns:
         NumPy array uint8 -- the filtered image
     """
-    # Vars and params
-    #CHARS = ['.', ',', ':', ';', '+', '*', '?', '%', 'S', '#', '@']
-    #CHARS = [' ', ',', '.', ':', '-', '=', '+', '*', '#', '%', '@']
-    CHARS = [' ', ',', '.', ':', '-', '=', '+', '*', '%', '@', '#']
+    # Small, 11 character ramps
+    STANDARD_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '#', '%', '@']  # "Standard"
+    ALTERNATE_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '%', '@', '#']   # "Alternate"
+
+    # Full, 70 character ramp
+    FULL_CHARSET = [' ', '.', '\'', '`', '^', '"', ',', ':', ';', 'I', 'l', '!',
+                    'i', '>', '<', '~', '+', '_', '-', '?', ']', '[', '}', '{',
+                    '1', ')', '(', '|', '\\', '/', 't', 'f', 'j', 'r', 'x', 'n',
+                    'u', 'v', 'c', 'z', 'X', 'Y', 'U', 'J', 'C', 'L', 'Q', '0',
+                    'O', 'Z', 'm', 'w', 'q', 'p', 'd', 'b', 'k', 'h', 'a', 'o',
+                    '*', '#', 'M', 'W', '&', '8', '%', 'B', '@', '$']
+    
+    if 'charset' in parameters:
+        if parameters['charset'] == 'standard':
+            CHARS = STANDARD_CHARSET
+        elif parameters['charset'] == 'alternate':
+            CHARS = ALTERNATE_CHARSET
+        else:
+            CHARS = FULL_CHARSET
+    else:
+        CHARS = ALTERNATE_CHARSET
+    
+    buckets = 256 / len(CHARS)
     CHARS = CHARS[::-1] # Reverse the list
-    buckets = 25
     
     def numberToChar(number):
-        return CHARS[number // buckets]
+        return CHARS[int(number // buckets)]
     
     # Vectorizing this function allows it to be applied on arrays
     numberToChar = np.vectorize(numberToChar)
@@ -144,7 +163,7 @@ def ascii_art(image, parameters={}):
         for j, char in enumerate(line):
             cv2.putText(ascii_image, char, (j * maximum_letter_width, y), font_face, 1, (0,0,0), 1, lineType=cv2.FILLED)
     
-    # Display resulting image
+    # Resize resulting image to original size of input image
     ascii_image = cv2.resize(ascii_image, original_size, interpolation=cv2.INTER_AREA)
 
     return ascii_image
