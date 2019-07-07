@@ -7,9 +7,10 @@ import time
 
 # Read the input image
 #imagePath = '../webui/static/testinputs/brontosaur.jpg' # Grayscale
-imagePath = '../webui/static/testinputs/chocolate.png' # Alpha channel
+#imagePath = '../webui/static/testinputs/chocolate.png' # Alpha channel
 #imagePath = '../webui/static/testinputs/lena.tiff' # TIFF format
 #imagePath = '../webui/static/testinputs/wide.jpg' # 4K image
+imagePath = '../webui/static/testinputs/flag.jpg'
 
 image = cv2.imread(imagePath, cv2.IMREAD_UNCHANGED)
 

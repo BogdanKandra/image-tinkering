@@ -4,8 +4,11 @@
 04. Despre serializare (pickle) si serializarea fisierelor FFT si RGB
 05. Cartea de image processing
 06. https://stackoverflow.com/questions/55780834/using-numpy-for-more-efficient-filter-generation -- Intrebarea pusa de mine pentru a eficientiza generarea filtrelor
-07. http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/ -- Discutie despre algoritmi de converie la grayscale
+07. http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/ -- Discutie despre algoritmi de conversie la grayscale
 08. https://profs.info.uaic.ro/~ancai/DIP/lab/Lab_2_DIP.pdf -- Same
+09. https://www.techrepublic.com/blog/how-do-i/how-do-i-convert-images-to-grayscale-and-sepia-tone-using-c/ -- Sepia
+10. https://en.wikipedia.org/wiki/ASCII_art?fbclid=IwAR0XKs0ctQay4bZ7U977cf3rTVTOYmNfwuaglTwHjX_w_CCO_HNJOXPp1XY -- ASCII art
+11. http://paulbourke.net/dataformats/asciiart/ -- ASCII art
 
 
 - Sa vorbesc despre json-ul operations.json, structura lui
@@ -26,3 +29,10 @@
 			}
 		]
 	}
+
+
+
+- Negative Filter: Pagina 108 din carte
+- Grayscale Filter: Vezi referintele 07 si 08
+- Sepia Filter: Vezi referinta 09
+- ASCII Filter: Vezi referintele 10 si 11

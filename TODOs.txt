@@ -1,0 +1,50 @@
+- Ca sa adaug o operatie noua in proiect, trebuie sa:
+	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
+	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
+
+
+
+TODOs:
+=======================================
+- Bug: daca configurez o imagine, apoi o reconfigurez, se considera doua configurari separate
+	- Da peste cap calculul numarului de imagini configurate
+
+
+- Rotation:
+	https://stackoverflow.com/questions/11764575/python-2-7-3-opencv-2-4-after-rotation-window-doesnt-fit-image
+	https://stackoverflow.com/questions/22041699/rotate-an-image-without-cropping-in-opencv-in-c
+	https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
+	https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html?highlight=getrotationmatrix2d
+	https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html?highlight=getrotationmatrix2d#void%20warpAffine(InputArray%20src,%20OutputArray%20dst,%20InputArray%20M,%20Size%20dsize,%20int%20flags,%20int%20borderMode,%20const%20Scalar&%20borderValue)
+
+- Quantization:
+	https://en.wikipedia.org/wiki/Color_quantization?fbclid=IwAR2yFBv24rMc9IXVXXfFtEH517upmmd0WnWHhb6F-Tt4OwrndxMu03JdZxM
+
+- Posterization:
+	http://www.axiomx.com/posterize.htm?fbclid=IwAR2QqSnAtC0aXzm98ejxilWjPg2sqzlvUoIysuXOZ9n8fQvJmIVMnyfIk2w
+	https://forum.image.sc/t/how-to-posterize-an-image/807?fbclid=IwAR1bVm1s4eSvmjtQhn_n4XUJIlNWBTpKcT996uKyhFTIbw77IYsmJYH9ClQ
+	
+- Oil Painting and Cartoon Filter:
+	https://softwarebydefault.com/2013/06/29/oil-painting-cartoon-filter/?fbclid=IwAR0VOdaaK7GtXLelPQH4kW47Pnje3Ly60zYxiZpe8V8z3JNauNnu7W37-wM
+	http://cbhushan.github.io/oil-paint/?fbclid=IwAR1ayOy6aTsv6z0kvc-cX_JwkGoOFdBkM5CYXRa65nmBmX9K2i2DAgdphVE
+	https://sci-hub.tw/https://doi.org/10.1109/ICAECC.2014.7002406?fbclid=IwAR1P0aVR7Tq2nZtypJp_aWdQI9HOwg1kyiYH0pxhPl3E6rJOLAvb3XEL34k
+	https://www.codeproject.com/Articles/471994/OilPaintEffect?fbclid=IwAR1hZ8WyEed71uNX9ChRXm6noZIrgvsdGldKkWRjWE6ihmHIjT2jYhbH9_E
+
+- Stained Glass:
+	http://people.scs.carleton.ca/~mould/papers/glass.pdf?fbclid=IwAR0gx-LYeG3NYO5J-1jpPlw7murjB2GMHb5mAgV3Lwq5pBPa6qX1RrpJsBE
+	
+- Photographic Mosaic:
+	https://en.wikipedia.org/wiki/Photographic_mosaic?fbclid=IwAR2H5ZfxRQR6aftoc6J2G4IkJqO7ETpKYFIxPvk2EBBKOhlgW5r16KGw0qk
+	https://www.researchgate.net/publication/262264720_A_Review_of_Image_Mosaicing_Techniques?fbclid=IwAR0QndgMIgXnUpEztEni1mHPRHhnbWFdlcOkVyJl2-HE12Vsl6qDvH9PSAg
+	
+- Image Stitching:
+	http://home.cse.ust.hk/~cstws/research/641D/mosaic/?fbclid=IwAR1MVb_uae0WEtz4Wn5-YkVkPECvB6FYcOcxIwsx6XfhAOjWOFQ62jMGgOU
+
+- Panoramare
+	https://www.photostitcher.com/?fbclid=IwAR25cQoPFtevvx-K7Hy7i9qnFLfYfHAnDsid54w1YQk8b3K94m2yn484YiM
+
+- Misc:
+	https://postcron.com/image-splitter/en/?fbclid=IwAR3NNhToY3Am3Pm1WeowXTyKsO8PpQe-NKpy2kKIeRf6dgosdfCKr0pklN0
+	
+- Filters:
+	https://www.cs.umb.edu/~jreyes/csit114-fall-2007/project4/filters.html?fbclid=IwAR1hZ8WyEed71uNX9ChRXm6noZIrgvsdGldKkWRjWE6ihmHIjT2jYhbH9_E#blur

@@ -9,44 +9,58 @@ import numpy as np
 
 
 def isGrayscale(image):
-    """ This function takes an image as parameter and returns whether the image
+    """ Takes an image as parameter and decides whether the image
     is grayscale or not
     """
     return len(image.shape) == 2
     
 def isColor(image):
-    """ This function takes an image as parameter and returns whether the image
-    is grayscale or not
+    """ Takes an image as parameter and decides whether the image
+    is color or not
     """
     return len(image.shape) != 2
 
 def getChannels(image):
-    """ This function takes an image as parameter and returns a list containing
+    """ Takes an image as parameter and returns a list containing
     its R, G, B channels or the image itself, if it is grayscale
     """
     return [image] if isGrayscale(image) else cv2.split(image)
 
 def getFFTs(image):
-    """ This function takes an image as parameter and returns a list containing
+    """ Takes an image as parameter and returns a list containing
     the Fast Fourier Transforms of each of the image's channels
     """
     return [np.fft.fftshift(np.fft.fft2(channel)) for channel in getChannels(image)]
 
 def fft_plot(image, cmap=None):
-    """Takes a frequency domain image and displays its spectrum.
+    """ Takes a frequency domain image and displays its spectrum
 
     Arguments:
         image (numPy array) -- the image to be displayed
         
-        cmap (str) -- optional, the color map to be used; default value is None
+        cmap (str) -- optional, the color map to be used
 
     Returns:
         Nothing
     """
-    
     # Take the magnitudes and reduce values by logarithming
     magnitudes = np.log(np.abs(image) + 1)
     
     plt.figure()
     plt.imshow(magnitudes, cmap)
     plt.show()
+
+def resize(image, new_width=80):
+    """ Resizes an image while maintaining the aspect ratio
+   
+    Arguments:
+        image (numPy array) -- the image to be resized
+        
+        new_width (int) -- optional, the new width (in pixels) of the resized image
+    """
+    h, w = image.shape[:2]
+    aspect_ratio = h / w
+    new_height = int(aspect_ratio * new_width)
+    new_dim = (new_width, new_height)
+
+    return cv2.resize(image, new_dim)

@@ -21,7 +21,6 @@ def flip(image, parameters):
     Returns:
         NumPy array uint8 -- the flipped image
     """
-    
     if 'axis' in parameters:
         axis = parameters['axis']
     else:

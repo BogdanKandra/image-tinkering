@@ -130,7 +130,6 @@ def low_pass(image, parameters):
     Returns:
         NumPy array uint8 -- the filtered image
     """
-    
     # Parameter validation and assignment
     if 'type' in parameters:
         type = parameters['type']
@@ -261,7 +260,6 @@ def high_pass(image, parameters):
     Returns:
         NumPy array uint8 -- the filtered image
     """
-    
     # Parameter validation and assignment
     if 'offset' in parameters:
         offset = parameters['offset']
