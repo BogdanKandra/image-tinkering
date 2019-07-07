@@ -73,12 +73,12 @@
     ],
     "description": "Sharpens an image using the FFT"
   },
-  "Grayscale": {
-    "function": "filtering.spatial.grayscale",
-    "parameters": []
-  },
   "Negative": {
     "function": "filtering.spatial.negative",
+    "parameters": []
+  },
+  "Grayscale": {
+    "function": "filtering.spatial.grayscale",
     "parameters": []
   },
   "Sepia": {
@@ -87,7 +87,15 @@
   },
   "ASCII Art": {
     "function": "filtering.spatial.ascii_art",
-    "parameters": []
+    "parameters": [
+      {
+        "name": "charset",
+        "type": "lookup",
+        "values": ["standard", "alternate", "full"],
+        "default": "alternate",
+        "description": "The set of characters to be used when rendering the ASCII image"
+      }
+    ]
   },
   "Flip": {
     "function": "transforms.flip.flip",
