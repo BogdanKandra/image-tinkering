@@ -98,7 +98,7 @@
     ]
   },
   "Flip": {
-    "function": "transforms.flip.flip",
+    "function": "geometric.axes.flip",
     "parameters": [
       {
         "name": "axis",
