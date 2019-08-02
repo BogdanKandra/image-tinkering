@@ -113,7 +113,7 @@
     "function": "geometric.axes.mirror",
     "parameters": [
       {
-        "name": "axis",
+        "name": "axis/location",
         "type": "lookup",
         "values": ["horizontal/left", "horizontal/right", "vertical/top", "vertical/bottom", "both/left/top", "both/left/bottom", "both/right/top", "both/right/bottom"],
         "default": "horizontal/right",
