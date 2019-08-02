@@ -54,7 +54,6 @@ Misc Operations:
 
 - One to one
 	- Random Pixel Permutation
-	- Mirroring
 	- Cropping
 	- Resizing
 	- Zooming
