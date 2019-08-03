@@ -60,7 +60,6 @@ Misc Operations:
 	- Panoramation
 
 - One to one
-	- Random Pixel Permutation
 	- Cropping
 	- Resizing
 	- Zooming
@@ -106,7 +105,9 @@ Video:
 
 
 
-
+-> Bug in shuffle - daca dau imagine grayscale, inputul ramane modificat dupa terminarea functiei
+-> La channel_shuffle sa fac optiunea de a interschimba canalele diferit pentru fiecare pixel
+-> Sa bag in interfata web operatia de shuffle
 
 
 
