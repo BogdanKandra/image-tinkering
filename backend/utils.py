@@ -6,6 +6,7 @@ Created on Sun Mar 10 15:12:37 2019
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
+import copy
 
 
 def isGrayscale(image):
@@ -24,7 +25,7 @@ def getChannels(image):
     """ Takes an image as parameter and returns a list containing
     its R, G, B channels or the image itself, if it is grayscale
     """
-    return [image] if isGrayscale(image) else cv2.split(image)
+    return [copy.deepcopy(image)] if isGrayscale(image) else cv2.split(image)
 
 def mergeChannels(channels):
     """ Takes a list of channels as input and outputs the image obtained by
