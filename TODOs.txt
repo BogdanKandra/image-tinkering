@@ -1,5 +1,3 @@
-TODOs:
-=======================================
 - Bug: daca configurez o imagine, apoi o reconfigurez, se considera doua configurari separate
 	- Da peste cap calculul numarului de imagini configurate
 
@@ -27,9 +25,16 @@ TODOs:
 - Stained Glass:
 	http://people.scs.carleton.ca/~mould/papers/glass.pdf?fbclid=IwAR0gx-LYeG3NYO5J-1jpPlw7murjB2GMHb5mAgV3Lwq5pBPa6qX1RrpJsBE
 	
-- Photographic Mosaic:
-	https://en.wikipedia.org/wiki/Photographic_mosaic?fbclid=IwAR2H5ZfxRQR6aftoc6J2G4IkJqO7ETpKYFIxPvk2EBBKOhlgW5r16KGw0qk
+- Photographic Mosaic: (Photomosaic algorithm)
+	https://en.wikipedia.org/wiki/Photographic_mosaic
 	https://www.researchgate.net/publication/262264720_A_Review_of_Image_Mosaicing_Techniques?fbclid=IwAR0QndgMIgXnUpEztEni1mHPRHhnbWFdlcOkVyJl2-HE12Vsl6qDvH9PSAg
+	https://www.geeksforgeeks.org/implementing-photomosaics/
+	https://stackoverflow.com/questions/5478519/photo-mosaic-algorithm-how-to-create-a-mosaic-photo-given-the-basic-image-and-a
+	https://github.com/DavideA/photomosaic
+	http://patorjk.com/blog/2007/08/11/alternative-photomosaic-algorithms/
+	https://waset.org/publications/9997759/generation-of-photo-mosaic-images-through-block-matching-and-color-adjustment
+	https://www.nbbmuseum.be/en/2014/12/pointillism-in-the-digital-era-robert-silvers-photomosaic.htm
+	- Plus documente la downloads
 	
 - Image Stitching:
 	http://home.cse.ust.hk/~cstws/research/641D/mosaic/?fbclid=IwAR1MVb_uae0WEtz4Wn5-YkVkPECvB6FYcOcxIwsx6XfhAOjWOFQ62jMGgOU
@@ -40,7 +45,68 @@ TODOs:
 - Misc:
 	https://postcron.com/image-splitter/en/?fbclid=IwAR3NNhToY3Am3Pm1WeowXTyKsO8PpQe-NKpy2kKIeRf6dgosdfCKr0pklN0
 	
-- Filters:
+- Inspiration:
 	https://www.cs.umb.edu/~jreyes/csit114-fall-2007/project4/filters.html?fbclid=IwAR1hZ8WyEed71uNX9ChRXm6noZIrgvsdGldKkWRjWE6ihmHIjT2jYhbH9_E#blur
+	https://www142.lunapic.com/editor/?action=retro
 
 - Sa implementez functia resize din utils altfel (de mana)
+
+
+Misc Operations:
+-----------------------------
+- Many to one
+	- Photomosaic Algorithm
+	- Image Collage (https://simplecollage.com/)
+	- Panoramation
+
+- One to one
+	- Random Pixel Permutation
+	- Cropping
+	- Resizing
+	- Zooming
+	- Reducing the intensity resolution (downsampling / compression ?)
+	- Kaleidoscope effect
+	- Infinite Mirror
+
+- One to many
+	- Splitting in Instagrammable Pics
+
+- "Surprise Me" feature - randomly apply an operation on webcam feed
+
+
+Image Filtering:
+-----------------------------
+- Retro 80s
+- Pixel Art
+- Style Transfer
+- Splitting into triangles
+- LSD
+- 8-Bit (Image Quantization?)
+
+
+Conversions:
+-----------------------------
+- Converting to various formats
+- Saturation editing
+- Brightness
+- Contrast Stretching / Enhancement (Histogram Equalisation)
+
+
+Others:
+-----------------------------
+- Noise Removal
+- Image Restoration
+- Image Enhancement
+- Stochastic Image Processing
+
+
+Video:
+-----------------------------
+- Play Video Slow Mo
+
+
+
+
+
+
+

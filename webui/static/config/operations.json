@@ -98,7 +98,7 @@
     ]
   },
   "Flip": {
-    "function": "transforms.flip.flip",
+    "function": "geometric.axes.flip",
     "parameters": [
       {
         "name": "axis",
@@ -106,6 +106,18 @@
         "values": ["horizontal", "vertical", "both"],
         "default": "horizontal",
         "description": "The axis along which to flip the image"
+      }
+    ]
+  },
+  "Mirror": {
+    "function": "geometric.axes.mirror",
+    "parameters": [
+      {
+        "name": "axis/location",
+        "type": "lookup",
+        "values": ["horizontal/left", "horizontal/right", "vertical/top", "vertical/bottom", "both/left/top", "both/left/bottom", "both/right/top", "both/right/bottom"],
+        "default": "horizontal/right",
+        "description": "The axis along which to flip the image and the location(s) relative to the input image where the flipped image should be pasted"
       }
     ]
   }
