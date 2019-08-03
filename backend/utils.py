@@ -26,6 +26,12 @@ def getChannels(image):
     """
     return [image] if isGrayscale(image) else cv2.split(image)
 
+def mergeChannels(channels):
+    """ Takes a list of channels as input and outputs the image obtained by
+    merging the channels
+    """
+    return channels[0] if len(channels) == 1 else cv2.merge(tuple(channels))
+
 def getFFTs(image):
     """ Takes an image as parameter and returns a list containing
     the Fast Fourier Transforms of each of the image's channels
