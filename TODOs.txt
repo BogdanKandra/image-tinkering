@@ -60,7 +60,6 @@ Misc Operations:
 	- Panoramation
 
 - One to one
-	- Random Pixel Permutation
 	- Cropping
 	- Resizing
 	- Zooming
@@ -103,10 +102,3 @@ Others:
 Video:
 -----------------------------
 - Play Video Slow Mo
-
-
-
-
-
-
-

@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import utils
-import filtering.spatial as f
 import time
 
 
@@ -10,7 +9,7 @@ import time
 #imagePath = '../webui/static/testinputs/chocolate.png' # Alpha channel
 #imagePath = '../webui/static/testinputs/lena.tiff' # TIFF format
 #imagePath = '../webui/static/testinputs/wide.jpg' # 4K image
-imagePath = '../webui/static/testinputs/flag.jpg'
+imagePath = '../webui/static/testinputs/flag.jpg'  # Normal image
 
 image = cv2.imread(imagePath, cv2.IMREAD_UNCHANGED)
 

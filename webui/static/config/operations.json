@@ -120,5 +120,17 @@
         "description": "The axis along which to flip the image and the location(s) relative to the input image where the flipped image should be pasted"
       }
     ]
+  },
+  "Shuffle": {
+    "function": "miscellaneous.shuffle.shuffle",
+    "parameters": [
+      {
+        "name": "criterion",
+        "type": "lookup",
+        "values": ["channels", "lines", "columns", "pixels"],
+        "default": "channels",
+        "description": "The criterion to shuffle the image data by"
+      }
+    ]
   }
 }
