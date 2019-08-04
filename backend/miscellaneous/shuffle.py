@@ -21,8 +21,8 @@ def shuffle(image, parameters):
         *parameters* (dictionary) -- a dictionary containing following keys:
             
             *criterion* (str, optional) -- the criterion to shuffle the image by;
-            possible values are *pixels*, *lines* and *channels*; default value
-            is *lines*
+            possible values are *pixels*, *lines*, *columns* and *channels*;
+            default value is *lines*
     """
     if 'criterion' in parameters:
         if parameters['criterion'] == 'pixels':
