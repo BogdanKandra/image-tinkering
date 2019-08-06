@@ -1,6 +1,7 @@
 {
   "Blur (Frequency Domain)": {
     "function": "filtering.fourier.low_pass",
+    "type": "one-to-one",
     "parameters": [
       {
         "name": "cutoff",
@@ -30,6 +31,7 @@
   },
   "Sharpen (Frequency Domain)": {
     "function": "filtering.fourier.high_pass",
+    "type": "one-to-one",
     "parameters": [
       {
         "name": "cutoff",
@@ -75,18 +77,22 @@
   },
   "Negative": {
     "function": "filtering.spatial.negative",
+    "type": "one-to-one",
     "parameters": []
   },
   "Grayscale": {
     "function": "filtering.spatial.grayscale",
+    "type": "one-to-one",
     "parameters": []
   },
   "Sepia": {
     "function": "filtering.spatial.sepia",
+    "type": "one-to-one",
     "parameters": []
   },
   "ASCII Art": {
     "function": "filtering.spatial.ascii_art",
+    "type": "one-to-one",
     "parameters": [
       {
         "name": "charset",
@@ -99,6 +105,7 @@
   },
   "Flip": {
     "function": "geometric.axes.flip",
+    "type": "one-to-one",
     "parameters": [
       {
         "name": "axis",
@@ -111,6 +118,7 @@
   },
   "Mirror": {
     "function": "geometric.axes.mirror",
+    "type": "one-to-one",
     "parameters": [
       {
         "name": "axis/location",
@@ -123,6 +131,7 @@
   },
   "Shuffle": {
     "function": "miscellaneous.shuffle.shuffle",
+    "type": "one-to-one",
     "parameters": [
       {
         "name": "criterion",
