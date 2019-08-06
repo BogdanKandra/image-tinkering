@@ -67,6 +67,7 @@ def butterworth_filter(mode, size, cutoff, order=2):
     I, J = np.ogrid[:size[0], :size[1]]
     p, q = I - v[0], J - v[1]
     Duvs = np.sqrt(p**2 + q**2)
+    
     if mode == 'low':
         filterImage = np.divide(1, np.add(1, np.power(Duvs / cutoff, orderTerm)))
     else:
@@ -99,6 +100,7 @@ def gaussian_filter(mode, size, cutoff):
     Duvs_squared = p**2 + q**2
     distances = -1 * Duvs_squared
     filterImage = np.power(np.e, distances / cutoffTerm)
+    
     if mode == 'low':
         return filterImage
     else:

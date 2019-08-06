@@ -23,27 +23,30 @@ def shuffle(image, parameters):
             *criterion* (str, optional) -- the criterion to shuffle the image by;
             possible values are *pixels*, *lines*, *columns* and *channels*;
             default value is *lines*
+    
+    Returns:
+        NumPy array uint8 -- the shuffled image
     """
+    state = np.random.get_state()
+    channels = utils.getChannels(image)
+    
     if 'criterion' in parameters:
         if parameters['criterion'] == 'pixels':
-            shuffled_image = pixels_shuffle(image)
+            shuffled_image = pixels_shuffle(channels, state)
         elif parameters['criterion'] == 'lines':
-            shuffled_image = lines_shuffle(image)
+            shuffled_image = lines_shuffle(channels, state)
         elif parameters['criterion'] == 'columns':
-            shuffled_image = columns_shuffle(image)
+            shuffled_image = columns_shuffle(channels, state)
         elif parameters['criterion'] == 'channels':
-            shuffled_image = channels_shuffle(image)
+            shuffled_image = channels_shuffle(channels)
     else:
-        shuffled_image = channels_shuffle(image)
+        shuffled_image = channels_shuffle(channels)
     
     return shuffled_image
 
-def pixels_shuffle(image):
+def pixels_shuffle(channels, state):
     """ Shuffles the pixels of an image. """
-    state = np.random.get_state()
-    channels = utils.getChannels(image)
-
-    # Shuffle the pixels in each channel
+    # Shuffle the pixels in each channel, with the same permutation
     for channel in channels:
         pixel_list = np.ravel(channel) # Flattens the channel matrix to an array
         np.random.shuffle(pixel_list)
@@ -54,14 +57,11 @@ def pixels_shuffle(image):
     
     return shuffled_image
 
-def lines_shuffle(image):
+def lines_shuffle(channels, state):
     """ Shuffles the lines of an image (The pixels on each line are left
     unchanged).
     """
-    state = np.random.get_state()
-    channels = utils.getChannels(image)
-
-    # Shuffle the lines in each channel
+    # Shuffle the lines in each channel, with the same permutation
     for channel in channels:
         np.random.shuffle(channel)
         np.random.set_state(state) # Reset the state so that next shuffle is same permutation
@@ -70,14 +70,11 @@ def lines_shuffle(image):
     
     return shuffled_image
 
-def columns_shuffle(image):
+def columns_shuffle(channels, state):
     """ Shuffles the columns of an image (The pixels on each column are left
     unchanged).
     """
-    state = np.random.get_state()
-    channels = utils.getChannels(image)
-    
-    # Shuffle the columns in each channel
+    # Shuffle the columns in each channel, with the same permutation
     for channel in channels:
         transpose = np.transpose(channel)
         np.random.shuffle(transpose)
@@ -88,10 +85,8 @@ def columns_shuffle(image):
     
     return shuffled_image
 
-def channels_shuffle(image):
+def channels_shuffle(channels):
     """ Shuffles the channels of an image. """
-    channels = utils.getChannels(image)
-
     # Keep shuffling the indices list until a non-stationary permutation has been
     # obtained, as to ensure the output image is not the same as the input
     indices = np.arange(len(channels))
