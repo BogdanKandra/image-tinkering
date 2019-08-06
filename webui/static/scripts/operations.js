@@ -50,11 +50,15 @@ function displayConfigurationModal(imageName) {
                                     parameterConfigurationAccordion.empty()
 								},
                                 onApprove: function() { // ACCEPT button
+                                    // Only count this image as configured if it has not yet been configured before
+                                    if (!dataToProcess.hasOwnProperty(imageName)) {
+                                        configuredImages++
+                                    }
+
                                     // Add the configuration of this image to the call data
                                     dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations))
 
                                     // Reevaluate the state of the PROCESS button
-                                    configuredImages++
                                     checkProcessCondition()
 								},
 								onDeny: function() {    // CANCEL button
