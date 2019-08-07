@@ -1,0 +1,4 @@
+NumPy - https://pypi.org/project/numpy/
+Magic - https://pypi.org/project/python-magic/
+	  - https://pypi.org/project/python-magic-bin/0.4.14/#files
+OpenCV - https://pypi.org/project/opencv-python/
