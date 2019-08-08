@@ -66,6 +66,8 @@ Misc Operations:
 	- Reducing the intensity resolution (downsampling / compression ?)
 	- Kaleidoscope effect
 	- Infinite Mirror
+	- Edge Detection
+	- Mean Filtering
 
 - One to many
 	- Splitting in Instagrammable Pics
@@ -89,6 +91,7 @@ Conversions:
 - Saturation editing
 - Brightness
 - Contrast Stretching / Enhancement (Histogram Equalisation)
+- Gamma Correction
 
 
 Others:
@@ -97,8 +100,38 @@ Others:
 - Image Restoration
 - Image Enhancement
 - Stochastic Image Processing
+	- https://pdfs.semanticscholar.org/7890/e379257d99982d55a7596dab926dbccab986.pdf
+	- https://cli99.github.io/pdf/stochastic-dac2013.pdf
 
 
 Video:
 -----------------------------
 - Play Video Slow Mo
+
+
+
+Meh:
+-----------------------------
+- Image Compression
+- Morphological Image Processing (Erosion, Dilation, etc)
+
+
+
+Watermarking:
+-----------------------------
+- Image Watermarking (Visible, LSB, DCT, DFT, DWT)
+
+- Visible Watermarking parameters:
+	- type: text or image
+	- value: input text or input select
+	- watermark location: one of four corners or everywhere
+
+- Will have to implement:
+	- text visible watermark
+	- dependsOn parameter attribute in UI
+		- for 'value' parameter in Visible Watermarking, the 'dependsOn' attr will have value 'type'
+			- this will attach a handler to the dependsOn value
+
+
+
+
