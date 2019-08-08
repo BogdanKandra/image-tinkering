@@ -50,11 +50,15 @@ function displayConfigurationModal(imageName) {
                                     parameterConfigurationAccordion.empty()
 								},
                                 onApprove: function() { // ACCEPT button
+                                    // Only count this image as configured if it has not yet been configured before
+                                    if (!dataToProcess.hasOwnProperty(imageName)) {
+                                        configuredImages++
+                                    }
+
                                     // Add the configuration of this image to the call data
                                     dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations))
 
                                     // Reevaluate the state of the PROCESS button
-                                    configuredImages++
                                     checkProcessCondition()
 								},
 								onDeny: function() {    // CANCEL button
@@ -157,7 +161,8 @@ function removeAccordion(removedValue) {
 function createMenuEntry(parameterObject, functionName) {
 
     let dropdownDiv = $('<div>').addClass('ui left pointing scrolling dropdown link item')
-    dropdownDiv.attr('data-content', parameterObject['description']) // Add the description of the parameter as a popup
+    dropdownDiv.prop('data-content', parameterObject['description']) // Add the description of the parameter as a popup
+    dropdownDiv.prop('id', parameterObject['name'] + '_parameter')
     let dropdownIcon = $('<i>').addClass('dropdown icon')
     let dropdownText = parameterObject['name'].charAt(0).toUpperCase() + parameterObject['name'].slice(1)
     let dropdownMenu = $('<div>').addClass('menu')
@@ -205,6 +210,23 @@ function createMenuEntry(parameterObject, functionName) {
                     operationConfigurations[i]['params'][dropdownText.toLowerCase()] = Number.isNaN(Number(value)) ? value : Number(value)
                 }
             }
+
+            // Check whether the presence of another parameter depends on this parameters' value
+            if (parameterObject.hasOwnProperty('presenceDependency')) {
+                let presenceDependency = parameterObject['presenceDependency']
+                let presenceConditionRegex = /([^a-zA-Z]+)([a-zA-Z]+)/
+                let matches = presenceConditionRegex.exec(parameterObject['presenceCondition'])
+                let execCond = '\"' + value + '\"' + matches[1] + '\"' + matches[2] + '\"'
+                if (eval(execCond)) {
+                    // The presence condition has been met, display the dependant parameter
+                    let parameterSelector = '#' + presenceDependency + '_parameter'
+                    $(parameterSelector).css('display', 'block')
+                } else {
+                    // The presence condition has not been met, hide the dependant parameter
+                    let parameterSelector = '#' + presenceDependency + '_parameter'
+                    $(parameterSelector).css('display', 'none')
+                }
+            }
         },
         onHide: function() {
             checkAcceptCondition() // Reevaluate the state of the ACCEPT button
@@ -233,12 +255,12 @@ function checkAcceptCondition() {
         let parametersOk = true
         
         // For each group of parameters, check the values of the parameters
-        $.each(parameterGroups, function(index) {
+        $.each(parameterGroups, function(_index) {
             let dropdowns = $(this).children()
             let dropdownsOk = true
             
             // For each dropdown, check if a value was set; if not, break (return false)
-            $.each(dropdowns, function(index) {
+            $.each(dropdowns, function(_index) {
                 let options = $(this).find('.menu').children()
                 let parameterSet = false
 
@@ -337,7 +359,7 @@ function processFilesAjax() {
             // Populate the container holding resulting images
 			populateResultsContainer(data)
         },
-        error: function(request, status, error) {
+        error: function(_request, _status, _error) {
             displayNotification({'text': 'An error occured during processing', 'type': 'error', 'theme': 'sunset'})
             processButton.removeClass('disabled')
         }
