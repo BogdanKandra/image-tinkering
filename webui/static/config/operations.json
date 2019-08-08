@@ -16,7 +16,7 @@
         "values": ["ideal", "butterworth", "gaussian"],
         "default": "gaussian",
         "presenceDependency": "order",
-        "presenceCondition": "type===butterworth",
+        "presenceCondition": "==butterworth",
         "description": "The type of filter to be used for filtering the input image"
       },
       {
@@ -62,6 +62,8 @@
         "type": "lookup",
         "values": ["ideal", "butterworth", "gaussian"],
         "default": "gaussian",
+        "presenceDependency": "order",
+        "presenceCondition": "==butterworth",
         "description": "The type of filter to be used for filtering the input image"
       },
       {
@@ -70,7 +72,6 @@
         "minimum": 0,
         "maximum": 10,
         "default": 2,
-        "presentIf": "type=butterworth",
         "description": "Describes the smoothness of the generated filter; lower values mean smoother filter"
       }
     ],
