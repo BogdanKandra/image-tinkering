@@ -214,9 +214,9 @@ function createMenuEntry(parameterObject, functionName) {
             // Check whether the presence of another parameter depends on this parameters' value
             if (parameterObject.hasOwnProperty('presenceDependency')) {
                 let presenceDependency = parameterObject['presenceDependency']
-                let presenceConditionRegex = /([a-zA-Z]+)([^a-zA-Z]+)([a-zA-Z]+)/g
+                let presenceConditionRegex = /([^a-zA-Z]+)([a-zA-Z]+)/
                 let matches = presenceConditionRegex.exec(parameterObject['presenceCondition'])
-                let execCond = '\"' + value + '\"' + matches[2] + '\"' + matches[3] + '\"'
+                let execCond = '\"' + value + '\"' + matches[1] + '\"' + matches[2] + '\"'
                 if (eval(execCond)) {
                     // The presence condition has been met, display the dependant parameter
                     let parameterSelector = '#' + presenceDependency + '_parameter'
