@@ -131,6 +131,19 @@
       }
     ]
   },
+  "Split into Channels": {
+    "function": "miscellaneous.channels.split_channels",
+    "type": "one-to-many",
+    "parameters": [
+      {
+        "name": "spectrum",
+        "type": "lookup",
+        "values": ["grayscale", "color"],
+        "default": "color",
+        "description": "The spectrum in which the channels will be represented"
+      }
+    ]
+  },
   "Shuffle": {
     "function": "miscellaneous.shuffle.shuffle",
     "type": "one-to-one",
