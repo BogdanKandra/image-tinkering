@@ -110,7 +110,7 @@ def call_module_function(*arguments):
     return result
 
 def load_extra_inputs(file_name):
-    """ Load the extra inputs needed for calling a 'many-to' operation """
+    """ Loads the extra inputs needed for calling a 'many-to' operation """
     extra_inputs = []
     i = 1
     
