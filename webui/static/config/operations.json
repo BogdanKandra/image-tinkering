@@ -144,6 +144,18 @@
       }
     ]
   },
+  "Remove Channels": {
+    "function": "miscellaneous.channels.remove_channels",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "channel(s)",
+        "type": "lookup",
+        "values": ["red", "green", "blue", "red & green", "red & blue", "green & blue"],
+        "description": "The channel(s) to be removed from the image"
+      }
+    ]
+  },
   "Shuffle": {
     "function": "miscellaneous.shuffle.shuffle",
     "type": "one-to-one",
