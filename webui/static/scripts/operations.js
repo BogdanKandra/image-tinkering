@@ -88,6 +88,7 @@ function populateOperationsSelect() {
                 // When selecting an item, a new operation configuration is stored in the list of configurations
                 let opConfig = {}
                 opConfig['function'] = data[addedValue]['function']
+                opConfig['type'] = data[addedValue]['type']
                 opConfig['params'] = {}
                 operationConfigurations.push(opConfig)
 
