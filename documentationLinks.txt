@@ -17,12 +17,14 @@
 		'numeImg_i': [
 			{
 				'function_j': 'nume functie de apelat, luat pe baza numelui operatiei alese,
+				'type': 'tipul operatiei, o valoare dintre one-to-one, one-to-many, many-to-one, many-to-many',
 				'params': {
 					'par_i': val_i
 				}
 			},
 			{
 				'function_k': 'Nume',
+				'type': 'one-to-one',
 				'params': {
 					'par_i': val_i
 				}
@@ -43,3 +45,8 @@
 	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
 	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
 	
+- Contractele tipurilor de operatii:
+	- one-to-one:   op(image, parameterDictionary), returns one image
+	- many-to-one:  op(image, [extra_inputs_list], parameterDictionary), returns one image
+	- one-to-many:  op(image, parameterDictionary), returns list of images
+	- many-to-many: op(image, [extra_inputs_list], parameterDictionary), returns list of images
