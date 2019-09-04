@@ -6,7 +6,7 @@ Created on Sat Aug  3 13:45:13 2019
 import os, sys
 import numpy as np
 projectPath = os.getcwd()
-while os.path.basename(projectPath) != 'ImageTinkering':
+while os.path.basename(projectPath) != 'image-tinkering':
     projectPath = os.path.dirname(projectPath)
 sys.path.append(projectPath)
 from backend import utils

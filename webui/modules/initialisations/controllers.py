@@ -15,7 +15,7 @@ from flask.json import jsonify
 from flask.templating import render_template
 # Import backend module
 projectPath = os.getcwd()
-while os.path.basename(projectPath) != 'ImageTinkering':
+while os.path.basename(projectPath) != 'image-tinkering':
     projectPath = os.path.dirname(projectPath)
 sys.path.append(os.path.join(projectPath))
 import backend.utils as utils

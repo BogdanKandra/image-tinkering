@@ -3,7 +3,7 @@ import pickle
 import cv2
 import numpy as np
 projectPath = os.getcwd()
-while os.path.basename(projectPath) != 'ImageTinkering':
+while os.path.basename(projectPath) != 'image-tinkering':
     projectPath = os.path.dirname(projectPath)
 sys.path.append(projectPath)
 from backend import utils
