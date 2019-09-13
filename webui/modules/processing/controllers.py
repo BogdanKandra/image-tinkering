@@ -21,7 +21,7 @@ def process():
 
     # Iterate over each file, processing it
     for file_name in data:
-        
+
         # Read the file
         file_path = os.path.join(app.config['IMAGES_DIR'], file_name)
         image = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
@@ -31,28 +31,28 @@ def process():
         operation_list = data[file_name]
         first_operation_type = operation_list[0]['type']
         file_name, extension = file_name.split('.')
-        
+
         if first_operation_type == 'one-to-one' or first_operation_type == 'many-to-one':
             # Only one-to-one operations will follow, so operation chaining is possible
             starting_index = 0 # This variable will store the starting index for chaining the operations
-            
+
             if first_operation_type == 'many-to-one':
                 # Load the extra inputs needed for calling the many-to-one operation
                 extra_inputs = load_extra_inputs(file_name)
-                
+
                 # Make the operation call
                 image = call_module_function(image, operation_list[0], extra_inputs)
                 starting_index = 1
-            
+
             # Iterate over each 'one-to-one' operation, applying them in order
             for i in range(starting_index, len(operation_list)):
                 image = call_module_function(image, operation_list[i])
-            
+
             # Save the result in temp zone, with name key + '_processed'
             result_name = file_name + '_processed.' + extension
             result_path = os.path.join(app.config['TEMP_DATA'], result_name)
             cv2.imwrite(result_path, image)
-            
+
             # Append the resulting file name to results_names
             results_names.append(result_name)
         elif first_operation_type == 'one-to-many' or first_operation_type == 'many-to-many':
@@ -60,7 +60,7 @@ def process():
             if first_operation_type == 'one-to-many':
                 # Make the operation call
                 images = call_module_function(image, operation_list[0])
-                
+
                 # Save the results in temp zone
                 i = 1
                 for result in images:
@@ -72,10 +72,10 @@ def process():
             else:
                 # Load the extra inputs needed for calling the many-to-many operation
                 extra_inputs = load_extra_inputs(file_name)
-                
+
                 # Make the operation call
                 images = call_module_function(image, operation_list[0], extra_inputs)
-                
+
                 # Save the results in temp zone
                 i = 1
                 for result in images:
@@ -84,7 +84,7 @@ def process():
                     cv2.imwrite(result_path, result)
                     results_names.append(result_name)
                     i += 1
-    
+
     # Return results_names
     return make_response(jsonify(results_names), 200)
 
