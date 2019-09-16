@@ -79,6 +79,7 @@ function displaySelfieModal() {
 								imageCapture = new ImageCapture(track)
 								actionButtons.first().removeClass('disabled')
 							})
+							.catch(console.log('>>> Camera not available'))
 	}
 }
 
