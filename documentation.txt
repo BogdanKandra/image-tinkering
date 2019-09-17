@@ -50,3 +50,22 @@
 	- many-to-one:  op(image, [extra_inputs_list], parameterDictionary), returns one image
 	- one-to-many:  op(image, parameterDictionary), returns list of images
 	- many-to-many: op(image, [extra_inputs_list], parameterDictionary), returns list of images
+
+- operations.json
+	- 'function' -> string obligatoriu, cale catre functia de pe server care aplica operatia;
+				 -> este de forma numeDirector.numeScript.numeFunctie
+	- 'type'     -> string obligatoriu, tipul de operatie;
+				 -> este una dintre cele 4 valori de mai sus
+	- 'description' -> string optional, descrierea operatiei, va aparea ca popup
+	- 'parameters'  -> o lista de obiecte optionala, fiecare reprezentand configurarea unui parametru
+		Configurarea parametrilor:
+		- 'name'    -> string obligatoriu, numele parametrului
+		- 'type'    -> string obligatoriu, poate avea una dintre valorile: 'range', 'lookup'
+		- 'minimum' -> numar obligatoriu daca 'type' = 'range', valoarea minima pe care o poate avea parametrul
+		- 'maximum' -> numar obligatoriu daca 'type' = 'range', valoarea maxima pe care o poate avea parametrul
+		- 'values'  -> lista obligatorie daca 'type' = 'lookup', lista de valori pe care o poate avea parametrul
+		- 'default' -> string optional, valoarea parametrului care va fi preselectata in UI
+		- 'presenceDependency' -> string optional, numele unui alt parametru de a carui valoare depinde prezenta acestui parametru in UI
+		- 'presenceCondition' -> string obligatoriu daca presenceDependency este prezent, conditia asupra parametrului-dependenta
+							  -> e de forma operator|valoare (exemplu '==butterworth'
+		- 'description' -> string optional, descrierea parametrului, apare ca popup la hover pe parametru
