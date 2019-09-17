@@ -95,6 +95,9 @@ function populateOperationsSelect() {
                 // And the corresponding parameter configuration accordion is also added
                 createAccordion(addedValue, data)
 
+                // Update the contents of the configurations dropdown, if necessary
+                updateOperationsSelect(data)
+
                 // Reevaluate the state of the ACCEPT button
                 checkAcceptCondition()
             },
@@ -109,6 +112,9 @@ function populateOperationsSelect() {
                         break
                     }
                 }
+
+                // Update the contents of the configurations dropdown, if necessary
+                updateOperationsSelect(data)
 
                 // Reevaluate the state of the ACCEPT button
                 checkAcceptCondition()
@@ -365,4 +371,37 @@ function processFilesAjax() {
             processButton.removeClass('disabled')
         }
     })
+}
+
+// Updates the list of available operations, based on the operations selected by the user
+function updateOperationsSelect(data) {
+
+    let operationsSelectItems = $('.description').find('.menu.transition').find('.item')
+
+    if (operationConfigurations.length != 0) {
+        let selectedOperationsTypes = operationConfigurations.map(x => x['type'])
+
+        if (selectedOperationsTypes.includes('one-to-many') || selectedOperationsTypes.includes('many-to-many')) {
+            // If the user has selected a -to-many operation, disable all other available operations and notify user
+            operationsSelectItems.addClass('disabled')
+            let notificationText = 'Operations which yield several result images cannot be chained by other operations. Remove it to be able to chain other operations'
+            displayNotification({'text': notificationText, 'type': 'info'})
+        } else if (selectedOperationsTypes.includes('one-to-one') || selectedOperationsTypes.includes('many-to-one')) {
+            // If the user has selected a -to-one operation, disable all non one-to- operations
+            let allOperationsNames = $.map(operationsSelectItems, (element, _index) => $(element).text())
+
+            $.each(operationsSelectItems, function(index, value) {
+                if (!data[allOperationsNames[index]]['type'].includes('one-to-') && !$(value).hasClass('filtered')) {
+                    $(value).addClass('disabled')
+                } else {
+                    $(value).removeClass('disabled')
+                }
+            })
+        } else {
+            console.log('??? How did you get here ???')
+        }
+    } else {
+        // If the user has not selected any operations, restore all operations to original state
+        operationsSelectItems.removeClass('disabled')
+    }
 }
