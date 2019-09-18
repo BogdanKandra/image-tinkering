@@ -171,7 +171,7 @@ function displayConfigurationModal(imageName) {
 
 // Initialises and opens the extra inputs selection modal
 function displayExtraInputsModal(imageName) {
-
+// TODO - Implement this
     populateOperationsSelect()
 	let operationsSelect = $("[name='operations']")
 	let parameterConfigurationAccordion = $('#paramCfgAccordion')
@@ -424,6 +424,20 @@ function processFilesAjax() {
         success: function(data) {
             processButton.removeClass('disabled')
             displayNotification({'text': 'Processing Complete!', 'type': 'success', 'theme': 'sunset'})
+
+            // Performs an AJAX call which deletes the uploaded files, since the processing has been completed
+            $.ajax({
+                url: '/cleanup/uploads',
+                method: 'POST',
+                data: JSON.stringify({'data': dataToProcess}),
+                contentType: 'application/json',
+                success: function(_data) {
+                    console.log(data)
+                },
+                error: function(_request, _status, _error) {
+                    console.log('>>> An error occured during file deletion')
+                }
+            })
 
             // Direct the user to the Results Step
 			$('#operationSelectionContent').css('display', 'none')
