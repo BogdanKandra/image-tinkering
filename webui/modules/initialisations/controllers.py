@@ -87,4 +87,4 @@ def initialise():
 #                file.close()
 #                i += 1
     
-    return make_response(jsonify('Initialisations finished!'), 200)
+    return make_response(jsonify('Server: Initialisations process completed successfully'), 200)
