@@ -20,12 +20,14 @@ from modules.cleanup.controllers import cleanup_mod
 APP_ROOT = os.path.dirname(os.path.abspath(__name__))
 IMAGES_UPLOAD_DIRECTORY = os.path.join('static', 'uploads', 'images')
 VIDEOS_UPLOAD_DIRECTORY = os.path.join('static', 'uploads', 'videos')
+EXTRA_IMAGES_UPLOAD_DIRECTORY = os.path.join(IMAGES_UPLOAD_DIRECTORY, 'extra_inputs')
 TEMP_DATA_DIRECTORY = os.path.join('static', 'tempdata')
 
 # Application instantiation and configuration
 app = Flask(__name__)
 app.config['IMAGES_DIR'] = os.path.join(APP_ROOT, IMAGES_UPLOAD_DIRECTORY)
 app.config['VIDEOS_DIR'] = os.path.join(APP_ROOT, VIDEOS_UPLOAD_DIRECTORY)
+app.config['EXTRA_IMAGES_DIR'] = os.path.join(APP_ROOT, EXTRA_IMAGES_UPLOAD_DIRECTORY)
 app.config['TEMP_DATA'] = os.path.join(APP_ROOT, TEMP_DATA_DIRECTORY)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
