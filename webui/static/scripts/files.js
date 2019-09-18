@@ -187,9 +187,9 @@ function uploadFilesAjax(imageData) {
 				data: JSON.stringify({'files': data}),
 				contentType: 'application/json',
 				success: function(data) {
-					console.log('>>>>> Initialisations process completed successfully')
+					console.log(data)
 				},
-				error: function(request, status, error) {
+				error: function(_request, _status, _error) {
 					console.log('>>>>> Error during initialisations process')
 				}
 			})
@@ -204,7 +204,7 @@ function uploadFilesAjax(imageData) {
 			// Populate the container holding uploaded images
 			populateFilesAndOperationsContainer(data)
 		},
-		error: function(request, status, error) {
+		error: function(_request, _status, _error) {
 			displayNotification({'text': 'File Upload failed!', 'type': 'error'})			
 			$('#uploadButton').removeClass('disabled')
 		}
