@@ -11,7 +11,6 @@
 11. http://paulbourke.net/dataformats/asciiart/ -- ASCII art
 
 
-- Sa vorbesc despre json-ul operations.json, structura lui
 - La submit, se face un AJAX call care are ca date un obiect de forma:
 	{
 		'numeImg_i': [
@@ -32,7 +31,7 @@
 		]
 	}
 
-
+- Sa vorbesc despre structura serverului - fisiere, module, etc
 
 - Negative Filter: Pagina 108 din carte
 - Grayscale Filter: Vezi referintele 07 si 08
