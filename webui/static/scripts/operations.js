@@ -36,39 +36,8 @@ function populateFilesAndOperationsContainer(data) {
 	}
 }
 
-// Initialises and opens the operation configuration modal
-function displayConfigurationModal(imageName) {
-
-	populateOperationsSelect()
-	let operationsSelect = $("[name='operations']")
-	let parameterConfigurationAccordion = $('#paramCfgAccordion')
-	parameterConfigurationAccordion.accordion()
-
-	$('#configurationModal').modal({
-								onHide: function() {    // Called whenever modal is closed
-									operationsSelect.dropdown('clear')
-                                    parameterConfigurationAccordion.empty()
-								},
-                                onApprove: function() { // ACCEPT button
-                                    // Only count this image as configured if it has not yet been configured before
-                                    if (!dataToProcess.hasOwnProperty(imageName)) {
-                                        configuredImages++
-                                    }
-
-                                    // Add the configuration of this image to the call data
-                                    dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations))
-
-                                    // Reevaluate the state of the PROCESS button
-                                    checkProcessCondition()
-								},
-								onDeny: function() {    // CANCEL button
-
-								}
-							}).modal('show')
-}
-
 // Populates the operations select element within the configuration modal by parsing the 'operations.json' file
-function populateOperationsSelect() {
+function populateOperationsSelect(imageName) {
 
     let operationsSelect = $("[name='operations']")
     operationsSelect.empty()  // Remove the old contents
@@ -91,6 +60,11 @@ function populateOperationsSelect() {
                 opConfig['type'] = data[addedValue]['type']
                 opConfig['params'] = {}
                 operationConfigurations.push(opConfig)
+
+                // Open a modal asking the user to select the extra inputs, if the operation type is 'many-to-'
+                if (opConfig['type'].startsWith('many-to-')) {
+                    displayExtraInputsModal(imageName)
+                }
 
                 // And the corresponding parameter configuration accordion is also added
                 createAccordion(addedValue, data)
@@ -129,6 +103,101 @@ function populateOperationsSelect() {
             operationsSelect.append(option)
         })
     })
+}
+
+// Updates the list of available operations, based on the operations selected by the user
+function updateOperationsSelect(data) {
+
+    let operationsSelectItems = $('.description').find('.menu.transition').find('.item')
+
+    if (operationConfigurations.length != 0) {
+        let selectedOperationsTypes = operationConfigurations.map(x => x['type'])
+
+        if (selectedOperationsTypes.includes('one-to-many') || selectedOperationsTypes.includes('many-to-many')) {
+            // If the user has selected a -to-many operation, disable all other available operations and notify user
+            operationsSelectItems.addClass('disabled')
+            let notificationText = 'Operations which yield several result images cannot be chained by other operations. Remove it to be able to chain other operations'
+            displayNotification({'text': notificationText, 'type': 'info'})
+        } else if (selectedOperationsTypes.includes('one-to-one') || selectedOperationsTypes.includes('many-to-one')) {
+            // If the user has selected a -to-one operation, disable all non one-to- operations
+            let allOperationsNames = $.map(operationsSelectItems, (element, _index) => $(element).text())
+
+            $.each(operationsSelectItems, function(index, value) {
+                if (!data[allOperationsNames[index]]['type'].includes('one-to-') && !$(value).hasClass('filtered')) {
+                    $(value).addClass('disabled')
+                } else {
+                    $(value).removeClass('disabled')
+                }
+            })
+        } else {
+            console.log('??? How did you get here ???')
+        }
+    } else {
+        // If the user has not selected any operations, restore all operations to original state
+        operationsSelectItems.removeClass('disabled')
+    }
+}
+
+// Initialises and opens the operation configuration modal
+function displayConfigurationModal(imageName) {
+
+	populateOperationsSelect(imageName)
+	let operationsSelect = $("[name='operations']")
+	let parameterConfigurationAccordion = $('#paramCfgAccordion')
+	parameterConfigurationAccordion.accordion()
+
+	$('#configurationModal').modal({
+								onHide: function() {    // Called whenever modal is closed
+									operationsSelect.dropdown('clear')
+                                    parameterConfigurationAccordion.empty()
+								},
+                                onApprove: function() { // ACCEPT button
+                                    // Only count this image as configured if it has not yet been configured before
+                                    if (!dataToProcess.hasOwnProperty(imageName)) {
+                                        configuredImages++
+                                    }
+
+                                    // Add the configuration of this image to the call data
+                                    dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations))
+
+                                    // Reevaluate the state of the PROCESS button
+                                    checkProcessCondition()
+								},
+								onDeny: function() {    // CANCEL button
+
+								}
+							}).modal('show')
+}
+
+// Initialises and opens the extra inputs selection modal
+function displayExtraInputsModal(imageName) {
+
+    populateOperationsSelect()
+	let operationsSelect = $("[name='operations']")
+	let parameterConfigurationAccordion = $('#paramCfgAccordion')
+	parameterConfigurationAccordion.accordion()
+
+	$('#configurationModal').modal({
+								onHide: function() {    // Called whenever modal is closed
+									operationsSelect.dropdown('clear')
+                                    parameterConfigurationAccordion.empty()
+								},
+                                onApprove: function() { // ACCEPT button
+                                    // Only count this image as configured if it has not yet been configured before
+                                    if (!dataToProcess.hasOwnProperty(imageName)) {
+                                        configuredImages++
+                                    }
+
+                                    // Add the configuration of this image to the call data
+                                    dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations))
+
+                                    // Reevaluate the state of the PROCESS button
+                                    checkProcessCondition()
+								},
+								onDeny: function() {    // CANCEL button
+
+								}
+							}).modal('show')
 }
 
 // Creates and appends a new entry to the parameter configuration accordion
@@ -371,37 +440,4 @@ function processFilesAjax() {
             processButton.removeClass('disabled')
         }
     })
-}
-
-// Updates the list of available operations, based on the operations selected by the user
-function updateOperationsSelect(data) {
-
-    let operationsSelectItems = $('.description').find('.menu.transition').find('.item')
-
-    if (operationConfigurations.length != 0) {
-        let selectedOperationsTypes = operationConfigurations.map(x => x['type'])
-
-        if (selectedOperationsTypes.includes('one-to-many') || selectedOperationsTypes.includes('many-to-many')) {
-            // If the user has selected a -to-many operation, disable all other available operations and notify user
-            operationsSelectItems.addClass('disabled')
-            let notificationText = 'Operations which yield several result images cannot be chained by other operations. Remove it to be able to chain other operations'
-            displayNotification({'text': notificationText, 'type': 'info'})
-        } else if (selectedOperationsTypes.includes('one-to-one') || selectedOperationsTypes.includes('many-to-one')) {
-            // If the user has selected a -to-one operation, disable all non one-to- operations
-            let allOperationsNames = $.map(operationsSelectItems, (element, _index) => $(element).text())
-
-            $.each(operationsSelectItems, function(index, value) {
-                if (!data[allOperationsNames[index]]['type'].includes('one-to-') && !$(value).hasClass('filtered')) {
-                    $(value).addClass('disabled')
-                } else {
-                    $(value).removeClass('disabled')
-                }
-            })
-        } else {
-            console.log('??? How did you get here ???')
-        }
-    } else {
-        // If the user has not selected any operations, restore all operations to original state
-        operationsSelectItems.removeClass('disabled')
-    }
 }
