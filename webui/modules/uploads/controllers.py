@@ -58,32 +58,3 @@ def upload():
                 abort(413, errorMessage)
     
     return make_response(jsonify(savedFiles), 200)
-
-@upload_mod.route('/purge', methods=['POST'])
-def purge_uploads():
-    data = request.get_json()['data']
-    
-    for file_name in data:
-        # Attempt to delete the file from uploads/images
-        file_path = os.path.join(app.config['IMAGES_DIR'], file_name)
-        
-        try:
-            os.remove(file_path)
-        except OSError as err:
-            print('>>> [/uploads/purge/] Error deleting file:', file_path)
-            print('>>>', err)
-        
-        # Attempt to delete associated extra inputs from uploads/images/extra_inputs
-        extra_inputs = [file for file in os.listdir(app.config['EXTRA_IMAGES_DIR']) 
-                            if file.startswith(file_name.split('.')[0] + '_')]
-        
-        for extra in extra_inputs:
-            extra_path = os.path.join(app.config['EXTRA_IMAGES_DIR'], extra)
-            
-            try:
-                os.remove(extra_path)
-            except OSError as err:
-                print('>>> [/uploads/purge/] Error deleting file:', extra_path)
-                print('>>>', err)
-    
-    return make_response(jsonify('Files have been deleted'), 200)
