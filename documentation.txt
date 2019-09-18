@@ -50,7 +50,7 @@
 	- one-to-many:  op(image, parameterDictionary), returns list of images
 	- many-to-many: op(image, [extra_inputs_list], parameterDictionary), returns list of images
 
-- operations.json
+- Structura fisierului de configurare operations.json:
 	- 'function' 		 -> string obligatoriu, cale catre functia de pe server care aplica operatia;
 						 -> este de forma numeDirector.numeScript.numeFunctie
 	- 'type'     		 -> string obligatoriu, tipul de operatie;
