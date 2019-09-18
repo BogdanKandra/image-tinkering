@@ -25,12 +25,12 @@ def upload():
             'image': [],
             'video': []
             }
-
+    
     for key in filesDict:
         file = filesDict[key]
         mimeType = mime.from_buffer(file.stream.read(1024))
         file.stream.seek(0) # Move the file pointer back to the start of buffer
-
+        
         # Only save the file if it is an image or a video
         if mimeType.startswith('image/') or mimeType.startswith('video/'):
             if mimeType.startswith('image/'):
@@ -39,7 +39,7 @@ def upload():
             else:
                 uploadsDir = app.config['VIDEOS_DIR']
                 filetype = 'video'
-                
+            
             # Append the timestamp to the filename
             timestamp = str(time.time())
             if '.' in timestamp: # Also append the fractional part if available
@@ -48,7 +48,7 @@ def upload():
             name = secure_filename(file.filename)
             nameComponents = name.split('.')
             name = nameComponents[0] + '_' + timestamp + '.' + nameComponents[1]
-                
+            
             uploadPath = os.path.join(uploadsDir, name)
             try:
                 file.save(uploadPath)
@@ -56,5 +56,34 @@ def upload():
             except RequestEntityTooLarge:
                 errorMessage = 'File could not be uploaded. Maximum size must be 50 MB'
                 abort(413, errorMessage)
-                
+    
     return make_response(jsonify(savedFiles), 200)
+
+@upload_mod.route('/purge', methods=['POST'])
+def purge_uploads():
+    data = request.get_json()['data']
+    
+    for file_name in data:
+        # Attempt to delete the file from uploads/images
+        file_path = os.path.join(app.config['IMAGES_DIR'], file_name)
+        
+        try:
+            os.remove(file_path)
+        except OSError as err:
+            print('>>> [/uploads/purge/] Error deleting file:', file_path)
+            print('>>>', err)
+        
+        # Attempt to delete associated extra inputs from uploads/images/extra_inputs
+        extra_inputs = [file for file in os.listdir(app.config['EXTRA_IMAGES_DIR']) 
+                            if file.startswith(file_name.split('.')[0] + '_')]
+        
+        for extra in extra_inputs:
+            extra_path = os.path.join(app.config['EXTRA_IMAGES_DIR'], extra)
+            
+            try:
+                os.remove(extra_path)
+            except OSError as err:
+                print('>>> [/uploads/purge/] Error deleting file:', extra_path)
+                print('>>>', err)
+    
+    return make_response(jsonify('Files have been deleted'), 200)
