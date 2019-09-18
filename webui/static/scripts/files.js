@@ -210,20 +210,3 @@ function uploadFilesAjax(imageData) {
 		}
 	})
 }
-
-// Switches the application mode between 'Image' and 'Video'
-// TODO - Change the page content accordingly (<title>, <h1> title and other stuff)
-function changeMode() {
-
-	let visibleContent = $('#switchMode').find('.visible').first()
-	let hiddenContentIcon = $('#switchMode').find('.hidden').first().find('.icon').first()
-
-	if (visibleContent.html().includes('VIDEO')) {
-		visibleContent.html('SWITCH TO IMAGE MODE')
-	} else {
-		visibleContent.html('SWITCH TO VIDEO MODE')
-	}
-
-	hiddenContentIcon.toggleClass('image')
-	hiddenContentIcon.toggleClass('video')
-}
