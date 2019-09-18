@@ -14,3 +14,20 @@ function displayNotification(parameters) {
         timeout: timeout
     }).show()
 }
+
+// Switches the application mode between 'Image' and 'Video'
+// TODO - Implement Video mode
+function changeMode() {
+
+	let visibleContent = $('#switchMode').find('.visible').first()
+	let hiddenContentIcon = $('#switchMode').find('.hidden').first().find('.icon').first()
+
+	if (visibleContent.html().includes('VIDEO')) {
+		visibleContent.html('SWITCH TO IMAGE MODE')
+	} else {
+		visibleContent.html('SWITCH TO VIDEO MODE')
+	}
+
+	hiddenContentIcon.toggleClass('image')
+	hiddenContentIcon.toggleClass('video')
+}
