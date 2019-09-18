@@ -52,12 +52,13 @@
 	- many-to-many: op(image, [extra_inputs_list], parameterDictionary), returns list of images
 
 - operations.json
-	- 'function' -> string obligatoriu, cale catre functia de pe server care aplica operatia;
-				 -> este de forma numeDirector.numeScript.numeFunctie
-	- 'type'     -> string obligatoriu, tipul de operatie;
-				 -> este una dintre cele 4 valori de mai sus
-	- 'description' -> string optional, descrierea operatiei, va aparea ca popup
-	- 'parameters'  -> o lista de obiecte optionala, fiecare reprezentand configurarea unui parametru
+	- 'function' 		 -> string obligatoriu, cale catre functia de pe server care aplica operatia;
+						 -> este de forma numeDirector.numeScript.numeFunctie
+	- 'type'     		 -> string obligatoriu, tipul de operatie;
+						 -> este una dintre cele 4 valori de mai sus
+	- 'description' 	 -> string optional, descrierea operatiei, va aparea ca popup
+	- 'extraInputsNames' -> lista de strings obligatorie daca 'type' incepe cu 'many-to-', contine denumirile parametrilor suplimentari de input
+	- 'parameters'  	 -> o lista de obiecte optionala, fiecare reprezentand configurarea unui parametru
 		Configurarea parametrilor:
 		- 'name'    -> string obligatoriu, numele parametrului
 		- 'type'    -> string obligatoriu, poate avea una dintre valorile: 'range', 'lookup'
