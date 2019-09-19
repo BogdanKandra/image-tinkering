@@ -190,7 +190,7 @@ function uploadFilesAjax(imageData) {
 					console.log(data)
 				},
 				error: function(_request, _status, _error) {
-					console.log('>>>>> Error during initialisations process')
+					console.log('>>> Error during initialisations process')
 				}
 			})
 
