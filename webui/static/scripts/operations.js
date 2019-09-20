@@ -143,15 +143,26 @@ function populateExtraInputsModal(extraInputsNames) {
                                     .addClass('primary small')
                                     .change(function(event) {
 
-                                        // TODO - Display the selected image in place of the placeholder or the placeholder, if the user did not select any image
+                                        // Manage the number of selected extra images and
+                                        // Display the selected image in place of the placeholder or the placeholder, if the user did not select any image
                                         let filesCount = event.target.files.length
                                         
                                         if (filesCount == 0) {
                                             extraInputsSelected[$(this).prop('id')] = false
                                             extraInputFiles[$(this).prop('id')] = undefined
+
+                                            $('#' + $(this).prop('id') + '_extra').replaceWith(imagePreviewContainer)
                                         } else {
                                             extraInputsSelected[$(this).prop('id')] = true
                                             extraInputFiles[$(this).prop('id')] = event.target.files[0]
+
+                                            let imageElement = $('<img>')
+                                            imageElement.prop('src', URL.createObjectURL(event.target.files[0]))
+                                            imageElement.prop('alt', 'Image Preview not Available')
+                                            imageElement.prop('height', '200')
+                            
+                                            $(imagePreviewContainer).replaceWith($('<div>').prop('id', $(this).prop('id') + '_extra')
+                                                                                           .append(imageElement))
                                         }
 
                                         checkExtraAcceptCondition(extraInputsSelected)
