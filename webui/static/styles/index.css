@@ -125,3 +125,19 @@ img {
     margin-top: 6em;
     text-align: center;
 }
+
+.extraInputsDetails {
+    margin-top: .5em;
+    margin-bottom: 1em;
+}
+
+.extraParamConfig {
+    margin: .4em 1em;
+    display: inline-block;
+    text-align: center;
+}
+
+.extraInputImage {
+    margin-bottom: 2em;
+    width: 200px;
+}

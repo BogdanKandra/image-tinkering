@@ -79,6 +79,7 @@ function displaySelfieModal() {
 								imageCapture = new ImageCapture(track)
 								actionButtons.first().removeClass('disabled')
 							})
+							.catch(console.log('>>> Camera not available'))
 	}
 }
 
@@ -171,7 +172,7 @@ function uploadFiles() {
 function uploadFilesAjax(imageData) {
 
 	$.ajax({
-		url: '/uploads/',
+		url: '/uploads/inputs',
 		method: 'POST',
 		data: imageData,
 		processData: false,
@@ -185,11 +186,9 @@ function uploadFilesAjax(imageData) {
 				method: 'POST',
 				data: JSON.stringify({'files': data}),
 				contentType: 'application/json',
-				success: function(data) {
-					console.log('>>>>> Initialisations process completed successfully')
-				},
-				error: function(request, status, error) {
-					console.log('>>>>> Error during initialisations process')
+				success: function(_data) {},
+				error: function(_request, _status, _error) {
+					console.log('>>> Error during initialisations process')
 				}
 			})
 
@@ -203,26 +202,9 @@ function uploadFilesAjax(imageData) {
 			// Populate the container holding uploaded images
 			populateFilesAndOperationsContainer(data)
 		},
-		error: function(request, status, error) {
+		error: function(_request, _status, _error) {
 			displayNotification({'text': 'File Upload failed!', 'type': 'error'})			
 			$('#uploadButton').removeClass('disabled')
 		}
 	})
-}
-
-// Switches the application mode between 'Image' and 'Video'
-// TODO - Change the page content accordingly (<title>, <h1> title and other stuff)
-function changeMode() {
-
-	let visibleContent = $('#switchMode').find('.visible').first()
-	let hiddenContentIcon = $('#switchMode').find('.hidden').first().find('.icon').first()
-
-	if (visibleContent.html().includes('VIDEO')) {
-		visibleContent.html('SWITCH TO IMAGE MODE')
-	} else {
-		visibleContent.html('SWITCH TO VIDEO MODE')
-	}
-
-	hiddenContentIcon.toggleClass('image')
-	hiddenContentIcon.toggleClass('video')
 }
