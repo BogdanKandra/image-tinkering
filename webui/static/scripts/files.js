@@ -172,7 +172,7 @@ function uploadFiles() {
 function uploadFilesAjax(imageData) {
 
 	$.ajax({
-		url: '/uploads/',
+		url: '/uploads/inputs',
 		method: 'POST',
 		data: imageData,
 		processData: false,
