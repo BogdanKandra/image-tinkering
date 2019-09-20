@@ -58,7 +58,7 @@ def cleanup_uploads():
         try:
             os.remove(file_path)
         except OSError as err:
-            print('>>> [/cleanup/purge] Error deleting file:', file_name)
+            print('>>> [/cleanup/uploads] Error deleting file:', file_name)
             print('>>>', err)
         
         # Delete associated extra inputs from uploads/images/extra_inputs
@@ -71,7 +71,25 @@ def cleanup_uploads():
             try:
                 os.remove(extra_path)
             except OSError as err:
-                print('>>> [/uploads/purge/] Error deleting file:', extra)
+                print('>>> [/cleanup/uploads] Error deleting file:', extra)
                 print('>>>', err)
     
     return make_response(jsonify('Server: Uploaded files have been deleted'), 200)
+
+@cleanup_mod.route('/extras', methods=['POST'])
+def cleanup_extras():
+    ''' Deletes extra images associated to a particular input image '''
+    image_name = request.get_json()['name']
+    extra_inputs = [file for file in os.listdir(app.config['EXTRA_IMAGES_DIR'])
+                        if file.startswith(image_name.split('.')[0] + '_')]
+    
+    for extra in extra_inputs:
+        extra_path = os.path.join(app.config['EXTRA_IMAGES_DIR'], extra)
+        
+        try:
+            os.remove(extra_path)
+        except OSError as err:
+            print('>>> [/cleanup/extras] Error deleting file:', extra)
+            print('>>>', err)
+    
+    return make_response(jsonify('Server: Extra images have been deleted'), 200)

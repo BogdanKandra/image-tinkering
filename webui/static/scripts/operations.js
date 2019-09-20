@@ -26,6 +26,7 @@ function populateFilesAndOperationsContainer(data) {
 		let configureButton = $('<button>').addClass('ui primary button')
 		configureButton.html('CONFIGURE')
 		configureButton.click(function() {
+            deleteExtraInputsAjax(name)
             displayConfigurationModal(name)
         })
 		configureDiv.append(configureButton)
@@ -564,4 +565,19 @@ function uploadExtraInputs(imageName) {
 			$('#uploadButton').removeClass('disabled')
 		}
 	})
+}
+
+// Deletes any existent extra images associated to the image to be configured
+function deleteExtraInputsAjax(imageName) {
+
+    $.ajax({
+        url: '/cleanup/extras',
+        method: 'POST',
+        data: JSON.stringify({'name': imageName}),
+        contentType: 'application/json',
+        success: function(_data) {},
+        error: function(_request, _status, _error) {
+
+        }
+    })
 }
