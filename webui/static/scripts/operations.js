@@ -3,6 +3,8 @@
 let operationConfigurations = [] // List of objects each describing the configuration of an operation
 let dataToProcess = {}           // Object to be sent to AJAX call when the user clicks the PROCESS button
 let configuredImages = 0         // Counter for keeping track of number of images configured
+let extraInputFiles = {}         // Object containing all extra input images (as File objects)
+let extraInputsNames = []         // List containing the names of the extra input parameters needed for certain operations
 
 // For each uploaded file, creates a container holding the uploaded file and a revealing "CONFIGURE" button over the file
 function populateFilesAndOperationsContainer(data) {
@@ -37,7 +39,7 @@ function populateFilesAndOperationsContainer(data) {
 }
 
 // Populates the operations select element within the configuration modal by parsing the 'operations.json' file
-function populateOperationsSelect(imageName) {
+function populateOperationsSelect() {
 
     let operationsSelect = $("[name='operations']")
     operationsSelect.empty()  // Remove the old contents
@@ -63,7 +65,7 @@ function populateOperationsSelect(imageName) {
 
                 // Open a modal asking the user to select the extra inputs, if the operation type is 'many-to-'
                 if (opConfig['type'].startsWith('many-to-')) {
-                    displayExtraInputsModal(imageName)
+                    displayExtraInputsModal(data, addedValue)
                 }
 
                 // And the corresponding parameter configuration accordion is also added
@@ -87,22 +89,78 @@ function populateOperationsSelect(imageName) {
                     }
                 }
 
-                // Update the contents of the configurations dropdown, if necessary
-                updateOperationsSelect(data)
-
-                // Reevaluate the state of the ACCEPT button
-                checkAcceptCondition()
+                // If a many-to- operation has been removed, cancel the Files selected just before
+                if (data[removedValue]['type'].startsWith('many-to-')) {
+                    extraInputFiles = {}
+                }
+                
+                updateOperationsSelect(data) // Update the contents of the configurations dropdown, if necessary
+                checkAcceptCondition() // Reevaluate the state of the ACCEPT button
             }
         })
 
         // Append each operation name to the select element
-        $.each(data, function(key, value) {
+        $.each(data, function(key, _value) {
             let option = $('<option>')
             option.prop('value', key)
                   .text(key)
             operationsSelect.append(option)
         })
     })
+}
+
+// Populates the container within the extra inputs modal
+function populateExtraInputsModal(extraInputsNames) {
+
+    let extraParamsContainer = $('#extraParams').empty()
+    let extraInputsSelected = {}
+    for (let i = 0; i < extraInputsNames.length; i++) {
+        extraInputsSelected[extraInputsNames[i]] = false
+    }
+    
+    for (const name of extraInputsNames) {
+        let extraParamConfig = $('<div>').addClass('extraParamConfig')
+
+        // Build a div containing parameter information
+        let paramNameSpan = $('<span>').append($('<strong>').text(name + ' Image'))
+        let paramInfoContainer = $('<div>').addClass('extraInputsDetails')
+                                           .append(paramNameSpan)
+
+        // Build a div containing a placeholder for the image preview
+        let imagePreviewContainer = $('<div>').addClass('ui placeholder extraInputImage')
+                                              .append($('<div>').addClass('rectangular image'))
+
+        // Build the file input
+        let fileIcon = $('<i>').addClass('file image icon')
+        let fileLabel = $('<label>').prop('for', name)
+                                    .addClass('ui labeled icon primary button')
+                                    .text('SELECT')
+        let fileInput = $('<input>').prop('type', 'file')
+                                    .prop('id', name)
+                                    .prop('accept', 'image/*')
+                                    .prop('style', 'display:none')
+                                    .addClass('primary small')
+                                    .change(function(event) {
+
+                                        // TODO - Display the selected image in place of the placeholder or the placeholder, if the user did not select any image
+                                        let filesCount = event.target.files.length
+                                        
+                                        if (filesCount == 0) {
+                                            extraInputsSelected[$(this).prop('id')] = false
+                                            extraInputFiles[$(this).prop('id')] = undefined
+                                        } else {
+                                            extraInputsSelected[$(this).prop('id')] = true
+                                            extraInputFiles[$(this).prop('id')] = event.target.files[0]
+                                        }
+
+                                        checkExtraAcceptCondition(extraInputsSelected)
+                                    })
+        fileLabel.append(fileIcon)
+        let fileContainer = $('<div>').append(fileLabel).append(fileInput)
+
+        extraParamConfig.append(paramInfoContainer).append(imagePreviewContainer).append(fileContainer)
+        extraParamsContainer.append(extraParamConfig)
+    }
 }
 
 // Updates the list of available operations, based on the operations selected by the user
@@ -147,57 +205,61 @@ function displayConfigurationModal(imageName) {
 	parameterConfigurationAccordion.accordion()
 
 	$('#configurationModal').modal({
-								onHide: function() {    // Called whenever modal is closed
-									operationsSelect.dropdown('clear')
-                                    parameterConfigurationAccordion.empty()
-								},
-                                onApprove: function() { // ACCEPT button
-                                    // Only count this image as configured if it has not yet been configured before
-                                    if (!dataToProcess.hasOwnProperty(imageName)) {
-                                        configuredImages++
-                                    }
+                        allowMultiple: true,
+                        onHide: function() {    // Called whenever modal is closed
+                            operationsSelect.dropdown('clear')
+                            parameterConfigurationAccordion.empty()
+                            extraInputFiles = {} // Reset the File dictionary
+                        },
+                        onApprove: function() { // ACCEPT button
+                            // Only count this image as configured if it has not yet been configured before
+                            if (!dataToProcess.hasOwnProperty(imageName)) {
+                                configuredImages++
+                            }
+                            
+                            dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations)) // Add the configuration of this image to the call data
 
-                                    // Add the configuration of this image to the call data
-                                    dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations))
+                            // If extra input files are needed, make a file upload
+                            if (extraInputFiles != {}) {
+                                uploadExtraInputs(imageName)
+                            }
 
-                                    // Reevaluate the state of the PROCESS button
-                                    checkProcessCondition()
-								},
-								onDeny: function() {    // CANCEL button
+                            checkProcessCondition() // Reevaluate the state of the PROCESS button
+                        },
+                        onDeny: function() {    // CANCEL button
 
-								}
-							}).modal('show')
+                        }
+                    }).modal('show')
 }
 
 // Initialises and opens the extra inputs selection modal
-function displayExtraInputsModal(imageName) {
-// TODO - Implement this
-    populateOperationsSelect()
-	let operationsSelect = $("[name='operations']")
-	let parameterConfigurationAccordion = $('#paramCfgAccordion')
-	parameterConfigurationAccordion.accordion()
+function displayExtraInputsModal(data, addedValue) {
 
-	$('#configurationModal').modal({
-								onHide: function() {    // Called whenever modal is closed
-									operationsSelect.dropdown('clear')
-                                    parameterConfigurationAccordion.empty()
-								},
-                                onApprove: function() { // ACCEPT button
-                                    // Only count this image as configured if it has not yet been configured before
-                                    if (!dataToProcess.hasOwnProperty(imageName)) {
-                                        configuredImages++
-                                    }
+    extraInputsNames = data[addedValue]['extraInputsNames']
+    let acceptedExtraInputsModal = false
+    populateExtraInputsModal(extraInputsNames)
 
-                                    // Add the configuration of this image to the call data
-                                    dataToProcess[imageName] = JSON.parse(JSON.stringify(operationConfigurations))
+	$('#extraInputsModal').modal({
+                        allowMultiple: true,
+                        onHide: function() {    // Called whenever modal is closed
+                            if (!acceptedExtraInputsModal) {
+                                // Remove the operation which triggered this modal from the operation chain, since the user canceled extra inputs selection
+                                let operationsSelect = $("[name='operations']")
+                                operationsSelect.dropdown('remove selected', addedValue)
+                                
+                                displayNotification({'text': 'The selected operation has been canceled, due to not selecting the necessary extra inputs', 'type': 'info'})
+                            }
 
-                                    // Reevaluate the state of the PROCESS button
-                                    checkProcessCondition()
-								},
-								onDeny: function() {    // CANCEL button
-
-								}
-							}).modal('show')
+                            $('#extraInputsActions div.ui.approve.primary.button').addClass('disabled')
+                            acceptedExtraInputsModal = false
+                        },
+                        onApprove: function() { // ACCEPT button
+                            acceptedExtraInputsModal = true
+                        },
+                        onDeny: function() {    // CANCEL button
+                            acceptedExtraInputsModal = false
+                        }
+                    }).modal('show')
 }
 
 // Creates and appends a new entry to the parameter configuration accordion
@@ -376,6 +438,30 @@ function checkProcessCondition() {
     }
 }
 
+// Checks whether the necessary number of extra input images have been selected or not and changes the state of the ACCEPT button accordingly
+function checkExtraAcceptCondition(extraInputsSelected) {
+
+    let enabling = true
+    let acceptButton = $('#extraInputsActions div.ui.approve.primary.button')
+
+    for (let paramName in extraInputsSelected) {
+        if (extraInputsSelected.hasOwnProperty(paramName)) {
+            if (extraInputsSelected[paramName] == false) {
+                enabling = false
+                break
+            }
+        }
+    }
+
+    if (enabling) {
+        acceptButton.removeClass('disabled')
+    } else {
+        acceptButton.addClass('disabled')
+    }
+
+    return enabling
+}
+
 // Checks how many files have been configured from the total uploaded and starts the processing if the user agrees
 function processFiles() {
 
@@ -454,4 +540,32 @@ function processFilesAjax() {
             processButton.removeClass('disabled')
         }
     })
+}
+
+// Prepares the form data and performs the AJAX call which uploads the extra input images to the server
+function uploadExtraInputs(imageName) {
+
+    // Build the request data
+    let imageData = new FormData()
+    
+    for (let i = 0; i < extraInputsNames.length; i++) {
+        imageData.append('extrafiles-' + (i + 1), extraInputFiles[extraInputsNames[i]])
+    }
+
+    imageData.append('image-name', JSON.stringify(imageName))
+
+	$.ajax({
+		url: '/uploads/extrainputs',
+		method: 'POST',
+		data: imageData,
+		processData: false,
+		contentType: false,
+		success: function(data) {
+            console.log(data)
+		},
+		error: function(_request, _status, _error) {
+			displayNotification({'text': 'Extra input files upload failed!', 'type': 'error'})			
+			$('#uploadButton').removeClass('disabled')
+		}
+	})
 }
