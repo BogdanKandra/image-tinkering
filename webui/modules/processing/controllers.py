@@ -3,7 +3,8 @@ Created on Thu May 16 12:29:17 2019
 
 @author: Bogdan
 """
-import importlib, os
+import importlib
+import os
 import cv2
 from flask import current_app as app
 from flask.blueprints import Blueprint
@@ -12,9 +13,9 @@ from flask.helpers import make_response
 from flask.json import jsonify
 
 
-processing_mod = Blueprint('processing', __name__, url_prefix='/process')
+PROCESSING_MOD = Blueprint('processing', __name__, url_prefix='/process')
 
-@processing_mod.route('/', methods=['POST'])
+@PROCESSING_MOD.route('/', methods=['POST'])
 def process():
     data = request.get_json()['data']
     results_names = []  # Will contain the names of the resulting files
@@ -32,9 +33,9 @@ def process():
         first_operation_type = operation_list[0]['type']
         file_name, extension = file_name.split('.')
 
-        if first_operation_type == 'one-to-one' or first_operation_type == 'many-to-one':
+        if first_operation_type in ('one-to-one', 'many-to-one'):
             # Only one-to-one operations will follow, so operation chaining is possible
-            starting_index = 0 # This variable will store the starting index for chaining the operations
+            starting_index = 0 # Stores the starting index for chaining the operations
 
             if first_operation_type == 'many-to-one':
                 # Load the extra inputs needed for calling the many-to-one operation
@@ -55,7 +56,7 @@ def process():
 
             # Append the resulting file name to results_names
             results_names.append(result_name)
-        elif first_operation_type == 'one-to-many' or first_operation_type == 'many-to-many':
+        elif first_operation_type in ('one-to-many', 'many-to-many'):
             # Do not expect any other operations to follow; this operation yields a list of results
             if first_operation_type == 'one-to-many':
                 # Make the operation call
@@ -96,24 +97,24 @@ def call_module_function(*arguments):
     list of extra inputs (for many-to operations)
     """
     # Unwind parameters and gather the operation details
-    image, parameterObject = arguments[0], arguments[1]
-    package, module, function = parameterObject['function'].split('.')
-    parameters = parameterObject['params']
-    
+    image, parameter_object = arguments[0], arguments[1]
+    package, module, function = parameter_object['function'].split('.')
+    parameters = parameter_object['params']
+
     # Call the requested function on the image
     imported_module = importlib.import_module('backend.' + package + '.' + module)
     if len(arguments) == 2:
         result = getattr(imported_module, function)(image, parameters)
     elif len(arguments) == 3:
         result = getattr(imported_module, function)(image, arguments[2], parameters)
-    
+
     return result
 
 def load_extra_inputs(file_name):
     """ Loads the extra inputs needed for calling a 'many-to' operation """
     extra_inputs = []
     i = 1
-    
+
     while True:
         extra_file_name = file_name + '_extra_' + str(i)
         extra_image_path = os.path.join(app.config['IMAGES_DIR'], extra_file_name)
@@ -123,5 +124,5 @@ def load_extra_inputs(file_name):
             i += 1
         else:
             break
-    
+
     return extra_inputs
