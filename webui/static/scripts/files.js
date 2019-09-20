@@ -186,9 +186,7 @@ function uploadFilesAjax(imageData) {
 				method: 'POST',
 				data: JSON.stringify({'files': data}),
 				contentType: 'application/json',
-				success: function(data) {
-					console.log(data)
-				},
+				success: function(_data) {},
 				error: function(_request, _status, _error) {
 					console.log('>>> Error during initialisations process')
 				}

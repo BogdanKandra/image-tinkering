@@ -113,9 +113,7 @@ function deleteResultsAjax(fileNamesList) {
         method: 'POST',
         data: JSON.stringify({'filenames': fileNamesList}),
         contentType: 'application/json',
-        success: function(data) {
-			console.log(data)
-        },
+        success: function(_data) {},
         error: function(_request, _status, _error) {
 			console.log('An error occured during deletion of files')
         }

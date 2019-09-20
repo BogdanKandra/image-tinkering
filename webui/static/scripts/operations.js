@@ -517,9 +517,7 @@ function processFilesAjax() {
                 method: 'POST',
                 data: JSON.stringify({'data': dataToProcess}),
                 contentType: 'application/json',
-                success: function(_data) {
-                    console.log(data)
-                },
+                success: function(_data) {},
                 error: function(_request, _status, _error) {
                     console.log('>>> An error occured during file deletion')
                 }
@@ -560,9 +558,7 @@ function uploadExtraInputs(imageName) {
 		data: imageData,
 		processData: false,
 		contentType: false,
-		success: function(data) {
-            console.log(data)
-		},
+		success: function(_data) {},
 		error: function(_request, _status, _error) {
 			displayNotification({'text': 'Extra input files upload failed!', 'type': 'error'})			
 			$('#uploadButton').removeClass('disabled')
