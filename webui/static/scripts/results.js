@@ -1,6 +1,6 @@
 "use strict";
 
-let attachedResetButtonClick = false
+let attachedDiscardButtonClick = false
 
 // For each result file, creates a container holding the file and a revealing "SAVE" button over the file
 function populateResultsContainer(data) {
@@ -33,11 +33,11 @@ function populateResultsContainer(data) {
 	}
 
 	// Bind click event for the "DISCARD" button
-	if (!attachedResetButtonClick) {
+	if (!attachedDiscardButtonClick) {
 		$('#resultsButtons .ui.button').click(function() {
-			openResetDialog(data)
+			openResetDialog(data, 'RESULTS') // Only processed images remain to be deleted
 		})
-		attachedResetButtonClick = true
+		attachedDiscardButtonClick = true
 	}
 }
 
@@ -52,7 +52,7 @@ function downloadFile(path) {
 }
 
 // Opens up a dialog asking the user whether they are sure they want to reset
-function openResetDialog(data) {
+function openResetDialog(data, resetType) {
 
 	let resetButton = $('#resultsButtons .ui.button')
 	resetButton.addClass('disabled')
@@ -68,9 +68,11 @@ function openResetDialog(data) {
 			Noty.button('YES', 'ui button positive tiny', function($noty) {
 				resetButton.removeClass('disabled')
 				$noty.close()
-				resetProgress()         // Cancel all selections, starting from file selection
-				if (data !== undefined) {
-					deleteTempdataAjax(data)	// Delete the result files from the server
+				
+				resetProgress()
+				switch(resetType) {
+					case 'RESULTS':
+						deleteTempdataAjax(data); break
 				}
 			}),
 			Noty.button('NO', 'ui button negative tiny', function($noty) {
@@ -106,4 +108,6 @@ function resetProgress() {
 	operationConfigurations = []
 	dataToProcess = {}
 	configuredImages = 0
+	extraInputFiles = {}
+	extraInputsNames = []
 }
