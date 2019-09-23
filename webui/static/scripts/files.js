@@ -25,10 +25,12 @@ $(document).ready(function() {
 
 		if (filesCount != 0) {
 			uploadButton.removeClass('disabled')
-			countParagraph.html('Files Loaded: ' + filesCount) // TODO - Style this to be civilised
+			countParagraph.html('Files Loaded: ' + filesCount)
 
 			for (let i = 0; i < filesCount; i++) {
-				let fileName = $('<span>').text(event.target.files[i]['name'] + ' ') // TODO - Change to tags
+				let fileName = $('<a>').prop('href', '#')
+									   .addClass('tagStat tagFile')
+									   .text(event.target.files[i]['name'] + ' ')
 				fileNames.append(fileName)
 
 				let imageElement = $('<img>')
