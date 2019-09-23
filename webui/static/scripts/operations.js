@@ -145,13 +145,12 @@ function populateExtraInputsModal(extraInputsNames) {
 
                                         // Manage the number of selected extra images and
                                         // Display the selected image in place of the placeholder or the placeholder, if the user did not select any image
+                                        $('#' + $(this).prop('id') + '_extra').replaceWith(imagePreviewContainer)
                                         let filesCount = event.target.files.length
                                         
                                         if (filesCount == 0) {
                                             extraInputsSelected[$(this).prop('id')] = false
                                             extraInputFiles[$(this).prop('id')] = undefined
-
-                                            $('#' + $(this).prop('id') + '_extra').replaceWith(imagePreviewContainer)
                                         } else {
                                             extraInputsSelected[$(this).prop('id')] = true
                                             extraInputFiles[$(this).prop('id')] = event.target.files[0]
@@ -162,6 +161,7 @@ function populateExtraInputsModal(extraInputsNames) {
                                             imageElement.prop('height', '200')
                             
                                             $(imagePreviewContainer).replaceWith($('<div>').prop('id', $(this).prop('id') + '_extra')
+                                                                                           .addClass('extraInputImage')
                                                                                            .append(imageElement))
                                         }
 
