@@ -21,7 +21,7 @@ function populateResultsContainer(data) {
 		let saveButton = $('<button>').addClass('ui primary button')
 		saveButton.html('SAVE')
 		saveButton.click(function() {
-            saveFile(path)
+            downloadFile(path)
         })
 		saveDiv.append(saveButton)
 
@@ -30,19 +30,19 @@ function populateResultsContainer(data) {
 		container.append(image).append(saveDiv)
 
 		resultsContainer.append(container)
+	}
 
-		// Bind click event for the "DISCARD" button
-		if (!attachedResetButtonClick) {
-			$('#resultsButtons .ui.button').click(function() {
-				openResetDialog(data)
-			})
-			attachedResetButtonClick = true
-		}
+	// Bind click event for the "DISCARD" button
+	if (!attachedResetButtonClick) {
+		$('#resultsButtons .ui.button').click(function() {
+			openResetDialog(data)
+		})
+		attachedResetButtonClick = true
 	}
 }
 
 // Downloads the file to the 'downloads' directory of the user
-function saveFile(path) {
+function downloadFile(path) {
 
     let download_name = path.substring(path.lastIndexOf("/") + 1).split("_")[0] + "_processed"
     let link = $('<a>')
@@ -53,7 +53,7 @@ function saveFile(path) {
 
 // Opens up a dialog asking the user whether they are sure they want to reset
 function openResetDialog(data) {
-	
+
 	let resetButton = $('#resultsButtons .ui.button')
 	resetButton.addClass('disabled')
 
@@ -69,7 +69,9 @@ function openResetDialog(data) {
 				resetButton.removeClass('disabled')
 				$noty.close()
 				resetProgress()         // Cancel all selections, starting from file selection
-				deleteResultsAjax(data)	// Delete the result files from the server
+				if (data !== undefined) {
+					deleteTempdataAjax(data)	// Delete the result files from the server
+				}
 			}),
 			Noty.button('NO', 'ui button negative tiny', function($noty) {
 				resetButton.removeClass('disabled')
@@ -91,6 +93,7 @@ function resetProgress() {
 	steps.eq(1).removeClass('completed')
 	steps.eq(2).removeClass('active')
 	steps.eq(2).removeClass('completed')
+	$('#homeButton').css('display', 'none')
 
 	// Remove old content from each screen
 	$('#filesCount').html('No Files loaded yet')
@@ -103,19 +106,4 @@ function resetProgress() {
 	operationConfigurations = []
 	dataToProcess = {}
 	configuredImages = 0
-}
-
-// Performs an AJAX call which deletes all result files
-function deleteResultsAjax(fileNamesList) {
-
-	$.ajax({
-        url: '/cleanup/results',
-        method: 'POST',
-        data: JSON.stringify({'filenames': fileNamesList}),
-        contentType: 'application/json',
-        success: function(_data) {},
-        error: function(_request, _status, _error) {
-			console.log('An error occured during deletion of files')
-        }
-    })
 }

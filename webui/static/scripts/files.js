@@ -200,6 +200,7 @@ function uploadFilesAjax(imageData) {
 			$('#steps').children('.step').first().removeClass('active')
 			$('#steps').children('.step').first().addClass('completed')
 			$('#steps').children('.step').eq(1).addClass('active')
+			$('#homeButton').css('display', 'inline-block')
 
 			// Populate the container holding uploaded images
 			populateFilesAndOperationsContainer(data)
