@@ -535,7 +535,13 @@ function processFilesAjax() {
             $('#steps').children('.step').eq(2).addClass('active')
             
             // Populate the container holding resulting images
-			populateResultsContainer(data)
+            populateResultsContainer(data)
+            
+            // Detach any existing click events and attach another one which deletes everything
+            $('#homeButton').off('click')
+                            .click(function() {
+                                openResetDialog(data, 'TEMPDATA')
+                            })
         },
         error: function(_request, _status, _error) {
             displayNotification({'text': 'An error occured during processing', 'type': 'error', 'theme': 'sunset'})

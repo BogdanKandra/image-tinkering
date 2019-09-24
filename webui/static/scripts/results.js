@@ -32,13 +32,11 @@ function populateResultsContainer(data) {
 		resultsContainer.append(container)
 	}
 
-	// Bind click event for the "DISCARD" button
-	if (!attachedDiscardButtonClick) {
-		$('#resultsButtons .ui.button').click(function() {
-			openResetDialog(data, 'RESULTS') // Only processed images remain to be deleted
-		})
-		attachedDiscardButtonClick = true
-	}
+	// Bind click event for the "DISCARD" button (Unbind the old click event first, if it exists)
+	$('#resultsButtons .ui.button').off('click')
+								   .click(function() {
+										openResetDialog(data, 'TEMPDATA') // Only processed images remain to be deleted
+									})
 }
 
 // Downloads the file to the 'downloads' directory of the user
@@ -71,8 +69,10 @@ function openResetDialog(data, resetType) {
 				
 				resetProgress()
 				switch(resetType) {
-					case 'RESULTS':
+					case 'TEMPDATA':
 						deleteTempdataAjax(data); break
+					case 'PICKLES_INPUTS':
+						deletePicklesAjax(data); deleteUploadsAjax(data); break
 				}
 			}),
 			Noty.button('NO', 'ui button negative tiny', function($noty) {

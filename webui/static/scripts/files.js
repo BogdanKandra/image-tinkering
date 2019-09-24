@@ -204,6 +204,12 @@ function uploadFilesAjax(imageData) {
 
 			// Populate the container holding uploaded images
 			populateFilesAndOperationsContainer(data)
+
+			// Detach any existing click events and attach another one which deletes the inputs and pickles
+			$('#homeButton').off('click')
+							.click(function() {
+								openResetDialog(data['image'], 'PICKLES_INPUTS')
+							})
 		},
 		error: function(_request, _status, _error) {
 			displayNotification({'text': 'File Upload failed!', 'type': 'error'})			
