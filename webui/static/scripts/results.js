@@ -55,7 +55,7 @@ function openResetDialog(data, resetType) {
 	let resetButton = $('#resultsButtons .ui.button')
 	resetButton.addClass('disabled')
 
-	let notificationText = 'Doing this will send you back to the File Selection Step. Are you sure you want to proceed?'
+	let notificationText = 'Doing this will send you back to the File Selection Step. Any uploaded or processed files will no longer be accesible. Are you sure you want to proceed?'
 
 	new Noty({
 		text: notificationText,
