@@ -304,8 +304,8 @@ function removeAccordion(removedValue) {
 function createMenuEntry(parameterObject, functionName) {
 
     let dropdownDiv = $('<div>').addClass('ui left pointing scrolling dropdown link item')
-    dropdownDiv.prop('data-content', parameterObject['description']) // Add the description of the parameter as a popup
-    dropdownDiv.prop('id', parameterObject['name'] + '_parameter')
+                                .prop('data-tooltip', parameterObject['description']) // Add the description of the parameter as a popup
+                                .prop('id', parameterObject['name'] + '_parameter')
     let dropdownIcon = $('<i>').addClass('dropdown icon')
     let dropdownText = parameterObject['name'].charAt(0).toUpperCase() + parameterObject['name'].slice(1)
     let dropdownMenu = $('<div>').addClass('menu')
@@ -375,7 +375,9 @@ function createMenuEntry(parameterObject, functionName) {
             checkAcceptCondition() // Reevaluate the state of the ACCEPT button
         }
     })
-    dropdownDiv.popup()
+    dropdownDiv.popup({
+        on: 'hover'
+    })
 
     return dropdownDiv
 }
