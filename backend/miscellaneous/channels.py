@@ -66,25 +66,26 @@ def remove_channels(image, parameters):
     channelsInformation = parameters['channel(s)']
     image_copy = copy.deepcopy(image)
     
-    if '&' in channelsInformation:
-        # Zero out the two specified channels
-        channels = channelsInformation.split(' & ')
-        if channels[0] == 'red':
-            image_copy[:,:,2] = 0
-        elif channels[0] == 'green':
-            image_copy[:,:,1] = 0
-        
-        if channels[1] == 'green':
-            image_copy[:,:,1] = 0
-        elif channels[1] == 'blue':
-            image_copy[:,:,0] = 0
-    else:
-        # Zero out the specified channel
-        if channelsInformation == 'red':
-            image_copy[:,:,2] = 0
-        elif channelsInformation == 'green':
-            image_copy[:,:,1] = 0
+    if utils.isColor(image):
+        if '&' in channelsInformation:
+            # Zero out the two specified channels
+            channels = channelsInformation.split(' & ')
+            if channels[0] == 'red':
+                image_copy[:,:,2] = 0
+            elif channels[0] == 'green':
+                image_copy[:,:,1] = 0
+            
+            if channels[1] == 'green':
+                image_copy[:,:,1] = 0
+            elif channels[1] == 'blue':
+                image_copy[:,:,0] = 0
         else:
-            image_copy[:,:,0] = 0
+            # Zero out the specified channel
+            if channelsInformation == 'red':
+                image_copy[:,:,2] = 0
+            elif channelsInformation == 'green':
+                image_copy[:,:,1] = 0
+            else:
+                image_copy[:,:,0] = 0
     
     return image_copy
