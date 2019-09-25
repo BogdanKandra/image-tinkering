@@ -98,6 +98,7 @@ function resetProgress() {
 	$('#homeButton').css('display', 'none')
 
 	// Remove old content from each screen
+	$('#fileInput').val('')
 	$('#filesCount').html('No Files loaded yet')
 	$('#fileNames').empty()
 	$('#filesContainer').empty()
