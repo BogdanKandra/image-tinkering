@@ -69,14 +69,9 @@ function populateOperationsSelect() {
                     displayExtraInputsModal(data, addedValue)
                 }
 
-                // And the corresponding parameter configuration accordion is also added
-                createAccordion(addedValue, data)
-
-                // Update the contents of the configurations dropdown, if necessary
-                updateOperationsSelect(data)
-
-                // Reevaluate the state of the ACCEPT button
-                checkAcceptCondition()
+                createAccordion(addedValue, data) // The corresponding parameter configuration accordion is also added
+                updateOperationsSelect(data) // Update the contents of the configurations dropdown, if necessary
+                checkAcceptCondition() // Reevaluate the state of the ACCEPT button
             },
             onRemove: function(removedValue) {
                 // When removing a selected item, the corresponding parameter configuration accordion and operation configuration entry are also removed
@@ -178,7 +173,7 @@ function populateExtraInputsModal(extraInputsNames) {
 // Updates the list of available operations, based on the operations selected by the user
 function updateOperationsSelect(data) {
 
-    let operationsSelectItems = $('.description').find('.menu.transition').find('.item')
+    let operationsSelectItems = $('.description').find('.ui.dropdown.selection').find('.menu.transition').find('.item')
 
     if (operationConfigurations.length != 0) {
         let selectedOperationsTypes = operationConfigurations.map(x => x['type'])
@@ -188,7 +183,7 @@ function updateOperationsSelect(data) {
             operationsSelectItems.addClass('disabled')
             let notificationText = 'Operations which yield several result images cannot be chained by other operations. Remove it to be able to chain other operations'
             displayNotification({'text': notificationText, 'type': 'info'})
-        } else if (selectedOperationsTypes.includes('one-to-one') || selectedOperationsTypes.includes('many-to-one')) {
+        } else {
             // If the user has selected a -to-one operation, disable all non one-to- operations
             let allOperationsNames = $.map(operationsSelectItems, (element, _index) => $(element).text())
 
@@ -199,8 +194,6 @@ function updateOperationsSelect(data) {
                     $(value).removeClass('disabled')
                 }
             })
-        } else {
-            console.log('??? How did you get here ???')
         }
     } else {
         // If the user has not selected any operations, restore all operations to original state
@@ -352,7 +345,7 @@ function createMenuEntry(parameterObject, functionName) {
     // Initialise the dropdown and specify the trigger for the animation as 'hover'
     dropdownDiv.dropdown({
         on: 'hover',
-        onChange: function(value, text) {
+        onChange: function(value, _text) {
             // When selecting an item, update the parameter value in the list of configurations as well
             for (let i = 0; i < operationConfigurations.length; i++) {
                 if (operationConfigurations[i]['function'] == functionName) {
