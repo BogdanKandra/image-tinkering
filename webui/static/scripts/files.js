@@ -53,6 +53,35 @@ $(document).ready(function() {
 	})
 })
 
+// Checks the available audio-video devices on the user's computer
+function checkUserMedia() {
+
+	if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+		displayNotification({text: 'User media could not be checked; errors might occur due to unavailable input devices', type: 'warning'})
+		displaySelfieModal()
+	} else {
+		let foundVideoInput = false
+		navigator.mediaDevices.enumerateDevices()
+					.then(devices => {
+						for (let device of devices) {
+							if (device.kind === 'videoinput') {
+								// There is at least one videoinput source, display the selfie modal
+								displaySelfieModal()
+								foundVideoInput = true
+								break
+							}
+						}
+
+						if (!foundVideoInput) {
+							// There are't any videoinput sources, disable the TAKE SELFIE button and notify the user
+							$('#takeSelfie').addClass('disabled')
+							displayNotification({text: 'No video input sources have been found; TAKE SELFIE functionality is disabled', type: 'info'})
+						}
+					})
+					.catch(err => console.log(err.name + ': ' + err.message))
+	}
+}
+
 // Initialises and opens the image capture modal
 function displaySelfieModal() {
 
@@ -72,14 +101,19 @@ function displaySelfieModal() {
 							}
 						}).modal('show')
 
-	// Initialise the camera feed if necessary
+	// Initialise the camera feed if necessary (and if possible)
+	navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia
 	if (imageCapture === undefined || imageCapture.track.readyState == 'ended') {
 		navigator.mediaDevices.getUserMedia({video: true})
 							.then(mediaStream => {
-								document.querySelector('video').srcObject = mediaStream;
-								const track = mediaStream.getVideoTracks()[0]
-								imageCapture = new ImageCapture(track)
-								actionButtons.first().removeClass('disabled')
+								if (mediaStream.getVideoTracks().length != 0) {
+									document.querySelector('video').srcObject = mediaStream
+									const track = mediaStream.getVideoTracks()[0]
+									if (track !== undefined) {
+										imageCapture = new ImageCapture(track)
+										actionButtons.first().removeClass('disabled')
+									}
+								}
 							})
 							.catch(console.log('>>> Camera not available'))
 	}
