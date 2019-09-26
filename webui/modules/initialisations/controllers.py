@@ -56,6 +56,22 @@ def initialise():
             # Compute the R, G, B channels of the image
             image_channels = utils.getChannels(image_file)
 
+            # Serialise the image channels
+            i = 0
+
+            if len(image_channels) == 4:
+                channels_string = 'bgra'
+            else:
+                channels_string = 'bgr'
+
+            for c in channels_string:
+                pickle_name = image_name_components[0] + '_' + c + '.pickle'
+                pickle_path = os.path.join(app.config['TEMP_DATA'], pickle_name)
+                file = open(pickle_path, 'wb')
+                pickle.dump(image_channels[i], file)
+                file.close()
+                i += 1
+
 #            # Compute the padded image
 #            image_h, image_w, channels = image_file.shape
 #            padded_h, padded_w = 2 * image_h, 2 * image_w
@@ -67,16 +83,6 @@ def initialise():
 
 #            # Compute the FFT of the padded image channels
 #            padded_image_FFTs = [np.fft.fftshift(np.fft.fft2(channel)) for channel in padded_image_channels]
-
-            # Serialise the image channels
-            i = 0
-            for c in 'bgr':
-                pickle_name = image_name_components[0] + '_' + c + '.pickle'
-                pickle_path = os.path.join(app.config['TEMP_DATA'], pickle_name)
-                file = open(pickle_path, 'wb')
-                pickle.dump(image_channels[i], file)
-                file.close()
-                i += 1
 
 #            # Serialise the FFTs of the padded image channels
 #            i = 0
