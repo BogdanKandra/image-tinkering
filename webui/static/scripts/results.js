@@ -103,6 +103,7 @@ function resetProgress() {
 	$('#fileNames').empty()
 	$('#filesContainer').empty()
 	$('#filesAndOperationsContainer').empty()
+	$('#takeSelfie').removeClass('disabled')
 	$('#configurationButtons .ui.button').addClass('disabled')
 	$('#resultsContainer').empty()
 	$('#steps').css('position', 'fixed')
