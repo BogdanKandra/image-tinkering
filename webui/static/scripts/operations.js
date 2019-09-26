@@ -69,14 +69,9 @@ function populateOperationsSelect() {
                     displayExtraInputsModal(data, addedValue)
                 }
 
-                // And the corresponding parameter configuration accordion is also added
-                createAccordion(addedValue, data)
-
-                // Update the contents of the configurations dropdown, if necessary
-                updateOperationsSelect(data)
-
-                // Reevaluate the state of the ACCEPT button
-                checkAcceptCondition()
+                createAccordion(addedValue, data) // The corresponding parameter configuration accordion is also added
+                updateOperationsSelect(data) // Update the contents of the configurations dropdown, if necessary
+                checkAcceptCondition() // Reevaluate the state of the ACCEPT button
             },
             onRemove: function(removedValue) {
                 // When removing a selected item, the corresponding parameter configuration accordion and operation configuration entry are also removed
@@ -145,13 +140,12 @@ function populateExtraInputsModal(extraInputsNames) {
 
                                         // Manage the number of selected extra images and
                                         // Display the selected image in place of the placeholder or the placeholder, if the user did not select any image
+                                        $('#' + $(this).prop('id') + '_extra').replaceWith(imagePreviewContainer)
                                         let filesCount = event.target.files.length
                                         
                                         if (filesCount == 0) {
                                             extraInputsSelected[$(this).prop('id')] = false
                                             extraInputFiles[$(this).prop('id')] = undefined
-
-                                            $('#' + $(this).prop('id') + '_extra').replaceWith(imagePreviewContainer)
                                         } else {
                                             extraInputsSelected[$(this).prop('id')] = true
                                             extraInputFiles[$(this).prop('id')] = event.target.files[0]
@@ -162,6 +156,7 @@ function populateExtraInputsModal(extraInputsNames) {
                                             imageElement.prop('height', '200')
                             
                                             $(imagePreviewContainer).replaceWith($('<div>').prop('id', $(this).prop('id') + '_extra')
+                                                                                           .addClass('extraInputImage')
                                                                                            .append(imageElement))
                                         }
 
@@ -178,7 +173,7 @@ function populateExtraInputsModal(extraInputsNames) {
 // Updates the list of available operations, based on the operations selected by the user
 function updateOperationsSelect(data) {
 
-    let operationsSelectItems = $('.description').find('.menu.transition').find('.item')
+    let operationsSelectItems = $('.description').find('.ui.dropdown.selection').find('.menu.transition').find('.item')
 
     if (operationConfigurations.length != 0) {
         let selectedOperationsTypes = operationConfigurations.map(x => x['type'])
@@ -188,7 +183,7 @@ function updateOperationsSelect(data) {
             operationsSelectItems.addClass('disabled')
             let notificationText = 'Operations which yield several result images cannot be chained by other operations. Remove it to be able to chain other operations'
             displayNotification({'text': notificationText, 'type': 'info'})
-        } else if (selectedOperationsTypes.includes('one-to-one') || selectedOperationsTypes.includes('many-to-one')) {
+        } else {
             // If the user has selected a -to-one operation, disable all non one-to- operations
             let allOperationsNames = $.map(operationsSelectItems, (element, _index) => $(element).text())
 
@@ -199,8 +194,6 @@ function updateOperationsSelect(data) {
                     $(value).removeClass('disabled')
                 }
             })
-        } else {
-            console.log('??? How did you get here ???')
         }
     } else {
         // If the user has not selected any operations, restore all operations to original state
@@ -311,8 +304,8 @@ function removeAccordion(removedValue) {
 function createMenuEntry(parameterObject, functionName) {
 
     let dropdownDiv = $('<div>').addClass('ui left pointing scrolling dropdown link item')
-    dropdownDiv.prop('data-content', parameterObject['description']) // Add the description of the parameter as a popup
-    dropdownDiv.prop('id', parameterObject['name'] + '_parameter')
+                                .prop('data-tooltip', parameterObject['description']) // Add the description of the parameter as a popup
+                                .prop('id', parameterObject['name'] + '_parameter')
     let dropdownIcon = $('<i>').addClass('dropdown icon')
     let dropdownText = parameterObject['name'].charAt(0).toUpperCase() + parameterObject['name'].slice(1)
     let dropdownMenu = $('<div>').addClass('menu')
@@ -352,7 +345,7 @@ function createMenuEntry(parameterObject, functionName) {
     // Initialise the dropdown and specify the trigger for the animation as 'hover'
     dropdownDiv.dropdown({
         on: 'hover',
-        onChange: function(value, text) {
+        onChange: function(value, _text) {
             // When selecting an item, update the parameter value in the list of configurations as well
             for (let i = 0; i < operationConfigurations.length; i++) {
                 if (operationConfigurations[i]['function'] == functionName) {
@@ -382,7 +375,9 @@ function createMenuEntry(parameterObject, functionName) {
             checkAcceptCondition() // Reevaluate the state of the ACCEPT button
         }
     })
-    dropdownDiv.popup()
+    dropdownDiv.popup({
+        on: 'hover'
+    })
 
     return dropdownDiv
 }
@@ -523,17 +518,9 @@ function processFilesAjax() {
             processButton.removeClass('disabled')
             displayNotification({'text': 'Processing Complete!', 'type': 'success', 'theme': 'sunset'})
 
-            // Performs an AJAX call which deletes the uploaded files, since the processing has been completed
-            $.ajax({
-                url: '/cleanup/uploads',
-                method: 'POST',
-                data: JSON.stringify({'data': dataToProcess}),
-                contentType: 'application/json',
-                success: function(_data) {},
-                error: function(_request, _status, _error) {
-                    console.log('>>> An error occured during file deletion')
-                }
-            })
+            // Perform AJAX calls which delete the uploaded files and the pickle files, since the processing has been completed
+            deleteUploadsAjax(dataToProcess)
+            deletePicklesAjax(dataToProcess)
 
             // Direct the user to the Results Step
 			$('#operationSelectionContent').css('display', 'none')
@@ -543,7 +530,13 @@ function processFilesAjax() {
             $('#steps').children('.step').eq(2).addClass('active')
             
             // Populate the container holding resulting images
-			populateResultsContainer(data)
+            populateResultsContainer(data)
+            
+            // Detach any existing click events and attach another one which deletes everything
+            $('#homeButton').off('click')
+                            .click(function() {
+                                openResetDialog(data, 'TEMPDATA')
+                            })
         },
         error: function(_request, _status, _error) {
             displayNotification({'text': 'An error occured during processing', 'type': 'error', 'theme': 'sunset'})
@@ -576,19 +569,4 @@ function uploadExtraInputs(imageName) {
 			$('#uploadButton').removeClass('disabled')
 		}
 	})
-}
-
-// Deletes any existent extra images associated to the image to be configured
-function deleteExtraInputsAjax(imageName) {
-
-    $.ajax({
-        url: '/cleanup/extras',
-        method: 'POST',
-        data: JSON.stringify({'name': imageName}),
-        contentType: 'application/json',
-        success: function(_data) {},
-        error: function(_request, _status, _error) {
-
-        }
-    })
 }

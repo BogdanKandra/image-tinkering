@@ -27,11 +27,12 @@ def process():
         file_path = os.path.join(app.config['IMAGES_DIR'], file_name)
         image = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
 
-        # Check for the type of the first operation, in order to decide how
-        # the operations will be applied
+        # Check for the type of the first operation, 
+        # in order to decide how the operations will be applied
         operation_list = data[file_name]
         first_operation_type = operation_list[0]['type']
         file_name, extension = file_name.split('.')
+        multiple_outputs = False # Helps in deciding how to store the results
 
         if first_operation_type in ('one-to-one', 'many-to-one'):
             # Only one-to-one operations will follow, so operation chaining is possible
@@ -45,46 +46,42 @@ def process():
                 image = call_module_function(image, operation_list[0], extra_inputs)
                 starting_index = 1
 
-            # Iterate over each 'one-to-one' operation, applying them in order
+            # Iterate over each of the remaining operations ('one-to-one' or 'one-to-many'), applying them in order
             for i in range(starting_index, len(operation_list)):
-                image = call_module_function(image, operation_list[i])
-
-            # Save the result in temp zone, with name key + '_processed'
-            result_name = file_name + '_processed.' + extension
-            result_path = os.path.join(app.config['TEMP_DATA'], result_name)
-            cv2.imwrite(result_path, image)
-
-            # Append the resulting file name to results_names
-            results_names.append(result_name)
+                if operation_list[i]['type'] == 'one-to-many':
+                    images = call_module_function(image, operation_list[i])
+                    multiple_outputs = True
+                else:
+                    image = call_module_function(image, operation_list[i])
         elif first_operation_type in ('one-to-many', 'many-to-many'):
             # Do not expect any other operations to follow; this operation yields a list of results
+            multiple_outputs = True
+            
             if first_operation_type == 'one-to-many':
                 # Make the operation call
                 images = call_module_function(image, operation_list[0])
-
-                # Save the results in temp zone
-                i = 1
-                for result in images:
-                    result_name = file_name + '_processed_' + str(i) + '.' + extension
-                    result_path = os.path.join(app.config['TEMP_DATA'], result_name)
-                    cv2.imwrite(result_path, result)
-                    results_names.append(result_name)
-                    i += 1
             else:
                 # Load the extra inputs needed for calling the many-to-many operation
                 extra_inputs = load_extra_inputs(file_name)
 
                 # Make the operation call
                 images = call_module_function(image, operation_list[0], extra_inputs)
-
-                # Save the results in temp zone
-                i = 1
-                for result in images:
-                    result_name = file_name + '_processed_' + str(i) + '.' + extension
-                    result_path = os.path.join(app.config['TEMP_DATA'], result_name)
-                    cv2.imwrite(result_path, result)
-                    results_names.append(result_name)
-                    i += 1
+        
+        if multiple_outputs:
+            # Save the results in temp zone
+            i = 1
+            for result in images:
+                result_name = file_name + '_processed_' + str(i) + '.' + extension
+                result_path = os.path.join(app.config['TEMP_DATA'], result_name)
+                cv2.imwrite(result_path, result)
+                results_names.append(result_name)
+                i += 1
+        else:
+            # Save the result in temp zone, with name key + '_processed'
+            result_name = file_name + '_processed.' + extension
+            result_path = os.path.join(app.config['TEMP_DATA'], result_name)
+            cv2.imwrite(result_path, image)
+            results_names.append(result_name)
 
     # Return results_names
     return make_response(jsonify(results_names), 200)

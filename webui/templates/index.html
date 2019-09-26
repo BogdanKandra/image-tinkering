@@ -26,10 +26,18 @@
                 <h1>Image Tinkering</h1>
             </div>
 
-            <div id="switchMode" class="ui animated fade button" onclick="changeMode()">
-                <div class="visible content">SWITCH TO VIDEO MODE</div>
-                <div class="hidden content">
-                    <i class="video icon"></i>
+            <div id="headerButtons">
+                <div id="homeButton" class="ui animated fade button">
+                    <div class="visible content">RETURN TO FILE SELECTION</div>
+                    <div class="hidden content">
+                        <i class="arrow left icon"></i>
+                    </div>
+                </div>
+                <div id="switchMode" class="ui animated fade button" onclick="changeMode()">
+                    <div class="visible content">SWITCH TO VIDEO MODE</div>
+                    <div class="hidden content">
+                        <i class="video icon"></i>
+                    </div>
                 </div>
             </div>
 
@@ -46,7 +54,7 @@
 
                 <div class="or"></div>
 
-                <div class="ui right labeled icon button" onclick="displaySelfieModal()">
+                <div id="takeSelfie" class="ui right labeled icon button" onclick="checkUserMedia()">
                     <i class="camera icon"></i>
                     TAKE SELFIE
                 </div>
@@ -61,7 +69,7 @@
 
             <div id="filesInformation">
                 <div>
-                    <span id="filesCount">No Files loaded yet</span>
+                    <a href="#" class="tagStat" id="filesCount">No Files loaded yet</a>
                     <div id="fileNames"></div>
                     <div id="filesSource"></div>
                 </div>

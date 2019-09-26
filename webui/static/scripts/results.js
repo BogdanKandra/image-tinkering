@@ -1,6 +1,6 @@
 "use strict";
 
-let attachedResetButtonClick = false
+let attachedDiscardButtonClick = false
 
 // For each result file, creates a container holding the file and a revealing "SAVE" button over the file
 function populateResultsContainer(data) {
@@ -21,7 +21,7 @@ function populateResultsContainer(data) {
 		let saveButton = $('<button>').addClass('ui primary button')
 		saveButton.html('SAVE')
 		saveButton.click(function() {
-            saveFile(path)
+            downloadFile(path)
         })
 		saveDiv.append(saveButton)
 
@@ -30,19 +30,17 @@ function populateResultsContainer(data) {
 		container.append(image).append(saveDiv)
 
 		resultsContainer.append(container)
-
-		// Bind click event for the "DISCARD" button
-		if (!attachedResetButtonClick) {
-			$('#resultsButtons .ui.button').click(function() {
-				openResetDialog(data)
-			})
-			attachedResetButtonClick = true
-		}
 	}
+
+	// Bind click event for the "DISCARD" button (Unbind the old click event first, if it exists)
+	$('#resultsButtons .ui.button').off('click')
+								   .click(function() {
+										openResetDialog(data, 'TEMPDATA') // Only processed images remain to be deleted
+									})
 }
 
 // Downloads the file to the 'downloads' directory of the user
-function saveFile(path) {
+function downloadFile(path) {
 
     let download_name = path.substring(path.lastIndexOf("/") + 1).split("_")[0] + "_processed"
     let link = $('<a>')
@@ -52,12 +50,12 @@ function saveFile(path) {
 }
 
 // Opens up a dialog asking the user whether they are sure they want to reset
-function openResetDialog(data) {
-	
+function openResetDialog(data, resetType) {
+
 	let resetButton = $('#resultsButtons .ui.button')
 	resetButton.addClass('disabled')
 
-	let notificationText = 'Doing this will send you back to the File Selection Step. Are you sure you want to proceed?'
+	let notificationText = 'Doing this will send you back to the File Selection Step. Any uploaded or processed files will no longer be accesible. Are you sure you want to proceed?'
 
 	new Noty({
 		text: notificationText,
@@ -68,8 +66,14 @@ function openResetDialog(data) {
 			Noty.button('YES', 'ui button positive tiny', function($noty) {
 				resetButton.removeClass('disabled')
 				$noty.close()
-				resetProgress()         // Cancel all selections, starting from file selection
-				deleteResultsAjax(data)	// Delete the result files from the server
+				
+				resetProgress()
+				switch(resetType) {
+					case 'TEMPDATA':
+						deleteTempdataAjax(data); break
+					case 'PICKLES_INPUTS':
+						deletePicklesAjax(data); deleteUploadsAjax(data); break
+				}
 			}),
 			Noty.button('NO', 'ui button negative tiny', function($noty) {
 				resetButton.removeClass('disabled')
@@ -91,31 +95,21 @@ function resetProgress() {
 	steps.eq(1).removeClass('completed')
 	steps.eq(2).removeClass('active')
 	steps.eq(2).removeClass('completed')
+	$('#homeButton').css('display', 'none')
 
 	// Remove old content from each screen
+	$('#fileInput').val('')
 	$('#filesCount').html('No Files loaded yet')
 	$('#fileNames').empty()
 	$('#filesContainer').empty()
 	$('#filesAndOperationsContainer').empty()
+	$('#takeSelfie').removeClass('disabled')
 	$('#configurationButtons .ui.button').addClass('disabled')
 	$('#resultsContainer').empty()
 	$('#steps').css('position', 'fixed')
 	operationConfigurations = []
 	dataToProcess = {}
 	configuredImages = 0
-}
-
-// Performs an AJAX call which deletes all result files
-function deleteResultsAjax(fileNamesList) {
-
-	$.ajax({
-        url: '/cleanup/results',
-        method: 'POST',
-        data: JSON.stringify({'filenames': fileNamesList}),
-        contentType: 'application/json',
-        success: function(_data) {},
-        error: function(_request, _status, _error) {
-			console.log('An error occured during deletion of files')
-        }
-    })
+	extraInputFiles = {}
+	extraInputsNames = []
 }
