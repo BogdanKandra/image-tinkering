@@ -23,7 +23,7 @@ def isColor(image):
 
 def getChannels(image):
     """ Takes an image as parameter and returns a list containing
-    its R, G, B channels or the image itself, if it is grayscale
+    its R, G, B (, A) channels or the image itself, if it is grayscale
     """
     return [copy.deepcopy(image)] if isGrayscale(image) else cv2.split(image)
 
