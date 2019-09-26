@@ -49,6 +49,12 @@
 	- many-to-one:  op(image, [extra_inputs_list], parameterDictionary), returns one image
 	- one-to-many:  op(image, parameterDictionary), returns list of images
 	- many-to-many: op(image, [extra_inputs_list], parameterDictionary), returns list of images
+	
+	- op(image, [extra_inputs_list], parameterDictionary), returns list of images
+		- one-to-one: extra_inputs_list = [], returns [image]
+		- many-to-one: returns [image]
+		- one-to-many: extra_inputs_list = []
+		
 
 - Structura fisierului de configurare operations.json:
 	- 'function' 		 -> string obligatoriu, cale catre functia de pe server care aplica operatia;
