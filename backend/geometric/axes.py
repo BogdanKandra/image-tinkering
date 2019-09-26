@@ -25,7 +25,7 @@ def flip(image, parameters):
         axis = parameters['axis']
     else:
         axis = 'horizontal'
-    
+
     flipped_image = np.zeros(image.shape, dtype=np.uint8)
     if axis == 'vertical':
         for i in range(image.shape[0]):
@@ -44,10 +44,10 @@ def flip(image, parameters):
         # Flip horizontally
         for j in range(image.shape[1]):
             flipped_image[:,j] = resultTemp[:,image.shape[1] - j - 1]
-        
+
 #        flipped_image = np.fliplr(image)
 #        flipped_image = np.flipud(flipped_image)
-    
+
     return flipped_image
 
 def mirror(image, parameters):
@@ -79,12 +79,12 @@ def mirror(image, parameters):
     else:
         axis = 'horizontal'
         location = 'right'
-    
+
     # Use the flip function to flip the input image accordingly
     params = {'axis': axis}
     if axis != 'both':
         flipped = flip(image, params)
-        
+
         # Create the mirror image according to the location parameter
         if location == 'left':
             mirror_image = np.hstack((flipped, image))
@@ -98,7 +98,7 @@ def mirror(image, parameters):
         flippedH = flip(image, {'axis': 'horizontal'})
         flippedV = flip(image, {'axis': 'vertical'})
         flippedBoth = flip(flippedV, {'axis': 'horizontal'})
-        
+
         # Create the mirror image according to the location parameter
         if locationH == 'left':
             mirror1 = np.hstack((flippedH, image))
@@ -106,10 +106,10 @@ def mirror(image, parameters):
         else:
             mirror1 = np.hstack((image, flippedH))
             mirror2 = np.hstack((flippedV, flippedBoth))
-        
+
         if locationV == 'top':
             mirror_image = np.vstack((mirror2, mirror1))
         else:
             mirror_image = np.vstack((mirror1, mirror2))
-    
+
     return mirror_image
