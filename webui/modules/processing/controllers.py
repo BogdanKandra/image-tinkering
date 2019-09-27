@@ -40,7 +40,7 @@ def process():
 
             if first_operation_type == 'many-to-one':
                 # Load the extra inputs needed for calling the many-to-one operation
-                extra_inputs = load_extra_inputs(file_name)
+                extra_inputs = load_extra_inputs(file_name, operation_list[0]['extras'])
 
                 # Make the operation call
                 image = call_module_function(image, operation_list[0], extra_inputs)
@@ -62,7 +62,7 @@ def process():
                 images = call_module_function(image, operation_list[0])
             else:
                 # Load the extra inputs needed for calling the many-to-many operation
-                extra_inputs = load_extra_inputs(file_name)
+                extra_inputs = load_extra_inputs(file_name, operation_list[0]['extras'])
 
                 # Make the operation call
                 images = call_module_function(image, operation_list[0], extra_inputs)
@@ -107,19 +107,16 @@ def call_module_function(*arguments):
 
     return result
 
-def load_extra_inputs(file_name):
+def load_extra_inputs(file_name, extra_inputs_names):
     """ Loads the extra inputs needed for calling a 'many-to' operation """
-    extra_inputs = []
-    i = 1
+    extra_inputs = {}
 
-    while True:
-        extra_file_name = file_name + '_extra_' + str(i)
-        extra_image_path = os.path.join(app.config['IMAGES_DIR'], extra_file_name)
+    for i in range(len(extra_inputs_names)):
+        extra_file_name = file_name + '_' + extra_inputs_names[i]
+        extra_file_extension = [file.split('.')[1] for file in os.listdir(app.config['EXTRA_IMAGES_DIR']) if file.startswith(extra_file_name)][0]
+        extra_image_path = os.path.join(app.config['EXTRA_IMAGES_DIR'], extra_file_name + '.' + extra_file_extension)
         extra_image = cv2.imread(extra_image_path, cv2.IMREAD_UNCHANGED)
-        if type(extra_image).__name__ != 'NoneType':
-            extra_inputs.append(extra_image)
-            i += 1
-        else:
-            break
+        
+        extra_inputs[extra_inputs_names[i]] = extra_image
 
     return extra_inputs
