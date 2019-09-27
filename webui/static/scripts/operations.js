@@ -62,6 +62,9 @@ function populateOperationsSelect() {
                 opConfig['function'] = data[addedValue]['function']
                 opConfig['type'] = data[addedValue]['type']
                 opConfig['params'] = {}
+                if (opConfig['type'].startsWith('mamy-to-')) {
+                    opConfig['extras'] = data[addedValue]['extraInputsNames']
+                }
                 operationConfigurations.push(opConfig)
 
                 // Open a modal asking the user to select the extra inputs, if the operation type is 'many-to-'
@@ -555,7 +558,8 @@ function uploadExtraInputs(imageName) {
         imageData.append('extrafiles-' + (i + 1), extraInputFiles[extraInputsNames[i]])
     }
 
-    imageData.append('image-name', JSON.stringify(imageName))
+    imageData.append('image-name', imageName)
+    imageData.append('params-names', extraInputsNames)
 
 	$.ajax({
 		url: '/uploads/extrainputs',
