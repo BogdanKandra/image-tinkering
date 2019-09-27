@@ -65,6 +65,7 @@ def upload_extra_inputs():
     ''' Uploads the specified extra input files, associated to the specified image '''
     files = request.files
     image_name = request.form['image-name']
+    params_names = request.form['params-names'].split(',') # Convert string to list
 
     mime = magic.Magic(mime=True)
     saved_files = {
@@ -72,8 +73,11 @@ def upload_extra_inputs():
         'video': []
         }
 
+    i = 0
     for key in files:
         file = files[key]
+        param_name = params_names[i]
+
         mime_type = mime.from_buffer(file.stream.read(1024))
         file.stream.seek(0) # Move the file pointer back to the start of buffer
 
@@ -82,7 +86,7 @@ def upload_extra_inputs():
             uploads_dir = app.config['EXTRA_IMAGES_DIR']
             filetype = 'image'
 
-            name = image_name.split('.')[0][1:] + '_' + secure_filename(file.filename)
+            name = image_name.split('.')[0] + '_' + param_name + '.' + file.filename.split('.')[1]
             upload_path = os.path.join(uploads_dir, name)
 
             try:
@@ -91,5 +95,7 @@ def upload_extra_inputs():
             except RequestEntityTooLarge:
                 error_message = 'File could not be uploaded. Maximum size must be 50 MB'
                 abort(413, error_message)
+
+        i += 1
 
     return make_response(jsonify(saved_files), 200)
