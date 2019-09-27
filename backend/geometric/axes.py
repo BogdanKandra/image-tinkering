@@ -87,7 +87,7 @@ def mirror(image, extra_inputs, parameters):
     # Use the flip function to flip the input image accordingly
     params = {'axis': axis}
     if axis != 'both':
-        flipped = flip(image, {}, params)
+        flipped = flip(image, {}, params)[0]
 
         # Create the mirror image according to the location parameter
         if location == 'left':
@@ -99,9 +99,9 @@ def mirror(image, extra_inputs, parameters):
         else:
             mirror_image = np.vstack((image, flipped))
     else:
-        flipped_h = flip(image, {}, {'axis': 'horizontal'})
-        flipped_v = flip(image, {}, {'axis': 'vertical'})
-        flipped_both = flip(flipped_v, {}, {'axis': 'horizontal'})
+        flipped_h = flip(image, {}, {'axis': 'horizontal'})[0]
+        flipped_v = flip(image, {}, {'axis': 'vertical'})[0]
+        flipped_both = flip(flipped_v, {}, {'axis': 'horizontal'})[0]
 
         # Create the mirror image according to the location parameter
         if location_h == 'left':

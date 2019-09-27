@@ -142,7 +142,7 @@ def ascii_art(image, extra_inputs, parameters):
     original_size = (w, h)
     image = utils.resize(image)
     if utils.is_color(image):
-        image = grayscale(image)
+        image = grayscale(image)[0]
 
     # Build results as list of lines of text and entire text
     lines = [''.join(number_to_char(row)) for row in list(image)]

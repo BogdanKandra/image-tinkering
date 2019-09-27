@@ -36,7 +36,7 @@ def initialise():
         image_file = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
         image_name_components = image.split('.')
 
-        if utils.isGrayscale(image_file):
+        if utils.is_grayscale(image_file):
             # Compute the padded image
             image_h, image_w = image_file.shape[:2]
 #            padded_h, padded_w = 2 * image_h, 2 * image_w
@@ -54,7 +54,7 @@ def initialise():
 #            file.close()
         else:
             # Compute the R, G, B channels of the image
-            image_channels = utils.getChannels(image_file)
+            image_channels = utils.get_channels(image_file)
 
             # Serialise the image channels
             i = 0
@@ -79,7 +79,7 @@ def initialise():
 #            padded_image[0:image_h, 0:image_w] = image_file
 
 #            # Compute the R, G, B channels of the padded image
-#            padded_image_channels = utils.getChannels(padded_image)
+#            padded_image_channels = utils.get_channels(padded_image)
 
 #            # Compute the FFT of the padded image channels
 #            padded_image_FFTs = [np.fft.fftshift(np.fft.fft2(channel)) for channel in padded_image_channels]

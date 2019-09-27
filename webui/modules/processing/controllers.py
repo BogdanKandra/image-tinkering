@@ -46,7 +46,7 @@ def process():
                 extra_inputs = {}
 
             # Make the operation call
-            [image] = call_module_function(image, extra_inputs, operation_list[0])
+            image = call_module_function(image, extra_inputs, operation_list[0])[0]
 
             # Iterate over each of the remaining operations ('one-to-one' or 'one-to-many'), applying them in order
             for i in range(starting_index, len(operation_list)):
@@ -54,7 +54,7 @@ def process():
                     images = call_module_function(image, {}, operation_list[i])
                     multiple_outputs = True
                 else:
-                    [image] = call_module_function(image, {}, operation_list[i])
+                    image = call_module_function(image, {}, operation_list[i])[0]
         elif first_operation_type in ('one-to-many', 'many-to-many'):
             # Do not expect any other operations to follow; this operation yields a list of results
             multiple_outputs = True
@@ -100,9 +100,9 @@ def call_module_function(*arguments):
 
     # Call the requested function on the image
     imported_module = importlib.import_module('backend.' + package + '.' + module)
-    result = getattr(imported_module, function)(image, extra_inputs_dict, parameters)
+    results = getattr(imported_module, function)(image, extra_inputs_dict, parameters)
 
-    return result
+    return results
 
 def load_extra_inputs(file_name, extra_inputs_names):
     """ Loads the extra inputs needed for calling a 'many-to' operation """
