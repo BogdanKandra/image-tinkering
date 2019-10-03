@@ -9,7 +9,6 @@ from flask import Flask
 from flask.helpers import make_response
 from flask.json import jsonify
 from flask.templating import render_template
-from modules.test.controllers import test_mod
 from modules.uploads.controllers import UPLOAD_MOD
 from modules.initialisations.controllers import INIT_MOD
 from modules.processing.controllers import PROCESSING_MOD
@@ -32,7 +31,6 @@ APP.config['TEMP_DATA'] = os.path.join(APP_ROOT, TEMP_DATA_DIRECTORY)
 APP.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
 # Blueprints Registration
-APP.register_blueprint(test_mod)
 APP.register_blueprint(UPLOAD_MOD)
 APP.register_blueprint(INIT_MOD)
 APP.register_blueprint(PROCESSING_MOD)

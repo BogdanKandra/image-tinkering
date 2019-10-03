@@ -38,35 +38,34 @@ def process():
             # Only one-to-one operations will follow, so operation chaining is possible
             starting_index = 0 # Stores the starting index for chaining the operations
 
+            # Load the extra inputs, if this is a many-to- operation
             if first_operation_type == 'many-to-one':
-                # Load the extra inputs needed for calling the many-to-one operation
-                extra_inputs = load_extra_inputs(file_name)
-
-                # Make the operation call
-                image = call_module_function(image, operation_list[0], extra_inputs)
+                extra_inputs = load_extra_inputs(file_name, operation_list[0]['extras'])
+                image = call_module_function(image, extra_inputs, operation_list[0])[0]
                 starting_index = 1
+            else:
+                extra_inputs = {}
 
             # Iterate over each of the remaining operations ('one-to-one' or 'one-to-many'), applying them in order
             for i in range(starting_index, len(operation_list)):
                 if operation_list[i]['type'] == 'one-to-many':
-                    images = call_module_function(image, operation_list[i])
+                    images = call_module_function(image, {}, operation_list[i])
                     multiple_outputs = True
                 else:
-                    image = call_module_function(image, operation_list[i])
+                    image = call_module_function(image, {}, operation_list[i])[0]
         elif first_operation_type in ('one-to-many', 'many-to-many'):
             # Do not expect any other operations to follow; this operation yields a list of results
             multiple_outputs = True
             
-            if first_operation_type == 'one-to-many':
-                # Make the operation call
-                images = call_module_function(image, operation_list[0])
+            # Load the extra inputs, if this is a many-to- operation
+            if first_operation_type == 'many-to-many':
+                extra_inputs = load_extra_inputs(file_name, operation_list[0]['extras'])
             else:
-                # Load the extra inputs needed for calling the many-to-many operation
-                extra_inputs = load_extra_inputs(file_name)
-
-                # Make the operation call
-                images = call_module_function(image, operation_list[0], extra_inputs)
-        
+                extra_inputs = {}
+            
+            # Make the operation call
+            images = call_module_function(image, extra_inputs, operation_list[0])
+            
         if multiple_outputs:
             # Save the results in temp zone
             i = 1
@@ -88,38 +87,31 @@ def process():
 
 def call_module_function(*arguments):
     """ Dynamically calls specified function from specified package and module,
-    on the given image. If given two arguments, it will simply call the function
-    on the image, with the given arguments; if given three arguments, it will
-    call the function on the image, with the given arguments and the given
-    list of extra inputs (for many-to operations)
+    on the given image. The three arguments of the function represent, in order:
+    the input image, any extra input images (necessary in the case of many-to-
+    operations, empty otherwise) and the parameters dictionary to be given to the call
     """
     # Unwind parameters and gather the operation details
-    image, parameter_object = arguments[0], arguments[1]
-    package, module, function = parameter_object['function'].split('.')
-    parameters = parameter_object['params']
+    image, extra_inputs_dict, parameters_dict = arguments[0], arguments[1], arguments[2]
+    package, module, function = parameters_dict['function'].split('.')
+    parameters = parameters_dict['params']
 
     # Call the requested function on the image
     imported_module = importlib.import_module('backend.' + package + '.' + module)
-    if len(arguments) == 2:
-        result = getattr(imported_module, function)(image, parameters)
-    elif len(arguments) == 3:
-        result = getattr(imported_module, function)(image, arguments[2], parameters)
+    results = getattr(imported_module, function)(image, extra_inputs_dict, parameters)
 
-    return result
+    return results
 
-def load_extra_inputs(file_name):
+def load_extra_inputs(file_name, extra_inputs_names):
     """ Loads the extra inputs needed for calling a 'many-to' operation """
-    extra_inputs = []
-    i = 1
+    extra_inputs = {}
 
-    while True:
-        extra_file_name = file_name + '_extra_' + str(i)
-        extra_image_path = os.path.join(app.config['IMAGES_DIR'], extra_file_name)
+    for i in range(len(extra_inputs_names)):
+        extra_file_name = file_name + '_' + extra_inputs_names[i]
+        extra_file_extension = [file.split('.')[1] for file in os.listdir(app.config['EXTRA_IMAGES_DIR']) if file.startswith(extra_file_name)][0]
+        extra_image_path = os.path.join(app.config['EXTRA_IMAGES_DIR'], extra_file_name + '.' + extra_file_extension)
         extra_image = cv2.imread(extra_image_path, cv2.IMREAD_UNCHANGED)
-        if type(extra_image).__name__ != 'NoneType':
-            extra_inputs.append(extra_image)
-            i += 1
-        else:
-            break
+
+        extra_inputs[extra_inputs_names[i]] = extra_image
 
     return extra_inputs

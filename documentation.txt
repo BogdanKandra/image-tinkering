@@ -11,7 +11,7 @@
 11. http://paulbourke.net/dataformats/asciiart/ -- ASCII art
 
 
-- La submit, se face un AJAX call care are ca date un obiect de forma:
+- La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
 	{
 		'numeImg_i': [
 			{
@@ -31,32 +31,13 @@
 		]
 	}
 
-- Sa vorbesc despre structura serverului - fisiere, module, etc
-
-- Negative Filter: Pagina 108 din carte
-- Grayscale Filter: Vezi referintele 07 si 08
-- Sepia Filter: Vezi referinta 09
-- ASCII Filter: Vezi referintele 10 si 11
-
-
-
-- Ca sa adaug o operatie noua in proiect, trebuie sa:
-	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
-	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
-	
-- Contractele tipurilor de operatii:
-	- one-to-one:   op(image, parameterDictionary), returns one image
-	- many-to-one:  op(image, [extra_inputs_list], parameterDictionary), returns one image
-	- one-to-many:  op(image, parameterDictionary), returns list of images
-	- many-to-many: op(image, [extra_inputs_list], parameterDictionary), returns list of images
-
 - Structura fisierului de configurare operations.json:
 	- 'function' 		 -> string obligatoriu, cale catre functia de pe server care aplica operatia;
 						 -> este de forma numeDirector.numeScript.numeFunctie
 	- 'type'     		 -> string obligatoriu, tipul de operatie;
 						 -> este una dintre cele 4 valori de mai sus
 	- 'description' 	 -> string optional, descrierea operatiei, va aparea ca popup
-	- 'extraInputsNames' -> lista de strings obligatorie daca 'type' incepe cu 'many-to-', contine denumirile parametrilor suplimentari de input
+	- 'extraInputsNames' -> lista de strings obligatorie daca 'type' incepe cu 'many-to-', contine denumirile parametrilor suplimentari de input (Exemplu: 'Watermark')
 	- 'parameters'  	 -> o lista de obiecte optionala, fiecare reprezentand configurarea unui parametru
 		Configurarea parametrilor:
 		- 'name'    -> string obligatoriu, numele parametrului
@@ -69,3 +50,35 @@
 		- 'presenceCondition' -> string obligatoriu daca presenceDependency este prezent, conditia asupra parametrului-dependenta
 							  -> e de forma operator|valoare (exemplu '==butterworth'
 		- 'description' -> string optional, descrierea parametrului, apare ca popup la hover pe parametru
+	
+- Contractul semnaturilor operatiilor:
+	operation(image, extra_inputs_dict, parameters_dict), returns list of images
+		- one-to-one: extra_inputs_list = [], returns [image]
+		- many-to-one: returns [image]
+		- one-to-many: extra_inputs_list = []
+	
+	- extra_inputs_dict:
+		- are ca si cheie numele parametrului extra, asa cum este el precizat in campul 'extraInputsNames' din operations.json
+		- are ca si valoare imaginea, ca NumPy array
+	
+	- parameters_dict:
+		- are ca si cheie numele parametrului, asa cum este el precizat in campul 'name' din fiecare element al listei 'parameters' din operation.json
+		- are ca si valoare valoarea parametrului
+
+- Ca sa adaug o operatie noua in proiect, trebuie sa:
+	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
+	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
+
+- Sa vorbesc despre structura serverului - fisiere, module, etc
+
+- Negative Filter: Pagina 108 din carte
+- Grayscale Filter: Vezi referintele 07 si 08
+- Sepia Filter: Vezi referinta 09
+- ASCII Filter: Vezi referintele 10 si 11
+
+
+
+
+		
+
+
