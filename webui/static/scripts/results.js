@@ -88,14 +88,16 @@ function resetProgress() {
 
 	// Direct the user back to the File Selection Step
 	$('#resultsContent').css('display', 'none')
+	$('#operationSelectionContent').css('display', 'none')
 	$('#fileSelectionContent').css('display', 'block')
+	$('#homeButton').css('display', 'none')
 	let steps = $('#steps').children('.step')
 	steps.first().addClass('active')
 	steps.first().removeClass('completed')
+	steps.eq(1).removeClass('active')
 	steps.eq(1).removeClass('completed')
 	steps.eq(2).removeClass('active')
 	steps.eq(2).removeClass('completed')
-	$('#homeButton').css('display', 'none')
 
 	// Remove old content from each screen
 	$('#fileInput').val('')
