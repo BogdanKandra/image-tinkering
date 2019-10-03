@@ -41,12 +41,10 @@ def process():
             # Load the extra inputs, if this is a many-to- operation
             if first_operation_type == 'many-to-one':
                 extra_inputs = load_extra_inputs(file_name, operation_list[0]['extras'])
+                image = call_module_function(image, extra_inputs, operation_list[0])[0]
                 starting_index = 1
             else:
                 extra_inputs = {}
-
-            # Make the operation call
-            image = call_module_function(image, extra_inputs, operation_list[0])[0]
 
             # Iterate over each of the remaining operations ('one-to-one' or 'one-to-many'), applying them in order
             for i in range(starting_index, len(operation_list)):
