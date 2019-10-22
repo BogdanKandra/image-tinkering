@@ -16,8 +16,9 @@ from backend import utils as projutils
 
 
 def visible_watermark(image, extra_inputs, parameters):
-    ''' Embeds a watermark image into the bottom-right corner of a host image,
-    using the visible watermarking technique
+    ''' Embeds a watermark image into a host image, using the visible watermarking technique; the
+    watermark is scaled to the selected size and is embedded into the selected location, with the
+    selected transparency
 
     Arguments:
         *image* (NumPy array) -- the image to be watermarked
@@ -28,17 +29,17 @@ def visible_watermark(image, extra_inputs, parameters):
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
-            *Blending Mode* (str, optional) -- how will the watermark image be overlayed over the
-            host image; possible values are: *transparent* and *opaque*; default value is
-            *transparent*
+            *transparency* (str, optional) -- how will the watermark image be overlayed over the
+            host image; possible values are: *opaque*, *transparent* and *very transparent*; default
+            value is *transparent*
 
-            *Watermark Location* (str, optional) -- the location where the watermark image will be
+            *location* (str, optional) -- the location where the watermark image will be
             embedded; possible values are: *bottom right*, *bottom left*, *top right*, *top left*,
             *center*, *everywhere*; default value is *bottom right*
 
-            *Watermark Size* (int, optional) -- the maximum width of the watermark image, as a
-            percentage of the width of the host image; possible values are: 10 to 100, with
-            increments of 10; default value is 10 (%)
+            *size* (int, optional) -- the maximum width of the watermark image, as a
+            percentage of the width of the host image; possible values are: 10 to 90, with
+            increments of 10; default value is 20 (%)
 
     **Notes**: if the watermark image's width is smaller than the maximum width, the image will be
     left unchanged. If the height of the watermark image (after width adjustment) is greater
@@ -52,25 +53,25 @@ def visible_watermark(image, extra_inputs, parameters):
     watermark = extra_inputs['watermark image']
 
     # Parameters extraction
-    if 'Blending Mode' in parameters:
-        mode = parameters['Blending Mode']
+    if 'transparency' in parameters:
+        mode = parameters['transparency']
     else:
         mode = 'transparent'
 
-    if 'Watermark Location' in parameters:
-        location = parameters['Watermark Location']
+    if 'location' in parameters:
+        location = parameters['location']
     else:
         location = 'bottom right'
 
-    if 'Watermark Size' in parameters:
-        size = parameters['Watermark Size']
+    if 'size' in parameters:
+        size = parameters['size']
     else:
-        size = 10
+        size = 20
 
     # Check if the watermark image needs rescaling
     image_h, image_w = image.shape[:2]
     watermark_h, watermark_w = watermark.shape[:2]
-    maximum_width = size / 100 * image_w
+    maximum_width = int(size / 100 * image_w)
 
     if watermark_w > maximum_width: # Resize watermark image by new width
         watermark = projutils.resize_dimension(watermark, new_width=maximum_width)
@@ -89,38 +90,80 @@ def visible_watermark(image, extra_inputs, parameters):
     # Verify whether the alpha channel is needed or not and act accordingly
     if mode == 'opaque':
         # Remove the alpha channels from both images (if present)
-        pass
-    else:
-        # Add alpha channels to both images (if not already present)
-        pass
-    
-    # TODO - Apply the watermark using the equations
+        if image.shape[2] == 4:
+            image = image[:, :, :3]
 
-def visible_watermark1(wmImage, hostImage):
-    # Split the image channels and merge them back using the Alpha Channel as a
-    # mask, due to a bug in OpenCV representing the supposed transparent pixels 
-    # (0-valued) as opaque pixels (255-valued)
-    (B, G, R, A) = cv2.split(wmImage)
-    B = cv2.bitwise_and(B, B, mask=A)  # Performs the and operation only for elems
-    G = cv2.bitwise_and(G, G, mask=A)  # where A[i][j] != 0, thus making the correct
-    R = cv2.bitwise_and(R, R, mask=A)  # pixels completely transparent (equal to 0)
-    wmImage = cv2.merge([B, G, R, A])
-    
-    wmH, wmW = wmImage.shape[:2]
-    
-    # Add an extra dimension to the host image - the alpha channel
-    imageH, imageW = hostImage.shape[:2]
-    alpha = np.ones((imageH, imageW), dtype='uint8') * 255
-    hostImage = np.dstack((hostImage, alpha))
-    
-    # Build an overlay of the same size as the host image
-    overlay = np.zeros((imageH, imageW, 4), dtype='uint8')
-    
-    # Add the watermark image to the overlay in the bottom-right corner
-    overlay[imageH - wmH - 10:imageH - 10, imageW - wmW - 10:imageW - 10] = wmImage
-    
-    # Add the overlay to the host image and save into output
-    output = hostImage.copy()
-    cv2.addWeighted(overlay, 1, hostImage, 1, 0, output)
-    
-    return output
+        if watermark.shape[2] == 4:
+            watermark = watermark[:, :, :3]
+    else:
+        # Add opaque alpha channels to both images (if not already present)
+        if image.shape[2] == 3:
+            alpha_channel = np.ones((image_h, image_w), dtype='uint8') * 255
+            image = np.dstack((image, alpha_channel))
+
+        if watermark.shape[2] == 3:
+            alpha_channel = np.ones((watermark_h, watermark_w), dtype='uint8') * 255
+            watermark = np.dstack((watermark, alpha_channel))
+
+    # Apply the watermark over the host image; alpha blending technique is used
+    # result = background * (1 - alpha) + foreground * alpha
+    watermarked_image = image.copy()
+
+    # Compute the alpha level needed for alpha blending
+    if mode == 'opaque':
+        transparency_level = 255 / 255
+    elif mode == 'transparent':
+        transparency_level = 170 / 255
+    elif mode == 'very transparent':
+        transparency_level = 85 / 255
+
+    # Compute the region of interest, based on the location specified by user
+    if location == 'top left':
+        line_start = 10
+        line_end = watermark_h + 10
+        column_start = 10
+        column_end = watermark_w + 10
+    elif location == 'top right':
+        line_start = 10
+        line_end = watermark_h + 10
+        column_start = image_w - watermark_w - 10
+        column_end = image_w - 10
+    elif location == 'bottom left':
+        line_start = image_h - watermark_h - 10
+        line_end = image_h - 10
+        column_start = 10
+        column_end = watermark_w + 10
+    elif location == 'bottom right':
+        line_start = image_h - watermark_h - 10
+        line_end = image_h - 10
+        column_start = image_w - watermark_w - 10
+        column_end = image_w - 10
+    elif location == 'center':
+        line_start = int(image_h / 2 - watermark_h / 2)
+        line_end = int(image_h / 2 + watermark_h / 2)
+        column_start = int(image_w / 2 - watermark_w / 2)
+        column_end = int(image_w / 2 + watermark_w / 2)
+    elif location == 'everywhere':
+        # Compute number of horizontal and vertical repeats, respectively
+        repeat_x = image_w // watermark_w
+        repeat_y = image_h // watermark_h
+
+        for x in range(repeat_x):
+            for y in range(repeat_y):
+                line_start = watermark_h * y
+                line_end = watermark_h * (y + 1)
+                column_start = watermark_w * x
+                column_end = watermark_w * (x + 1)
+
+                watermarked_image[line_start : line_end, column_start : column_end] = watermark
+
+        return [watermarked_image]
+    else:
+        raise ValueError("'location' parameter value not allowed")
+
+    # Overlay the watermark on the host image
+    watermarked_image[line_start : line_end, column_start : column_end] = \
+        image[line_start : line_end, column_start : column_end] * (1 - transparency_level) + \
+        watermark * transparency_level
+
+    return [watermarked_image]
