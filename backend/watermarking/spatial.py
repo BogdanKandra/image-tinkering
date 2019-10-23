@@ -14,7 +14,7 @@ from backend import utils as projutils
 
 
 def visible_watermark(image, extra_inputs, parameters):
-    ''' Embeds a watermark image into a host image, using the visible watermarking technique; the
+    ''' Embeds a watermark image over a host image, using the visible watermarking technique; the
     watermark is scaled to the selected size and is embedded into the selected location, with the
     selected transparency
 
@@ -39,13 +39,14 @@ def visible_watermark(image, extra_inputs, parameters):
             percentage of the width of the host image; possible values are: 10 to 90, with
             increments of 10; default value is 20 (%)
 
-    **Notes**: if the watermark image's width is smaller than the maximum width, the image will be
-    left unchanged. If the height of the watermark image (after width adjustment) is greater
-    than the height of the host image, the height of the watermark image will be rescaled as to fit
-    the host image
-
     Returns:
         list of NumPy array uint8 -- list containing the watermarked image
+
+    Observations:
+        If the watermark image's width is smaller than the maximum width, the image will be left
+        unchanged. If the height of the watermark image (after width adjustment) is greater than the
+        height of the host image, the height of the watermark image will be rescaled as to fit the
+        host image
     '''
     # Load the extra parameter, the watermark image
     watermark = extra_inputs['Watermark']
