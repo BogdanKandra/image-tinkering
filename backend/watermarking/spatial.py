@@ -153,17 +153,17 @@ def visible_watermark(image, extra_inputs, parameters):
                 column_start = watermark_w * x
                 column_end = watermark_w * (x + 1)
 
-                watermarked_image[line_start : line_end, column_start : column_end] = \
-                    image[line_start : line_end, column_start : column_end] * (1 - alpha_level) + \
-                    watermark * alpha_level
+                watermarked_image[line_start : line_end, column_start : column_end, : 3] = \
+                    image[line_start : line_end, column_start : column_end, : 3] * (1 - alpha_level) + \
+                    watermark[:, :, : 3] * alpha_level
 
         return [watermarked_image]
     else:
         raise ValueError("'location' parameter value not allowed")
 
     # Overlay the watermark on the host image
-    watermarked_image[line_start : line_end, column_start : column_end] = \
-        image[line_start : line_end, column_start : column_end] * (1 - alpha_level) + \
-        watermark * alpha_level
+    watermarked_image[line_start : line_end, column_start : column_end, : 3] = \
+        image[line_start : line_end, column_start : column_end, : 3] * (1 - alpha_level) + \
+        watermark[:, :, : 3] * alpha_level
 
     return [watermarked_image]
