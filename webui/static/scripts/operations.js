@@ -4,7 +4,7 @@ let operationConfigurations = [] // List of objects each describing the configur
 let dataToProcess = {}           // Object to be sent to AJAX call when the user clicks the PROCESS button
 let configuredImages = 0         // Counter for keeping track of number of images configured
 let extraInputFiles = {}         // Object containing all extra input images (as File objects)
-let extraInputsNames = []         // List containing the names of the extra input parameters needed for certain operations
+let extraInputsNames = []        // List containing the names of the extra input parameters needed for certain operations
 
 // For each uploaded file, creates a container holding the uploaded file and a revealing "CONFIGURE" button over the file
 function populateFilesAndOperationsContainer(data) {
@@ -62,7 +62,7 @@ function populateOperationsSelect() {
                 opConfig['function'] = data[addedValue]['function']
                 opConfig['type'] = data[addedValue]['type']
                 opConfig['params'] = {}
-                if (opConfig['type'].startsWith('mamy-to-')) {
+                if (opConfig['type'].startsWith('many-to-')) {
                     opConfig['extras'] = data[addedValue]['extraInputsNames']
                 }
                 operationConfigurations.push(opConfig)
@@ -142,7 +142,7 @@ function populateExtraInputsModal(extraInputsNames) {
                                     .change(function(event) {
 
                                         // Manage the number of selected extra images and
-                                        // Display the selected image in place of the placeholder or the placeholder, if the user did not select any image
+                                        // Display the selected image in place of the placeholder (or the placeholder, if the user did not select any image)
                                         $('#' + $(this).prop('id') + '_extra').replaceWith(imagePreviewContainer)
                                         let filesCount = event.target.files.length
                                         
@@ -324,7 +324,9 @@ function createMenuEntry(parameterObject, functionName) {
     }
 
     if (paramType == 'range') {
-        for (let i = parameterObject['minimum']; i <= parameterObject['maximum']; i++) {
+        let step = (parameterObject.hasOwnProperty('step')) ? parameterObject['step'] : 1
+
+        for (let i = parameterObject['minimum']; i <= parameterObject['maximum']; i += step) {
             let item = $('<div>').addClass('item')
             item.text(i)
             if (i == paramDefault) {
