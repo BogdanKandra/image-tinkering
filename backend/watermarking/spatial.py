@@ -6,8 +6,6 @@ Created on Thu Oct  3 19:50:10 2019
 import os
 import sys
 import numpy as np
-import cv2
-import utils as wmutils
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
     project_path = os.path.dirname(project_path)
@@ -25,7 +23,7 @@ def visible_watermark(image, extra_inputs, parameters):
 
         *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call
 
-            *watermark image* (NumPy array) -- the image to be embedded on top of the host image
+            *Watermark* (NumPy array) -- the image to be embedded on top of the host image
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
@@ -50,7 +48,7 @@ def visible_watermark(image, extra_inputs, parameters):
         list of NumPy array uint8 -- list containing the watermarked image
     '''
     # Load the extra parameter, the watermark image
-    watermark = extra_inputs['watermark image']
+    watermark = extra_inputs['Watermark']
 
     # Parameters extraction
     if 'transparency' in parameters:
@@ -111,11 +109,11 @@ def visible_watermark(image, extra_inputs, parameters):
 
     # Compute the alpha level needed for alpha blending
     if mode == 'opaque':
-        transparency_level = 255 / 255
+        alpha_level = 255 / 255
     elif mode == 'transparent':
-        transparency_level = 170 / 255
+        alpha_level = 170 / 255
     elif mode == 'very transparent':
-        transparency_level = 85 / 255
+        alpha_level = 85 / 255
 
     # Compute the region of interest, based on the location specified by user
     if location == 'top left':
@@ -155,7 +153,9 @@ def visible_watermark(image, extra_inputs, parameters):
                 column_start = watermark_w * x
                 column_end = watermark_w * (x + 1)
 
-                watermarked_image[line_start : line_end, column_start : column_end] = watermark
+                watermarked_image[line_start : line_end, column_start : column_end] = \
+                    image[line_start : line_end, column_start : column_end] * (1 - alpha_level) + \
+                    watermark * alpha_level
 
         return [watermarked_image]
     else:
@@ -163,7 +163,7 @@ def visible_watermark(image, extra_inputs, parameters):
 
     # Overlay the watermark on the host image
     watermarked_image[line_start : line_end, column_start : column_end] = \
-        image[line_start : line_end, column_start : column_end] * (1 - transparency_level) + \
-        watermark * transparency_level
+        image[line_start : line_end, column_start : column_end] * (1 - alpha_level) + \
+        watermark * alpha_level
 
     return [watermarked_image]
