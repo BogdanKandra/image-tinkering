@@ -44,6 +44,7 @@
 		- 'type'    -> string obligatoriu, poate avea una dintre valorile: 'range', 'lookup'
 		- 'minimum' -> numar obligatoriu daca 'type' = 'range', valoarea minima pe care o poate avea parametrul
 		- 'maximum' -> numar obligatoriu daca 'type' = 'range', valoarea maxima pe care o poate avea parametrul
+		- 'step'    -> pasul cu care se trece de la o valoare la alta in range (optional, default e 1)
 		- 'values'  -> lista obligatorie daca 'type' = 'lookup', lista de valori pe care o poate avea parametrul
 		- 'default' -> string optional, valoarea parametrului care va fi preselectata in UI
 		- 'presenceDependency' -> string optional, numele unui alt parametru de a carui valoare depinde prezenta acestui parametru in UI
