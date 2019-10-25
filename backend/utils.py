@@ -62,7 +62,7 @@ def fft_plot(image, cmap=None):
 
     plt.show()
 
-def resize_dimension(image, new_height=0, new_width=0):
+def resize_dimension(image, new_height=0, new_width=0, interpolation_method=cv2.INTER_LINEAR):
     ''' If one of the dimensions is not given, resizes an image to the specified height (or width),
     while maintaining the original aspect ratio. If given both dimensions, resizes an image to the
     fixed, specified dimensions
@@ -91,7 +91,7 @@ def resize_dimension(image, new_height=0, new_width=0):
 
     new_shape = (new_width, new_height)
 
-    return cv2.resize(image, new_shape)
+    return cv2.resize(image, new_shape, interpolation_method)
 
 def resize_percentage(image, percentage=0):
     ''' Resizes an image by reducing the dimensions to the given percentage of the original
