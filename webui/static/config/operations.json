@@ -1,6 +1,6 @@
 {
   "Blur (Frequency Domain)": {
-    "function": "filtering.fourier.low_pass",
+    "function": "filtering.frequency.low_pass",
     "type": "one-to-one",
     "parameters": [
       {
@@ -31,7 +31,7 @@
     "description": "Blurs an image using the FFT"
   },
   "Sharpen (Frequency Domain)": {
-    "function": "filtering.fourier.high_pass",
+    "function": "filtering.frequency.high_pass",
     "type": "one-to-one",
     "parameters": [
       {
