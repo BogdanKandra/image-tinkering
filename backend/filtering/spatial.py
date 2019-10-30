@@ -140,7 +140,7 @@ def ascii_art(image, extra_inputs, parameters):
     # Resize and convert the image to grayscale
     h, w = image.shape[:2]
     original_size = (w, h)
-    image = utils.resize(image)
+    image = utils.resize_dimension(image, new_width=80)
     if utils.is_color(image):
         image = grayscale(image)[0]
 

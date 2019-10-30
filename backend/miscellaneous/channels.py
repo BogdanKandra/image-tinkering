@@ -16,7 +16,7 @@ from backend import utils
 
 
 def split_channels(image, extra_inputs, parameters):
-    """ Splits an image into its channels and returns them.
+    ''' Splits an image into its channels and returns them.
 
     Arguments:
         *image* (NumPy array) -- the image to be split
@@ -31,7 +31,7 @@ def split_channels(image, extra_inputs, parameters):
 
     Returns:
         list of NumPy array uint8 -- list containing the channels of the image
-    """
+    '''
     if utils.is_color(image):
         b = image[:, :, 0]
         g = image[:, :, 1]
@@ -53,7 +53,7 @@ def split_channels(image, extra_inputs, parameters):
     return [image]
 
 def remove_channels(image, extra_inputs, parameters):
-    """ Zeroes out channels from an image.
+    ''' Zeroes out channels from an image.
 
     Arguments:
         *image* (NumPy array) -- the image from which to remove channels
@@ -67,7 +67,7 @@ def remove_channels(image, extra_inputs, parameters):
             blue*, *green & blue*
     Returns:
         list of NumPy array uint8 -- list containing the image having the requested channels removed
-    """
+    '''
     channels_information = parameters['channel(s)']
     image_copy = copy.deepcopy(image)
 

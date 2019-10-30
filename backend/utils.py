@@ -54,20 +54,64 @@ def fft_plot(image, cmap=None):
     magnitudes = np.log(np.abs(image) + 1)
 
     plt.figure()
+
+    plt.subplot(121)
+    plt.imshow(image, cmap)
+    plt.subplot(122)
     plt.imshow(magnitudes, cmap)
+
     plt.show()
 
-def resize(image, new_width=80):
-    """ Resizes an image while maintaining the aspect ratio
+def resize_dimension(image, new_height=0, new_width=0, interpolation_method=cv2.INTER_LINEAR):
+    ''' If one of the dimensions is not given, resizes an image to the specified height (or width),
+    while maintaining the original aspect ratio. If given both dimensions, resizes an image to the
+    fixed, specified dimensions
 
     Arguments:
         image (numPy array) -- the image to be resized
 
-        new_width (int) -- optional, the new width (in pixels) of the resized image
-    """
-    h, w = image.shape[:2]
-    aspect_ratio = h / w
-    new_height = int(aspect_ratio * new_width)
-    new_dim = (new_width, new_height)
+        new_height (int, optional) -- the new height (in pixels) of the resized image; the default
+        value is 0, meaning that the image will not be resized by height
 
-    return cv2.resize(image, new_dim)
+        new_width (int, optional) -- same as "new_height", except for the width. If both these
+        arguments are left as default, the original image will be returned
+    '''
+    image_h, image_w = image.shape[:2]
+    aspect_ratio = image_w / image_h
+
+    if new_height < 0 or new_width < 0:
+        raise ValueError('"new_height" and "new_width" must be positive integers')
+
+    if new_height == 0 and new_width == 0:
+        return image
+    elif new_height == 0:
+        new_height = int(1 / aspect_ratio * new_width)
+    elif new_width == 0:
+        new_width = int(aspect_ratio * new_height)
+
+    new_shape = (new_width, new_height)
+
+    return cv2.resize(image, new_shape, interpolation_method)
+
+def resize_percentage(image, percentage=0):
+    ''' Resizes an image by reducing the dimensions to the given percentage of the original
+
+    Arguments:
+        image (numPy array) -- the image to be resized
+
+        percentage (int, optional) -- the percentage out of the original image's dimensions to
+        resize to; the default value of 0 means that no resizing will be done
+    '''
+    image_h, image_w = image.shape[:2]
+    aspect_ratio = image_w / image_h
+
+    if percentage == 0:
+        return image
+    elif percentage < 0:
+        raise ValueError('The "percentage" argument must be a positive integer')
+    else:
+        new_width = int(percentage / 100 * image_w)
+        new_height = int(1 / aspect_ratio * new_width)
+        new_shape = (new_width, new_height)
+
+        return cv2.resize(image, new_shape)
