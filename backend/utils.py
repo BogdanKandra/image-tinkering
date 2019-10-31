@@ -4,6 +4,7 @@ Created on Sun Mar 10 15:12:37 2019
 @author: Bogdan
 """
 import copy
+import os
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
@@ -115,3 +116,63 @@ def resize_percentage(image, percentage=0):
         new_shape = (new_width, new_height)
 
         return cv2.resize(image, new_shape)
+
+def save_image(width, height, r_value, g_value, b_value, image_name):
+    ''' Helper which actually generates and saves an image '''
+    image = np.zeros((width, height, 3), dtype='uint8')
+    image[:, :, 0] = r_value
+    image[:, :, 1] = g_value
+    image[:, :, 2] = b_value
+    cv2.imwrite(os.path.join('database', image_name), image)
+
+def generate_color_rectangles(width, height):
+    ''' Generates and saves to disk about 1000 single-color rectangle-shaped images '''
+    light_values = range(69, 231, 3)
+    medium_values = range(46, 154, 2)
+    dark_values = range(23, 78, 1)
+    index = 1
+
+    # Generate light coloured images
+    for value in light_values:
+        save_image(10, 10, 69, 230, value, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, 69, value, 230, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, 230, 69, value, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, 230, value, 69, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, value, 69, 230, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, value, 230, 69, 'color_' + str(index) + '.jpg')
+        index += 1
+
+    # Generate medium coloured images
+    for value in medium_values:
+        save_image(10, 10, 46, 153, value, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, 46, value, 153, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, 153, 46, value, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, 153, value, 46, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, value, 46, 153, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, value, 153, 46, 'color_' + str(index) + '.jpg')
+        index += 1
+
+    # Generate dark coloured images
+    for value in dark_values:
+        save_image(10, 10, 23, 77, value, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, 23, value, 77, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, 77, 23, value, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, 77, value, 23, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, value, 23, 77, 'color_' + str(index) + '.jpg')
+        index += 1
+        save_image(10, 10, value, 77, 23, 'color_' + str(index) + '.jpg')
+        index += 1
