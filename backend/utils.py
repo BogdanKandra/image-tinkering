@@ -92,7 +92,7 @@ def resize_dimension(image, new_height=0, new_width=0, interpolation_method=cv2.
 
     new_shape = (new_width, new_height)
 
-    return cv2.resize(image, new_shape, interpolation_method)
+    return cv2.resize(image, new_shape, interpolation=interpolation_method)
 
 def resize_percentage(image, percentage=0):
     ''' Resizes an image by reducing the dimensions to the given percentage of the original
@@ -117,15 +117,15 @@ def resize_percentage(image, percentage=0):
 
         return cv2.resize(image, new_shape)
 
-def save_image(width, height, r_value, g_value, b_value, image_name):
+def generate_image(width, height, r_value, g_value, b_value, image_name, destination_dir):
     ''' Helper which actually generates and saves an image '''
     image = np.zeros((width, height, 3), dtype='uint8')
     image[:, :, 0] = r_value
     image[:, :, 1] = g_value
     image[:, :, 2] = b_value
-    cv2.imwrite(os.path.join('database', image_name), image)
+    cv2.imwrite(os.path.join(destination_dir, image_name), image)
 
-def generate_color_rectangles(width, height):
+def generate_single_color_images(width, height, destination_dir):
     ''' Generates and saves to disk about 1000 single-color rectangle-shaped images '''
     light_values = range(69, 231, 3)
     medium_values = range(46, 154, 2)
@@ -134,45 +134,60 @@ def generate_color_rectangles(width, height):
 
     # Generate light coloured images
     for value in light_values:
-        save_image(10, 10, 69, 230, value, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 69, 230, value, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, 69, value, 230, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 69, value, 230, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, 230, 69, value, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 230, 69, value, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, 230, value, 69, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 230, value, 69, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, value, 69, 230, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, value, 69, 230, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, value, 230, 69, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, value, 230, 69, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
 
     # Generate medium coloured images
     for value in medium_values:
-        save_image(10, 10, 46, 153, value, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 46, 153, value, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, 46, value, 153, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 46, value, 153, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, 153, 46, value, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 153, 46, value, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, 153, value, 46, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 153, value, 46, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, value, 46, 153, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, value, 46, 153, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, value, 153, 46, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, value, 153, 46, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
 
     # Generate dark coloured images
     for value in dark_values:
-        save_image(10, 10, 23, 77, value, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 23, 77, value, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, 23, value, 77, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 23, value, 77, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, 77, 23, value, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 77, 23, value, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, 77, value, 23, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, 77, value, 23, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, value, 23, 77, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, value, 23, 77, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
-        save_image(10, 10, value, 77, 23, 'color_' + str(index) + '.jpg')
+        generate_image(width, height, value, 77, 23, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
+
+def resize_image_dataset(input_directory, new_height, new_width, results_prefix, destination_directory):
+    ''' Resizes all images present in the input directory to the given dimensions. Also, the
+    resulting pixel values are normalized in the [0, 255] interval '''
+    files = os.listdir(input_directory)
+    count = 1
+
+    for file in files:
+        image = cv2.imread(os.path.join(input_directory, file), cv2.IMREAD_UNCHANGED)
+        resized = resize_dimension(image, new_height, new_width, cv2.INTER_AREA)
+        normalized = ((resized - np.min(resized)) / (np.max(resized) - np.min(resized)) * 255).astype('uint8')
+        
+        image_name = results_prefix + '_' + str(count) + '.' + file.split('.')[-1]
+        cv2.imwrite(os.path.join(destination_directory, image_name), normalized)
+        count += 1
