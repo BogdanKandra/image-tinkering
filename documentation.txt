@@ -71,6 +71,7 @@
 	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
 
 - Sa vorbesc despre structura serverului - fisiere, module, etc
+- Sa vorbesc despre functiile din utils; pentru ce au fost folosite
 
 - Negative Filter: Pagina 108 din carte
 - Grayscale Filter: Vezi referintele 07 si 08
