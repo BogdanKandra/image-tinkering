@@ -5,6 +5,7 @@ Created on Sun Mar 10 15:12:37 2019
 """
 import copy
 import os
+import pickle
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
@@ -187,7 +188,24 @@ def resize_image_dataset(input_directory, new_height, new_width, results_prefix,
         image = cv2.imread(os.path.join(input_directory, file), cv2.IMREAD_UNCHANGED)
         resized = resize_dimension(image, new_height, new_width, cv2.INTER_AREA)
         normalized = ((resized - np.min(resized)) / (np.max(resized) - np.min(resized)) * 255).astype('uint8')
-        
+
         image_name = results_prefix + '_' + str(count) + '.' + file.split('.')[-1]
         cv2.imwrite(os.path.join(destination_directory, image_name), normalized)
         count += 1
+
+def pickle_imageset_information(input_directory):
+    ''' Reads all images present in the input directory; computes, for each image, the average
+    values of the red, green and blue channels respectively and places them in a dictionary;
+    this dataset's images dimensions and the dictionary are serialized in a pickle having the same
+    name as the input directory '''
+    files = os.listdir(input_directory)
+    averages = {}
+
+    for file in files:
+        image = cv2.imread(os.path.join(input_directory, file), cv2.IMREAD_UNCHANGED)
+        means = (int(np.mean(image[:,:,0])), int(np.mean(image[:,:,1])), int(np.mean(image[:,:,2])))
+        averages[file] = means
+
+    with open(input_directory + '.pickle', 'wb') as p:
+        pickle.dump(image.shape[:2], p)
+        pickle.dump(averages, p)
