@@ -178,14 +178,17 @@ def generate_single_color_images(width, height, destination_dir):
         generate_image(width, height, value, 77, 23, 'color_' + str(index) + '.jpg', destination_dir)
         index += 1
 
-def resize_image_dataset(input_directory, new_height, new_width, results_prefix, destination_directory):
-    ''' Resizes all images present in the input directory to the given dimensions. Also, the
+def preprocess_image_dataset(input_directory, new_height, new_width, results_prefix, destination_directory):
+    ''' Applies several preprocessing operations on the images in the input_directory: if present,
+    the alpha channel is stripped; then resizing to the given dimensions is performed; finally, the
     resulting pixel values are normalized in the [0, 255] interval '''
     files = os.listdir(input_directory)
     count = 1
 
     for file in files:
         image = cv2.imread(os.path.join(input_directory, file), cv2.IMREAD_UNCHANGED)
+        if image.shape[2] == 4:
+            image = image[:, :, :3]
         resized = resize_dimension(image, new_height, new_width, cv2.INTER_AREA)
         normalized = ((resized - np.min(resized)) / (np.max(resized) - np.min(resized)) * 255).astype('uint8')
 
