@@ -70,6 +70,12 @@
 	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
 	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
 
+- Ca sa adaug un nou set de imagini pentru utilizare la mozaicare, trebuie sa:
+	- Toate imaginile trebuie sa aiba aceleasi dimensiuni (mici, de pana in 36x20, daca se doreste raport 16:9) -> permite rezolutiile de 9x5, 18x10 si 36x20 (facem preprocesare la dataset folosind functia preprocess_image_dataset din utils)
+	- Le pun intr-un director in backend/miscellaneous/database
+	- Creez pickle-ul cu informatii despre dataset, apeland functia pickle_imageset_information
+	- Pun optiunea la parametrul 'texture' al operatiei
+
 - Sa vorbesc despre structura serverului - fisiere, module, etc
 - Sa vorbesc despre functiile din utils; pentru ce au fost folosite
 
