@@ -113,8 +113,8 @@ def photomosaic(image, extra_inputs, parameters):
             *resolution* (str, optional) -- the resolution of the photomosaic; possible values are
             *low*, *standard* and *high*; default value is *standard*
             
-            *redundancy* (str, optional) -- whether or not to allow the same tile to be repeated in
-            bulk; possible values are *allowed* and *not allowed*; default value is *not allowed*
+            *redundancy* (str, optional) -- whether or not to allow the same tile to be repeated for
+            neighbours; possible values are *allowed* and *not allowed*; default value is *allowed*
 
     Returns:
         list of NumPy array uint8 -- list containing the photomosaic of the image
@@ -147,7 +147,7 @@ def photomosaic(image, extra_inputs, parameters):
         else:
             redundancy = False
     else:
-        redundancy = False
+        redundancy = True
 
     # Determine the pickle to be loaded based on requested texture and resolution
     if texture == 'pixels':
