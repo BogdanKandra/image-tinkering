@@ -16,7 +16,29 @@ sys.path.append(project_path)
 from backend import utils
 
 
-def build_mosaic(image, technique, texture, alpha_level, resolution):
+def get_closest_usable_tile_index(distances, tile_usage_grid, line, column):
+    ''' Helper function which returns the index of the closest tile which has not been used on a
+    square centered on the current position, of radius 1 '''
+    grid_height, grid_width = tile_usage_grid.shape
+
+    while True:
+        closest_tile_index = np.argwhere(distances == np.min(distances))[0][-1]
+        found = True
+
+        for i in range(line-1, line+1):
+            for j in range(column-1, column+2):
+                if i >= 0 and j >= 0 and i < grid_height and j < grid_width and (i != line or j < column):
+                    if tile_usage_grid[i][j] == closest_tile_index:
+                        found = False
+                        break
+            if not found:
+                distances = np.delete(distances, np.argwhere(distances == np.min(distances)))
+                break
+
+        if found:
+            return closest_tile_index
+
+def build_mosaic(image, technique, texture, alpha_level, resolution, redundancy):
     ''' Helper function which actually builds the mosaic '''
     pickle_name = texture + '_' + resolution + '.pickle'
     database_path = os.path.join(project_path, 'backend', 'miscellaneous', 'database')
@@ -37,6 +59,7 @@ def build_mosaic(image, technique, texture, alpha_level, resolution):
     mosaic_lines = int(image_height / tiles_height)
     mosaic_columns = int(image_width / tiles_width)
     mosaic_image = np.zeros((mosaic_lines * tiles_height, mosaic_columns * tiles_width, 3), dtype='uint8')
+    tile_usage_grid = np.ones((mosaic_lines, mosaic_columns), dtype='uint8') * -1
 
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
@@ -48,10 +71,17 @@ def build_mosaic(image, technique, texture, alpha_level, resolution):
             block = image[line * tiles_height : (line + 1) * tiles_height, column * tiles_width : (column + 1) * tiles_width]
             block_averages[0] = np.array((np.mean(block[:, :, 0]), np.mean(block[:, :, 1]), np.mean(block[:, :, 2])))
             distances = cdist(block_averages, tiles_averages)
-            closest_tile_index = np.where(distances == np.min(distances))[1][0]
+
+            # Determine the index of the closest compatible tile
+            if redundancy:
+                closest_tile_index = np.where(distances == np.min(distances))[1][0]
+            else:
+                closest_tile_index = get_closest_usable_tile_index(distances, tile_usage_grid, line, column)
+
             closest_tile_name = tiles_averages_keys[closest_tile_index]
             closest_tile = cv2.imread(os.path.join(database_path, texture + '_' + resolution, closest_tile_name), cv2.IMREAD_UNCHANGED)
             mosaic_image[line * tiles_height : (line + 1) * tiles_height, column * tiles_width : (column + 1) * tiles_width] = closest_tile
+            tile_usage_grid[line][column] = closest_tile_index
 
     if technique == 'alternative':
         # Overlay the mosaic on the input image
@@ -82,6 +112,9 @@ def photomosaic(image, extra_inputs, parameters):
 
             *resolution* (str, optional) -- the resolution of the photomosaic; possible values are
             *low*, *standard* and *high*; default value is *standard*
+            
+            *redundancy* (str, optional) -- whether or not to allow the same tile to be repeated in
+            bulk; possible values are *allowed* and *not allowed*; default value is *not allowed*
 
     Returns:
         list of NumPy array uint8 -- list containing the photomosaic of the image
@@ -107,9 +140,17 @@ def photomosaic(image, extra_inputs, parameters):
     else:
         resolution = 'standard'
 
+    if 'redundancy' in parameters:
+        redundancy = parameters['redundancy']
+        if redundancy == 'allowed':
+            redundancy = True
+        else:
+            redundancy = False
+    else:
+        redundancy = False
+
     # Determine the pickle to be loaded based on requested texture and resolution
     if texture == 'pixels':
-        resolutions = ['20x20', '10x10', '5x5']
         if resolution == 'low':
             resolution = '20x20'
         elif resolution == 'standard':
@@ -117,7 +158,6 @@ def photomosaic(image, extra_inputs, parameters):
         elif resolution == 'high':
             resolution = '5x5'
     elif texture == 'cakes':
-        resolutions = ['36x20', '18x10', '9x5']
         if resolution == 'low':
             resolution = '36x20'
         elif resolution == 'standard':
@@ -135,7 +175,7 @@ def photomosaic(image, extra_inputs, parameters):
         elif transparency == 'high':
             alpha_level = 75 / 255
 
-    mosaic_image = build_mosaic(image, technique, texture, alpha_level, resolution)
+    mosaic_image = build_mosaic(image, technique, texture, alpha_level, resolution, redundancy)
 
     return [mosaic_image]
 
