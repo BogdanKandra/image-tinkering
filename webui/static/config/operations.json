@@ -205,6 +205,19 @@
       }
     ]
   },
+  "Pixelate": {
+    "function": "miscellaneous.lego.pixelate",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "resolution",
+        "type": "lookup",
+        "values": ["low", "standard", "high"],
+        "default": "standard",
+        "description": "The size of the tiles used when building the mosaic"
+      }
+    ]
+  },
   "Visible Watermark": {
     "function": "watermarking.spatial.visible_watermark",
     "type": "many-to-one",
