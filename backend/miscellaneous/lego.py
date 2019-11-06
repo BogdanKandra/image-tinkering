@@ -40,6 +40,9 @@ def get_closest_usable_tile_index(distances, tile_usage_grid, line, column):
 
 def build_mosaic(image, technique, texture, alpha_level, resolution, redundancy):
     ''' Helper function which actually builds the mosaic '''
+    if utils.is_grayscale(image):
+        image = utils.merge_channels([image, image, image])
+
     pickle_name = texture + '_' + resolution + '.pickle'
     database_path = os.path.join(project_path, 'backend', 'miscellaneous', 'database')
     pickle_path = os.path.join(database_path, pickle_name)
@@ -103,8 +106,9 @@ def photomosaic(image, extra_inputs, parameters):
             *technique* (str, optional) -- the technique used when building the photomosaic;
             possible values are *original* and *alternative*; default value is *original*
 
-            *texture* (str) -- the texture used to build the photo mosaic; possible values are
-            *cakes* and *pixels*; the *pixels* texture is only compatible with *original* technique
+            *texture* (str, optional) -- the texture used to build the photo mosaic; possible values
+            are *cakes* and *pixels*; the *pixels* texture is only compatible with *original*
+            technique; default value is *cakes*
 
             *transparency* (str, optional) -- the level of transparency of the mosaic image;
             possible values are *high*, *medium* and *low*; this parameter is ignored unless
@@ -179,6 +183,35 @@ def photomosaic(image, extra_inputs, parameters):
 
     return [mosaic_image]
 
-def collage_maker():
+def pixelate(image, extra_inputs, parameters):
+    ''' Uses the photomosaic technique to apply an 8-bit-like filter on an image.
+
+    Arguments:
+        *image* (NumPy array) -- the image to be pixelated
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *resolution* (str, optional) -- the resolution of the pixelated image; possible values
+            are *low*, *standard* and *high*; default value is *standard*
+
+    Returns:
+        list of NumPy array uint8 -- list containing the pixelated image
+    '''
+    if 'resolution' in parameters:
+        resolution = parameters['resolution']
+    else:
+        resolution = 'standard'
+
+    params = {
+        'technique': 'original',
+        'texture': 'pixels',
+        'resolution': resolution
+        }
+
+    return photomosaic(image, {}, params)
+
+def collage():
     ''' Google "photo collage maker" '''
-    pass
+    pass # TODO
