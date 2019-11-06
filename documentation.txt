@@ -9,7 +9,11 @@
 09. https://www.techrepublic.com/blog/how-do-i/how-do-i-convert-images-to-grayscale-and-sepia-tone-using-c/ -- Sepia
 10. https://en.wikipedia.org/wiki/ASCII_art?fbclid=IwAR0XKs0ctQay4bZ7U977cf3rTVTOYmNfwuaglTwHjX_w_CCO_HNJOXPp1XY -- ASCII art
 11. http://paulbourke.net/dataformats/asciiart/ -- ASCII art
-
+12. https://en.wikipedia.org/wiki/Photographic_mosaic -- Photomosaicking
+13. https://www.picturemosaics.com/true/ -- Photomosaicking
+14. https://www.geeksforgeeks.org/implementing-photomosaics/ -- Photomosaicking
+15. https://pdfs.semanticscholar.org/4660/5d83877c33b54d749c7f5f1b1329e2c81a55.pdf -- Photomosaicking
+16. https://www.photo-mosaic.co.uk/how-it-works/what-is-a-photo-mosaic/ -- Photomosaicking
 
 - La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
 	{
@@ -70,7 +74,14 @@
 	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
 	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
 
+- Ca sa adaug un nou set de imagini pentru utilizare la mozaicare, trebuie sa:
+	- Toate imaginile trebuie sa aiba aceleasi dimensiuni (mici, de pana in 36x20, daca se doreste raport 16:9) -> permite rezolutiile de 9x5, 18x10 si 36x20 (facem preprocesare la dataset folosind functia preprocess_image_dataset din utils)
+	- Le pun intr-un director in backend/miscellaneous/database
+	- Creez pickle-ul cu informatii despre dataset, apeland functia pickle_imageset_information
+	- Pun optiunea la parametrul 'texture' al operatiei
+
 - Sa vorbesc despre structura serverului - fisiere, module, etc
+- Sa vorbesc despre functiile din utils; pentru ce au fost folosite
 
 - Negative Filter: Pagina 108 din carte
 - Grayscale Filter: Vezi referintele 07 si 08

@@ -4,6 +4,8 @@ Created on Sun Mar 10 15:12:37 2019
 @author: Bogdan
 """
 import copy
+import os
+import pickle
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
@@ -91,7 +93,7 @@ def resize_dimension(image, new_height=0, new_width=0, interpolation_method=cv2.
 
     new_shape = (new_width, new_height)
 
-    return cv2.resize(image, new_shape, interpolation_method)
+    return cv2.resize(image, new_shape, interpolation=interpolation_method)
 
 def resize_percentage(image, percentage=0):
     ''' Resizes an image by reducing the dimensions to the given percentage of the original
@@ -115,3 +117,98 @@ def resize_percentage(image, percentage=0):
         new_shape = (new_width, new_height)
 
         return cv2.resize(image, new_shape)
+
+def generate_image(width, height, r_value, g_value, b_value, image_name, destination_dir):
+    ''' Helper which actually generates and saves an image '''
+    image = np.zeros((width, height, 3), dtype='uint8')
+    image[:, :, 0] = r_value
+    image[:, :, 1] = g_value
+    image[:, :, 2] = b_value
+    cv2.imwrite(os.path.join(destination_dir, image_name), image)
+
+def generate_single_color_images(width, height, destination_dir):
+    ''' Generates and saves to disk about 1000 single-color rectangle-shaped images '''
+    light_values = range(69, 231, 3)
+    medium_values = range(46, 154, 2)
+    dark_values = range(23, 78, 1)
+    index = 1
+
+    # Generate light coloured images
+    for value in light_values:
+        generate_image(width, height, 69, 230, value, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, 69, value, 230, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, 230, 69, value, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, 230, value, 69, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, value, 69, 230, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, value, 230, 69, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+
+    # Generate medium coloured images
+    for value in medium_values:
+        generate_image(width, height, 46, 153, value, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, 46, value, 153, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, 153, 46, value, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, 153, value, 46, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, value, 46, 153, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, value, 153, 46, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+
+    # Generate dark coloured images
+    for value in dark_values:
+        generate_image(width, height, 23, 77, value, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, 23, value, 77, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, 77, 23, value, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, 77, value, 23, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, value, 23, 77, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+        generate_image(width, height, value, 77, 23, 'color_' + str(index) + '.jpg', destination_dir)
+        index += 1
+
+def preprocess_image_dataset(input_directory, new_height, new_width, results_prefix, destination_directory):
+    ''' Applies several preprocessing operations on the images in the input_directory: if present,
+    the alpha channel is stripped; then resizing to the given dimensions is performed; finally, the
+    resulting pixel values are normalized in the [0, 255] interval '''
+    files = os.listdir(input_directory)
+    count = 1
+
+    for file in files:
+        image = cv2.imread(os.path.join(input_directory, file), cv2.IMREAD_UNCHANGED)
+        if image.shape[2] == 4:
+            image = image[:, :, :3]
+        resized = resize_dimension(image, new_height, new_width, cv2.INTER_AREA)
+        normalized = ((resized - np.min(resized)) / (np.max(resized) - np.min(resized)) * 255).astype('uint8')
+
+        image_name = results_prefix + '_' + str(count) + '.' + file.split('.')[-1]
+        cv2.imwrite(os.path.join(destination_directory, image_name), normalized)
+        count += 1
+
+def pickle_imageset_information(input_directory):
+    ''' Reads all images present in the input directory; computes, for each image, the average
+    values of the red, green and blue channels respectively and places them in a dictionary;
+    this dataset's images dimensions and the dictionary are serialized in a pickle having the same
+    name as the input directory '''
+    files = os.listdir(input_directory)
+    averages = {}
+
+    for file in files:
+        image = cv2.imread(os.path.join(input_directory, file), cv2.IMREAD_UNCHANGED)
+        means = (int(np.mean(image[:,:,0])), int(np.mean(image[:,:,1])), int(np.mean(image[:,:,2])))
+        averages[file] = means
+
+    with open(input_directory + '.pickle', 'wb') as p:
+        pickle.dump(image.shape[:2], p)
+        pickle.dump(averages, p)

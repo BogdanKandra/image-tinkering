@@ -1,6 +1,6 @@
 {
   "Blur (Frequency Domain)": {
-    "function": "filtering.fourier.low_pass",
+    "function": "filtering.frequency.low_pass",
     "type": "one-to-one",
     "parameters": [
       {
@@ -31,7 +31,7 @@
     "description": "Blurs an image using the FFT"
   },
   "Sharpen (Frequency Domain)": {
-    "function": "filtering.fourier.high_pass",
+    "function": "filtering.frequency.high_pass",
     "type": "one-to-one",
     "parameters": [
       {
@@ -166,6 +166,55 @@
         "values": ["channels", "lines", "columns", "pixels"],
         "default": "channels",
         "description": "The criterion to shuffle the image data by"
+      }
+    ]
+  },
+  "Photomosaic": {
+    "function": "miscellaneous.lego.photomosaic",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "technique",
+        "type": "lookup",
+        "values": ["original", "alternative"],
+        "default": "original",
+        "presenceDependency": "transparency",
+        "presenceCondition": "==alternative",
+        "description": "The technique used when building the photomosaic"
+      },
+      {
+        "name": "transparency",
+        "type": "lookup",
+        "values": ["low", "medium", "high"],
+        "default": "high",
+        "description": "The level of transparency of the mosaic image"
+      },
+      {
+        "name": "resolution",
+        "type": "lookup",
+        "values": ["low", "standard", "high"],
+        "default": "standard",
+        "description": "The size of the tiles used when building the mosaic"
+      },
+      {
+        "name": "redundancy",
+        "type": "lookup",
+        "values": ["allowed", "not allowed"],
+        "default": "allowed",
+        "description": "Whether or not to allow the same tile to be repeated for neighbours"
+      }
+    ]
+  },
+  "Pixelate": {
+    "function": "miscellaneous.lego.pixelate",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "resolution",
+        "type": "lookup",
+        "values": ["low", "standard", "high"],
+        "default": "standard",
+        "description": "The size of the tiles used when building the mosaic"
       }
     ]
   },
