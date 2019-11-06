@@ -1,20 +1,28 @@
 import cv2
+import os
 import numpy as np
-import utils
-import time
+import miscellaneous.lego as lego
 
 
 # Read the input image
-#imagePath = '../webui/static/testinputs/brontosaur.jpg' # Grayscale
-#imagePath = '../webui/static/testinputs/chocolate.png' # Alpha channel
-#imagePath = '../webui/static/testinputs/lena.tiff' # TIFF format
-#imagePath = '../webui/static/testinputs/wide.jpg' # 4K image
-imagePath = '../webui/static/testinputs/flag.jpg'  # Normal image
+#image_path = '../webui/static/testinputs/brontosaur.jpg' # Grayscale
+#image_path = '../webui/static/testinputs/chocolate.png'  # Alpha channel
+#image_path = '../webui/static/testinputs/lena.tiff'      # TIFF format
+#image_path = '../webui/static/testinputs/wide.jpg'       # 4K image
+image_path = '../webui/static/testinputs/mandrill.tiff'
 
-image = cv2.imread(imagePath, cv2.IMREAD_UNCHANGED)
+image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
 
-# Display results
-cv2.imshow('Original Image', image)
+extra_inputs = {
+    }
+
+params = {
+    }
+
+result = lego.photomosaic(image, extra_inputs, params)[0]
+
+cv2.imshow('Test', result)
+#cv2.imwrite('test.jpg', result)
 
 cv2.waitKey()
 cv2.destroyAllWindows()
