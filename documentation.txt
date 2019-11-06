@@ -9,9 +9,11 @@
 09. https://www.techrepublic.com/blog/how-do-i/how-do-i-convert-images-to-grayscale-and-sepia-tone-using-c/ -- Sepia
 10. https://en.wikipedia.org/wiki/ASCII_art?fbclid=IwAR0XKs0ctQay4bZ7U977cf3rTVTOYmNfwuaglTwHjX_w_CCO_HNJOXPp1XY -- ASCII art
 11. http://paulbourke.net/dataformats/asciiart/ -- ASCII art
-12. https://www.picturemosaics.com/true/ -- Photomosaicking
-13. https://www.geeksforgeeks.org/implementing-photomosaics/ -- Photomosaicking
-
+12. https://en.wikipedia.org/wiki/Photographic_mosaic -- Photomosaicking
+13. https://www.picturemosaics.com/true/ -- Photomosaicking
+14. https://www.geeksforgeeks.org/implementing-photomosaics/ -- Photomosaicking
+15. https://pdfs.semanticscholar.org/4660/5d83877c33b54d749c7f5f1b1329e2c81a55.pdf -- Photomosaicking
+16. https://www.photo-mosaic.co.uk/how-it-works/what-is-a-photo-mosaic/ -- Photomosaicking
 
 - La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
 	{
