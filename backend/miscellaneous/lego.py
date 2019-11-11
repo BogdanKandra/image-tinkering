@@ -106,17 +106,13 @@ def photomosaic(image, extra_inputs, parameters):
             *technique* (str, optional) -- the technique used when building the photomosaic;
             possible values are *original* and *alternative*; default value is *original*
 
-            *texture* (str, optional) -- the texture used to build the photo mosaic; possible values
-            are *cakes* and *pixels*; the *pixels* texture is only compatible with *original*
-            technique; default value is *cakes*
-
             *transparency* (str, optional) -- the level of transparency of the mosaic image;
             possible values are *high*, *medium* and *low*; this parameter is ignored unless
             *technique* == *alternative*; default value is *high*
 
             *resolution* (str, optional) -- the resolution of the photomosaic; possible values are
             *low*, *standard* and *high*; default value is *standard*
-            
+
             *redundancy* (str, optional) -- whether or not to allow the same tile to be repeated for
             neighbours; possible values are *allowed* and *not allowed*; default value is *allowed*
 
@@ -128,11 +124,6 @@ def photomosaic(image, extra_inputs, parameters):
         technique = parameters['technique']
     else:
         technique = 'original'
-
-    if 'texture' in parameters:
-        texture = parameters['texture']
-    else:
-        texture = 'cakes'
 
     if 'transparency' in parameters:
         transparency = parameters['transparency']
