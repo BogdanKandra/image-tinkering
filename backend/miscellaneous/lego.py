@@ -203,11 +203,11 @@ def pixelate(image, extra_inputs, parameters):
 
     # Determine the number of pixel-blocks to be used for both dimensions
     image_height, image_width = image.shape[:2]
-    channels_count = image.shape[2]
     lines_count = image_height // resolution
     columns_count = image_width // resolution
 
     if utils.is_color(image):
+        channels_count = image.shape[2]
         pixel_tile = np.zeros((resolution, resolution, channels_count))
         pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype='uint8')
     else:
