@@ -210,11 +210,11 @@
     "type": "one-to-one",
     "parameters": [
       {
-        "name": "resolution",
+        "name": "fidelity",
         "type": "lookup",
-        "values": ["low", "standard", "high"],
+        "values": ["very low", "low", "standard", "high", "very high"],
         "default": "standard",
-        "description": "The size of the tiles used when building the mosaic"
+        "description": "How close the resulting image will look compared to the original (inverse proportional to the size of the composing pixels)"
       }
     ]
   },

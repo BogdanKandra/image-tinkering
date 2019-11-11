@@ -38,13 +38,13 @@ def get_closest_usable_tile_index(distances, tile_usage_grid, line, column):
         if found:
             return closest_tile_index
 
-def build_mosaic(image, technique, texture, alpha_level, resolution, redundancy):
+def build_mosaic(image, technique, alpha_level, resolution, redundancy):
     ''' Helper function which actually builds the mosaic '''
     if utils.is_grayscale(image):
         image = utils.merge_channels([image, image, image])
 
-    pickle_name = texture + '_' + resolution + '.pickle'
     database_path = os.path.join(project_path, 'backend', 'miscellaneous', 'database')
+    pickle_name = 'cakes_' + resolution + '.pickle'
     pickle_path = os.path.join(database_path, pickle_name)
 
     with open(pickle_path, 'rb') as p:
@@ -82,7 +82,7 @@ def build_mosaic(image, technique, texture, alpha_level, resolution, redundancy)
                 closest_tile_index = get_closest_usable_tile_index(distances, tile_usage_grid, line, column)
 
             closest_tile_name = tiles_averages_keys[closest_tile_index]
-            closest_tile = cv2.imread(os.path.join(database_path, texture + '_' + resolution, closest_tile_name), cv2.IMREAD_UNCHANGED)
+            closest_tile = cv2.imread(os.path.join(database_path, 'cakes_' + resolution, closest_tile_name), cv2.IMREAD_UNCHANGED)
             mosaic_image[line * tiles_height : (line + 1) * tiles_height, column * tiles_width : (column + 1) * tiles_width] = closest_tile
             tile_usage_grid[line][column] = closest_tile_index
 
@@ -106,17 +106,13 @@ def photomosaic(image, extra_inputs, parameters):
             *technique* (str, optional) -- the technique used when building the photomosaic;
             possible values are *original* and *alternative*; default value is *original*
 
-            *texture* (str, optional) -- the texture used to build the photo mosaic; possible values
-            are *cakes* and *pixels*; the *pixels* texture is only compatible with *original*
-            technique; default value is *cakes*
-
             *transparency* (str, optional) -- the level of transparency of the mosaic image;
             possible values are *high*, *medium* and *low*; this parameter is ignored unless
             *technique* == *alternative*; default value is *high*
 
             *resolution* (str, optional) -- the resolution of the photomosaic; possible values are
             *low*, *standard* and *high*; default value is *standard*
-            
+
             *redundancy* (str, optional) -- whether or not to allow the same tile to be repeated for
             neighbours; possible values are *allowed* and *not allowed*; default value is *allowed*
 
@@ -128,11 +124,6 @@ def photomosaic(image, extra_inputs, parameters):
         technique = parameters['technique']
     else:
         technique = 'original'
-
-    if 'texture' in parameters:
-        texture = parameters['texture']
-    else:
-        texture = 'cakes'
 
     if 'transparency' in parameters:
         transparency = parameters['transparency']
@@ -153,21 +144,13 @@ def photomosaic(image, extra_inputs, parameters):
     else:
         redundancy = True
 
-    # Determine the pickle to be loaded based on requested texture and resolution
-    if texture == 'pixels':
-        if resolution == 'low':
-            resolution = '20x20'
-        elif resolution == 'standard':
-            resolution = '10x10'
-        elif resolution == 'high':
-            resolution = '5x5'
-    elif texture == 'cakes':
-        if resolution == 'low':
-            resolution = '36x20'
-        elif resolution == 'standard':
-            resolution = '18x10'
-        elif resolution == 'high':
-            resolution = '9x5'
+    # Determine the pickle to be loaded based on requested resolution
+    if resolution == 'low':
+        resolution = '36x20'
+    elif resolution == 'standard':
+        resolution = '18x10'
+    elif resolution == 'high':
+        resolution = '9x5'
 
     # Determine the alpha level needed for alpha blending, if alternative technique is required
     alpha_level = None
@@ -179,12 +162,12 @@ def photomosaic(image, extra_inputs, parameters):
         elif transparency == 'high':
             alpha_level = 75 / 255
 
-    mosaic_image = build_mosaic(image, technique, texture, alpha_level, resolution, redundancy)
+    mosaic_image = build_mosaic(image, technique, alpha_level, resolution, redundancy)
 
     return [mosaic_image]
 
 def pixelate(image, extra_inputs, parameters):
-    ''' Uses the photomosaic technique to apply an 8-bit-like filter on an image.
+    ''' Uses a form of downscaling in order to achieve an 8-bit-like filter appearance of an image.
 
     Arguments:
         *image* (NumPy array) -- the image to be pixelated
@@ -193,24 +176,58 @@ def pixelate(image, extra_inputs, parameters):
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
-            *resolution* (str, optional) -- the resolution of the pixelated image; possible values
-            are *low*, *standard* and *high*; default value is *standard*
+            *fidelity* (str, optional) -- how close the resulting image will look compared to the
+            original (inverse proportional to the size of the composing pixels); possible values are
+            *very low*, *low*, *standard*, *high* and *very high*; default value is *standard*
 
     Returns:
         list of NumPy array uint8 -- list containing the pixelated image
     '''
+    # Parameters extraction
     if 'resolution' in parameters:
         resolution = parameters['resolution']
     else:
         resolution = 'standard'
 
-    params = {
-        'technique': 'original',
-        'texture': 'pixels',
-        'resolution': resolution
-        }
+    # Determine the resolution of the pixel-blocks used (the length of the square)
+    if resolution == 'very low':
+        resolution = 25
+    elif resolution == 'low':
+        resolution = 20
+    elif resolution == 'standard':
+        resolution = 15
+    elif resolution == 'high':
+        resolution = 10
+    elif resolution == 'very high':
+        resolution = 5
 
-    return photomosaic(image, {}, params)
+    # Determine the number of pixel-blocks to be used for both dimensions
+    image_height, image_width = image.shape[:2]
+    lines_count = image_height // resolution
+    columns_count = image_width // resolution
+
+    if utils.is_color(image):
+        channels_count = image.shape[2]
+        pixel_tile = np.zeros((resolution, resolution, channels_count))
+        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype='uint8')
+    else:
+        pixel_tile = np.zeros((resolution, resolution))
+        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution), dtype='uint8')
+
+    # For each block:
+    #    Compute the average r, g, b values of the block and put them in a vector
+    #    Replace the current block with a tile coloured the same as the average vector
+    for line in range(lines_count):
+        for column in range(columns_count):
+            block = image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution]
+            if utils.is_color(image):
+                for i in range(channels_count):
+                    pixel_tile[:, :, i] = int(round(np.mean(block[:, :, i])))
+            else:
+                pixel_tile = int(round(np.mean(block)))
+            pixelated_image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution] = pixel_tile
+
+    return [pixelated_image]
 
 def collage():
     ''' Google "photo collage maker" '''
