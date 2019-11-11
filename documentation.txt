@@ -14,6 +14,7 @@
 14. https://www.geeksforgeeks.org/implementing-photomosaics/ -- Photomosaicking
 15. https://pdfs.semanticscholar.org/4660/5d83877c33b54d749c7f5f1b1329e2c81a55.pdf -- Photomosaicking
 16. https://www.photo-mosaic.co.uk/how-it-works/what-is-a-photo-mosaic/ -- Photomosaicking
+17. https://worldwide.espacenet.com/publicationDetails/biblio?CC=US&NR=6137498A&KC=A&FT=D&ND=&date=20001024&DB=&locale=en_EP -- Photomosaicking
 
 - La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
 	{
