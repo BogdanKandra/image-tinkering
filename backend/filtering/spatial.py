@@ -1,12 +1,13 @@
-"""
+'''
 Created on Sat May 18 16:58:05 2019
 
 @author: Bogdan
-"""
+'''
 import os
 import sys
 import cv2
 import numpy as np
+from scipy.signal import convolve2d
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
     project_path = os.path.dirname(project_path)
@@ -14,8 +15,37 @@ sys.path.append(project_path)
 from backend import utils
 
 
+def apply_kernel(image, kernel):
+    ''' Performs convolution between the given image and kernel and returns the result '''
+    if utils.is_color(image):
+        result_b = convolve2d(image[:,:,0], kernel, mode='same').astype(np.uint8)
+        result_g = convolve2d(image[:,:,1], kernel, mode='same').astype(np.uint8)
+        result_r = convolve2d(image[:,:,2], kernel, mode='same').astype(np.uint8)
+
+        filtered_image = utils.merge_channels([result_b, result_g, result_r])
+    else:
+        filtered_image = convolve2d(image, kernel, mode='same').astype(np.uint8)
+
+    return filtered_image
+
+def generate_box_kernel(size):
+    ''' Generates a kernel having the given size and giving equal weights to all elements
+    surrounding the current pixel '''
+    return (1 / size ** 2) * np.ones((size, size), dtype=np.uint8)
+
+def generate_gaussian_kernel(size, sigma=3):
+    ''' Generates an one-sum kernel having the given size, containing samples from a gaussian
+    distribution having the given standard deviation '''
+    size = size // 2
+    x, y = np.mgrid[-size : size + 1, -size : size + 1]
+    normal = 1 / (2.0 * np.pi * sigma**2)
+    g = np.exp(-((x ** 2 + y ** 2) / (2.0 * sigma ** 2))) * normal
+    g = g / (np.sum(g))    # Normalize the kernel so the sum of elements is 1
+
+    return g
+
 def negative(image, extra_inputs={}, parameters={}):
-    """Applies a **Negative Filter** on an image. \n
+    '''Applies a **Negative Filter** onto an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be filtered
@@ -26,14 +56,14 @@ def negative(image, extra_inputs={}, parameters={}):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    """
+    '''
     # Negative is defined as complementary to maximum intensity value
     negative_image = 255 - image
 
     return [negative_image]
 
 def grayscale(image, extra_inputs={}, parameters={}):
-    """Applies a **Grayscale Filter** on an image. \n
+    '''Applies a **Grayscale Filter** onto an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be filtered
@@ -44,7 +74,7 @@ def grayscale(image, extra_inputs={}, parameters={}):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    """
+    '''
     if utils.is_grayscale(image):
         gray_image = image
     else:
@@ -54,7 +84,7 @@ def grayscale(image, extra_inputs={}, parameters={}):
     return [gray_image]
 
 def sepia(image, extra_inputs={}, parameters={}):
-    """Applies a **Sepia Filter** on an image. \n
+    '''Applies a **Sepia Filter** onto an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be filtered
@@ -65,7 +95,7 @@ def sepia(image, extra_inputs={}, parameters={}):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    """
+    '''
     # Apply the Sepia formulas
     if utils.is_color(image):
         result_red = image[:, :, 2] * 0.393 + image[:, :, 1] * 0.769 + image[:, :, 0] * 0.189
@@ -86,12 +116,86 @@ def sepia(image, extra_inputs={}, parameters={}):
     result_green = np.uint8(np.rint(result_green))
     result_blue = np.uint8(np.rint(result_blue))
 
-    sepia_image = cv2.merge((result_blue, result_green, result_red))
+    sepia_image = utils.merge_channels([result_blue, result_green, result_red])
 
     return [sepia_image]
 
+def blur(image, extra_inputs, parameters):
+    '''Applies a **Blur Filter** onto an image. \n
+
+    Arguments:
+        *image* (NumPy array) -- the image to be filtered
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *type* (str, optional) -- the type of kernel to be used; possible values are *box* and
+            *gaussian*; default value is *gaussian*
+
+            *strength* (str) -- the strength of the blur effect; possible values are *weak*,
+            *medium* and *strong*
+
+    Returns:
+        list of NumPy array uint8 -- list containing the filtered image
+    '''
+    if 'type' in parameters:
+        kernel = parameters['type']
+    else:
+        kernel = 'gaussian'
+
+    strength = parameters['strength']
+    if strength == 'weak':
+        size = 5
+    elif strength == 'medium':
+        size = 11
+    else:
+        size = 17
+
+    kernel = getattr(sys.modules[__name__], 'generate_{}_kernel'.format(kernel))(size)
+    blurred_image = apply_kernel(image, kernel)
+
+    return [blurred_image]
+
+def sharpen(image, extra_inputs, parameters):
+    ''' Applies a **Sharpen Filter** onto an image \n
+
+    Arguments:
+        *image* (NumPy array) -- the image to be filtered
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *type* (str, optional) -- the type of kernel to be used when performing the blur;
+            possible values are *box* and *gaussian*; default value is *gaussian*
+
+            *strength* (str) -- the strength of the blur effect; possible values are *weak*,
+            *medium* and *strong*
+
+    Returns:
+        list of NumPy array uint8 -- list containing the filtered image
+    '''
+    if 'type' in parameters:
+        kernel = parameters['type']
+    else:
+        kernel = 'gaussian'
+
+    strength = parameters['strength']
+
+    # Removing the blurred image from the original results in an image containing only the details
+    blurred_image = blur(image, {}, {'type': kernel, 'strength': strength})[0]
+    underflow_mask = image < blurred_image
+    details_image = np.where(underflow_mask, 0, image - blurred_image)
+
+    # Adding the details image to the original results in a sharpened image
+    overflow_mask = image > 255 - details_image
+    sharpened_image = np.where(overflow_mask, 255, image + details_image)
+
+    return [sharpened_image]
+
 def ascii_art(image, extra_inputs, parameters):
-    """Applies an **ASCII Art Filter** on an image. \n
+    '''Applies an **ASCII Art Filter** onto an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be filtered
@@ -105,7 +209,7 @@ def ascii_art(image, extra_inputs, parameters):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    """
+    '''
     # Small, 11 character ramps
     STANDARD_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '#', '%', '@']  # "Standard"
     ALTERNATE_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '%', '@', '#']   # "Alternate"
