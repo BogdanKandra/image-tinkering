@@ -92,6 +92,44 @@
     "type": "one-to-one",
     "parameters": []
   },
+  "Blur (Spatial Domain)": {
+    "function": "filtering.spatial.blur",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["box", "gaussian"],
+        "default": "gaussian",
+        "description": "The type of kernel to be used"
+      },
+      {
+        "name": "strength",
+        "type": "lookup",
+        "values": ["weak", "medium", "strong"],
+        "description": "The strength of the blur effect"
+      }
+    ]
+  },
+  "Sharpen (Spatial Domain)": {
+    "function": "filtering.spatial.sharpen",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["box", "gaussian"],
+        "default": "gaussian",
+        "description": "The type of kernel to be used"
+      },
+      {
+        "name": "strength",
+        "type": "lookup",
+        "values": ["weak", "medium", "strong"],
+        "description": "The strength of the blur effect"
+      }
+    ]
+  },
   "ASCII Art": {
     "function": "filtering.spatial.ascii_art",
     "type": "one-to-one",
