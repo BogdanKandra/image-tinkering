@@ -18,13 +18,29 @@ from backend import utils
 def apply_kernel(image, kernel):
     ''' Performs convolution between the given image and kernel and returns the result '''
     if utils.is_color(image):
-        result_b = convolve2d(image[:,:,0], kernel, mode='same').astype(np.uint8)
-        result_g = convolve2d(image[:,:,1], kernel, mode='same').astype(np.uint8)
-        result_r = convolve2d(image[:,:,2], kernel, mode='same').astype(np.uint8)
+        result_b = convolve2d(image[:,:,0], kernel, mode='same')
+        result_g = convolve2d(image[:,:,1], kernel, mode='same')
+        result_r = convolve2d(image[:,:,2], kernel, mode='same')
+        channels_list = []
 
-        filtered_image = utils.merge_channels([result_b, result_g, result_r])
+        # Trim values lower than 0 or higher than 255 and convert to uint8 for openCV compatibility
+        for channel in 'bgr':
+            underflow_mask = locals()['result_' + channel] < 0
+            result_temp = np.where(underflow_mask, 0, locals()['result_' + channel])
+            overflow_mask = result_temp > 255
+            result_temp = np.where(overflow_mask, 255, result_temp)
+            result_temp = result_temp.astype(np.uint8)
+            channels_list.append(result_temp)
+
+        filtered_image = utils.merge_channels(channels_list)
     else:
-        filtered_image = convolve2d(image, kernel, mode='same').astype(np.uint8)
+        # Trim values lower than 0 or higher than 255 and convert to uint8 for openCV compatibility
+        filtered_image = convolve2d(image, kernel, mode='same')
+        underflow_mask = filtered_image < 0
+        filtered_image = np.where(underflow_mask, 0, filtered_image)
+        overflow_mask = filtered_image > 255
+        filtered_image = np.where(overflow_mask, 255, filtered_image)
+        filtered_image = filtered_image.astype(np.uint8)
 
     return filtered_image
 
@@ -38,8 +54,8 @@ def generate_gaussian_kernel(size, sigma=3):
     distribution having the given standard deviation '''
     size = size // 2
     x, y = np.mgrid[-size : size + 1, -size : size + 1]
-    normal = 1 / (2.0 * np.pi * sigma**2)
-    g = np.exp(-((x ** 2 + y ** 2) / (2.0 * sigma ** 2))) * normal
+    normalization_factor = 1 / (2.0 * np.pi * sigma**2)
+    g = np.exp(-((x ** 2 + y ** 2) / (2.0 * sigma ** 2))) * normalization_factor
     g = g / (np.sum(g))    # Normalize the kernel so the sum of elements is 1
 
     return g
@@ -191,6 +207,25 @@ def sharpen(image, extra_inputs, parameters):
     # Adding the details image to the original results in a sharpened image
     overflow_mask = image > 255 - details_image
     sharpened_image = np.where(overflow_mask, 255, image + details_image)
+
+##### Alternative implementation using kernels
+#    sharp_3x3_1 = np.array([[0, -1, 0],
+#                            [-1, 5, -1],
+#                            [0, -1, 0]])
+#    sharp_3x3_2 = np.array([[-1, -1, -1],
+#                            [-1, 9, -1],
+#                            [-1, -1, -1]])
+#    sharp_3x3_3 = np.array([[-1/8, -1/8, -1/8],
+#                            [-1/8, 2, -1/8],
+#                            [-1/8, -1/8, -1/8]])
+    # Unsharp masking kernel
+#    sharp_5x5 = np.array([[-0.00391, -0.01563, -0.02344, -0.01563, -0.00391],
+#                          [-0.01563, -0.06250, -0.09375, -0.06250, -0.01563],
+#                          [-0.02344, -0.09375, 1.85980, -0.09375, -0.02344],
+#                          [-0.01563, -0.06250, -0.09375, -0.06250, -0.01563],
+#                          [-0.00391, -0.01563, -0.02344, -0.01563, -0.00391]])
+#
+#    sharpened_image = apply_kernel(image, sharp_5x5)
 
     return [sharpened_image]
 
