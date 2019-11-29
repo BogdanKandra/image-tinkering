@@ -15,6 +15,13 @@
 15. https://pdfs.semanticscholar.org/4660/5d83877c33b54d749c7f5f1b1329e2c81a55.pdf -- Photomosaicking
 16. https://www.photo-mosaic.co.uk/how-it-works/what-is-a-photo-mosaic/ -- Photomosaicking
 17. https://worldwide.espacenet.com/publicationDetails/biblio?CC=US&NR=6137498A&KC=A&FT=D&ND=&date=20001024&DB=&locale=en_EP -- Photomosaicking
+18. http://alumni.media.mit.edu/~maov/classes/vision09/lect/09_Image_Filtering_Edge_Detection_09.pdf -- Convolution (Blur, Sharpen, Edge)
+19. http://setosa.io/ev/image-kernels/ -- Vizualizare de kernels
+20. https://www.researchgate.net/publication/330502797_Image_Processing_Filtering_Edge_detection_and_Template_matching -- Convolution (Theory)
+21. https://www.taylorpetrick.com/blog/post/convolution-part3 -- Convolution, kernels
+22. http://aishack.in/tutorials/image-convolution-examples/ -- Kernels
+23. http://eeweb.poly.edu/~yao/EE3414/image_filtering.pdf -- Filtering, Kernels
+24. https://en.wikipedia.org/wiki/Kernel_(image_processing) -- Kernels
 
 - La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
 	{
@@ -89,7 +96,7 @@
 - Sepia Filter: Vezi referinta 09
 - ASCII Filter: Vezi referintele 10 si 11
 
-
+- Kintsugi Filter: Edge points detection brute force approach - If the point located in ANY of the adjacent positions is not contained in the polygon, then the current point is on the edge - is much too slow
 
 
 		
