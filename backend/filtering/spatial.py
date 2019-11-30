@@ -195,7 +195,12 @@ def blur(image, extra_inputs, parameters):
     else:
         size = 17
 
-    kernel = getattr(sys.modules['backend.filtering.helpers'], 'generate_{}_kernel'.format(kernel))(size)
+    if 'backend.filtering.helpers' in sys.modules:
+        module_key = 'backend.filtering.helpers'
+    else:
+        module_key = 'filtering.helpers'
+
+    kernel = getattr(sys.modules[module_key], 'generate_{}_kernel'.format(kernel))(size)
     blurred_image = helpers.apply_kernel(image, kernel)
 
     return [blurred_image]
