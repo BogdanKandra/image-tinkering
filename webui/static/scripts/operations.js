@@ -319,7 +319,7 @@ function createMenuEntry(parameterObject, functionName) {
     // Store the default parameter value in the list of configurations as well
     for (let j = 0; j < operationConfigurations.length; j++) {
         if (operationConfigurations[j]['function'] == functionName && paramDefault != undefined) {
-            operationConfigurations[j]['params'][dropdownText.toLowerCase()] = paramDefault
+            operationConfigurations[j]['params'][dropdownText.charAt(0).toLowerCase() + dropdownText.slice(1)] = paramDefault
         }
     }
 
@@ -355,24 +355,28 @@ function createMenuEntry(parameterObject, functionName) {
             for (let i = 0; i < operationConfigurations.length; i++) {
                 if (operationConfigurations[i]['function'] == functionName) {
                     // The value will be converted to number if it is numeric
-                    operationConfigurations[i]['params'][dropdownText.toLowerCase()] = Number.isNaN(Number(value)) ? value : Number(value)
+                    operationConfigurations[i]['params'][dropdownText.charAt(0).toLowerCase() + dropdownText.slice(1)] = Number.isNaN(Number(value)) ? value : Number(value)
                 }
             }
 
             // Check whether the presence of another parameter depends on this parameters' value
-            if (parameterObject.hasOwnProperty('presenceDependency')) {
-                let presenceDependency = parameterObject['presenceDependency']
+            if (parameterObject.hasOwnProperty('presenceDependencies')) {
+                let presenceDependencies = parameterObject['presenceDependencies']
+                let presenceConditions = parameterObject['presenceConditions']
                 let presenceConditionRegex = /([^a-zA-Z]+)([a-zA-Z]+)/
-                let matches = presenceConditionRegex.exec(parameterObject['presenceCondition'])
-                let execCond = '\"' + value + '\"' + matches[1] + '\"' + matches[2] + '\"'
-                if (eval(execCond)) {
-                    // The presence condition has been met, display the dependant parameter
-                    let parameterSelector = '#' + presenceDependency + '_parameter'
-                    $(parameterSelector).css('display', 'block')
-                } else {
-                    // The presence condition has not been met, hide the dependant parameter
-                    let parameterSelector = '#' + presenceDependency + '_parameter'
-                    $(parameterSelector).css('display', 'none')
+
+                for (let i = 0; i < presenceDependencies.length; i++) {
+                    let matches = presenceConditionRegex.exec(presenceConditions[i])
+                    let execCond = '\"' + value + '\"' + matches[1] + '\"' + matches[2] + '\"'
+                    if (eval(execCond)) {
+                        // The presence condition has been met, display the dependant parameter
+                        let parameterSelector = '#' + presenceDependencies[i] + '_parameter'
+                        $(parameterSelector).css('display', 'block')
+                    } else {
+                        // The presence condition has not been met, hide the dependant parameter
+                        let parameterSelector = '#' + presenceDependencies[i] + '_parameter'
+                        $(parameterSelector).css('display', 'none')
+                    }
                 }
             }
         },
