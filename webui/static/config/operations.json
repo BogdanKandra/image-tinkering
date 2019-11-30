@@ -107,6 +107,7 @@
         "type": "range",
         "minimum": 1,
         "maximum": 254,
+        "default": 127,
         "description": "The value which separates the two pixel values"
       },
       {
