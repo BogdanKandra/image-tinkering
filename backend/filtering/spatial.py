@@ -7,58 +7,13 @@ import os
 import sys
 import cv2
 import numpy as np
-from scipy.signal import convolve2d
+from . import helpers
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
     project_path = os.path.dirname(project_path)
 sys.path.append(project_path)
 from backend import utils
 
-
-def apply_kernel(image, kernel):
-    ''' Performs convolution between the given image and kernel and returns the result '''
-    if utils.is_color(image):
-        result_b = convolve2d(image[:,:,0], kernel, mode='same')
-        result_g = convolve2d(image[:,:,1], kernel, mode='same')
-        result_r = convolve2d(image[:,:,2], kernel, mode='same')
-        channels_list = []
-
-        # Trim values lower than 0 or higher than 255 and convert to uint8 for openCV compatibility
-        for channel in 'bgr':
-            underflow_mask = locals()['result_' + channel] < 0
-            result_temp = np.where(underflow_mask, 0, locals()['result_' + channel])
-            overflow_mask = result_temp > 255
-            result_temp = np.where(overflow_mask, 255, result_temp)
-            result_temp = result_temp.astype(np.uint8)
-            channels_list.append(result_temp)
-
-        filtered_image = utils.merge_channels(channels_list)
-    else:
-        # Trim values lower than 0 or higher than 255 and convert to uint8 for openCV compatibility
-        filtered_image = convolve2d(image, kernel, mode='same')
-        underflow_mask = filtered_image < 0
-        filtered_image = np.where(underflow_mask, 0, filtered_image)
-        overflow_mask = filtered_image > 255
-        filtered_image = np.where(overflow_mask, 255, filtered_image)
-        filtered_image = filtered_image.astype(np.uint8)
-
-    return filtered_image
-
-def generate_box_kernel(size):
-    ''' Generates a kernel having the given size and giving equal weights to all elements
-    surrounding the current pixel '''
-    return (1 / size ** 2) * np.ones((size, size), dtype=np.uint8)
-
-def generate_gaussian_kernel(size, sigma=3):
-    ''' Generates an one-sum kernel having the given size, containing samples from a gaussian
-    distribution having the given standard deviation '''
-    size = size // 2
-    x, y = np.mgrid[-size : size + 1, -size : size + 1]
-    normalization_factor = 1 / (2.0 * np.pi * sigma**2)
-    g = np.exp(-((x ** 2 + y ** 2) / (2.0 * sigma ** 2))) * normalization_factor
-    g = g / (np.sum(g))    # Normalize the kernel so the sum of elements is 1
-
-    return g
 
 def negative(image, extra_inputs={}, parameters={}):
     '''Applies a **Negative Filter** onto an image. \n
@@ -136,6 +91,78 @@ def sepia(image, extra_inputs={}, parameters={}):
 
     return [sepia_image]
 
+def binarize(image, extra_inputs={}, parameters={}):
+    ''' Binarizes an image. \n
+
+    Arguments:
+        *image* (NumPy array) -- the image to be binarized
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *thresholding_Method* (str, optional) -- the type of thresholding; possible values are
+            *simple* and *adaptive*; default value is *adaptive*. In the case of *simple*
+            thresholding, the binarization threshold is chosen by the user and it is the same for
+            all pixels; this can cause unsatisfactory results if the source image has different
+            lighting conditions in different areas. In *adaptive* thresholding, the threshold is
+            automatically computed and is different for each source pixel
+
+            *threshold* (int, optional) -- the value which separates the two pixel values, in the case of
+            simple thresholding; must be between 1 and 254; default value is 127
+
+            *maximum_Value* (int, optional) -- the value with which to replace pixel values greater
+            than the threshold; default value is 255; must be between 1 and 255
+
+            *adaptive_Method* (str, optional) -- the type of adaptive threshold computation;
+            possible values are *mean* and *gaussian*; default value is *gaussian*. When *mean*,
+            the threshold is computed as the mean of the values in the neighbourhood; when
+            *gaussian*, the threshold is computed as a gaussian-weighted sum of the neighbourhood
+            values
+
+            *neighbourhood_Size* (int, optional) -- the square size of the neighbourhood of values
+            to consider when computing adaptive thresholds; possible values are *5*, *9* and *15*;
+            default value is 15
+    '''
+    if utils.is_color(image):
+        image = grayscale(image, {}, {})[0]
+
+    if 'thresholding_Method' in parameters:
+        thresholding = parameters['thresholding_Method']
+    else:
+        thresholding = 'adaptive'
+
+    if 'maximum_Value' in parameters:
+        max_value = parameters['maximum_Value']
+    else:
+        max_value = 255
+
+    if thresholding == 'simple':
+        if 'threshold' in parameters:
+            threshold = parameters['threshold']
+        else:
+            threshold = 127
+
+        # If the pixel value is greater than the threshold, set the pixel value to 'max_value'
+        # Otherwise, set it to 0
+        binary_image = np.where(image > threshold, max_value, 0).astype(np.uint8)
+    else:
+        if 'adaptive_Method' in parameters:
+            method = parameters['adaptive_Method']
+        else:
+            method = 'gaussian'
+
+        if 'neighbourhood_Size' in parameters:
+            neighbourhood_size = parameters['neighbourhood_Size']
+        else:
+            neighbourhood_size = 11
+
+        # Compute the thresholds and set the new values accordingly
+        thresholds = helpers.get_thresholds(image, method, neighbourhood_size) - 2
+        binary_image = np.where(image > thresholds, max_value, 0).astype(np.uint8)
+
+    return [binary_image]
+
 def blur(image, extra_inputs, parameters):
     '''Applies a **Blur Filter** onto an image. \n
 
@@ -168,8 +195,8 @@ def blur(image, extra_inputs, parameters):
     else:
         size = 17
 
-    kernel = getattr(sys.modules[__name__], 'generate_{}_kernel'.format(kernel))(size)
-    blurred_image = apply_kernel(image, kernel)
+    kernel = getattr(sys.modules['backend.filtering.helpers'], 'generate_{}_kernel'.format(kernel))(size)
+    blurred_image = helpers.apply_kernel(image, kernel)
 
     return [blurred_image]
 
