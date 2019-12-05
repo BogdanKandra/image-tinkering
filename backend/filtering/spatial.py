@@ -108,8 +108,9 @@ def binarize(image, extra_inputs={}, parameters={}):
             lighting conditions in different areas. In *adaptive* thresholding, the threshold is
             automatically computed and is different for each source pixel
 
-            *threshold* (int, optional) -- the value which separates the two pixel values, in the case of
-            simple thresholding; must be between 1 and 254; default value is 127
+            *threshold* (str, optional) -- the value which separates the two pixel values, in the
+            case of simple thresholding; possible values are *median* and *127*; default value is
+            *median*
 
             *maximum_Value* (int, optional) -- the value with which to replace pixel values greater
             than the threshold; default value is 255; must be between 1 and 255
@@ -138,8 +139,10 @@ def binarize(image, extra_inputs={}, parameters={}):
         max_value = 255
 
     if thresholding == 'simple':
-        if 'threshold' in parameters:
-            threshold = parameters['threshold']
+        threshold = parameters['threshold']
+
+        if threshold == 'median':
+            threshold = np.median(image)
         else:
             threshold = 127
 

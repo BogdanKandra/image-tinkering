@@ -104,10 +104,9 @@
       },
       {
         "name": "threshold",
-        "type": "range",
-        "minimum": 1,
-        "maximum": 254,
-        "default": 127,
+        "type": "lookup",
+        "values": ["median", "127"],
+        "default": "median",
         "description": "The value which separates the two pixel values"
       },
       {
