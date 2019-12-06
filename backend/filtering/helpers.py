@@ -26,8 +26,7 @@ def apply_kernel(image, kernel):
         for channel in 'bgr':
             underflow_mask = locals()['result_' + channel] < 0
             result_temp = np.where(underflow_mask, 0, locals()['result_' + channel])
-            overflow_mask = result_temp > 255
-            result_temp = np.where(overflow_mask, 255, result_temp)
+            result_temp = np.where(result_temp > 255, 255, result_temp)
             result_temp = result_temp.astype(np.uint8)
             channels_list.append(result_temp)
 
@@ -35,10 +34,8 @@ def apply_kernel(image, kernel):
     else:
         # Trim values lower than 0 or higher than 255 and convert to uint8 for openCV compatibility
         filtered_image = convolve2d(image, kernel, mode='same')
-        underflow_mask = filtered_image < 0
-        filtered_image = np.where(underflow_mask, 0, filtered_image)
-        overflow_mask = filtered_image > 255
-        filtered_image = np.where(overflow_mask, 255, filtered_image)
+        filtered_image = np.where(filtered_image < 0, 0, filtered_image)
+        filtered_image = np.where(filtered_image > 255, 255, filtered_image)
         filtered_image = filtered_image.astype(np.uint8)
 
     return filtered_image
