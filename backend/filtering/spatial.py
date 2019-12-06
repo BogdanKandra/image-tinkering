@@ -158,7 +158,7 @@ def binarize(image, extra_inputs={}, parameters={}):
         if 'neighbourhood_Size' in parameters:
             neighbourhood_size = parameters['neighbourhood_Size']
         else:
-            neighbourhood_size = 11
+            neighbourhood_size = 15
 
         # Compute the thresholds and set the new values accordingly
         thresholds = helpers.get_thresholds(image, method, neighbourhood_size) - 2
@@ -235,13 +235,10 @@ def sharpen(image, extra_inputs, parameters):
     strength = parameters['strength']
 
     # Removing the blurred image from the original results in an image containing only the details
-    blurred_image = blur(image, {}, {'type': kernel, 'strength': strength})[0]
-    underflow_mask = image < blurred_image
-    details_image = np.where(underflow_mask, 0, image - blurred_image)
-
     # Adding the details image to the original results in a sharpened image
-    overflow_mask = image > 255 - details_image
-    sharpened_image = np.where(overflow_mask, 255, image + details_image)
+    blurred_image = blur(image, {}, {'type': kernel, 'strength': strength})[0]
+    details_image = np.where(image - blurred_image < 0, 0, image - blurred_image)
+    sharpened_image = np.where(image + details_image > 255, 255, image + details_image)
 
 ##### Alternative implementation using kernels
 #    sharp_3x3_1 = np.array([[0, -1, 0],
@@ -351,3 +348,59 @@ def ascii_art(image, extra_inputs, parameters):
     ascii_image = cv2.resize(ascii_image, original_size, interpolation=cv2.INTER_AREA)
 
     return [ascii_image]
+
+def edge(image, extra_inputs, parameters):
+    '''Performs edge detection onto an image and returns the edge image. \n
+
+    Arguments:
+        *image* (NumPy array) -- the image to be filtered
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *method* (str) -- the type of edge detection algorithm to be applied; possible values
+            are *canny* and *laplacian*
+
+            *pre-blur* (str, optional) -- whether to apply blur to the input image before convolving
+            with the laplacian kernel; possible values are 'Yes' and 'No'; default value is 'Yes'
+
+    Returns:
+        list of NumPy array uint8 -- list containing the filtered image
+    '''
+    # Parameters extraction
+    method = parameters['method']
+
+    if 'pre-blur' in parameters:
+        pre_blur = parameters['pre-blur']
+        if pre_blur == 'Yes':
+            pre_blur = True
+        else:
+            pre_blur = False
+    else:
+        pre_blur = True
+
+    # Perform Edge Detection
+    if method == 'canny':       # This method assumes applying the Canny Edge Detection algorithm
+        pass
+    elif method == 'laplacian': # This method assumes convolving the image with the Laplacian kernel
+        # Preprocess the input image
+        if pre_blur:
+            gray = grayscale(image, {}, {})[0]
+            blur_kernel = helpers.generate_gaussian_kernel(3, 1)
+            processed_image = helpers.apply_kernel(gray, blur_kernel)
+        else:
+            processed_image = grayscale(image, {}, {})[0]
+
+        # Convolve processed image with laplacian kernel
+        laplacian_kernel_alt = np.array([[-1, -1, -1],
+                                         [-1, 8, -1],
+                                         [-1, -1, -1]])
+#       ### Original Laplacian kernel -- gives weaker edges
+#                edge_kernel_og = np.array([[0, -1, 0],
+#                                           [-1, 4, -1],
+#                                           [0, -1, 0]])
+
+        edges_image = helpers.apply_kernel(processed_image, laplacian_kernel_alt)
+
+    return [edges_image]
