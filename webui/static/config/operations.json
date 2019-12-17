@@ -184,6 +184,34 @@
       }
     ]
   },
+  "Edge Detection": {
+    "function": "filtering.spatial.edge",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "method",
+        "type": "lookup",
+        "values": ["laplacian", "gradient", "non-max suppression", "canny"],
+        "presenceDependencies": ["pre-Blur", "edge_Count"],
+        "presenceConditions": ["==laplacian", "==canny"],
+        "description": "The edge detection algorithm to be applied"
+      },
+      {
+        "name": "pre-Blur",
+        "type": "lookup",
+        "values": ["yes", "no"],
+        "default": "yes",
+        "description": "Whether to blur the input image before convolving with the laplacian kernel; the result will have less noise but lesser edges"
+      },
+      {
+        "name": "edge_Count",
+        "type": "lookup",
+        "values": ["standard", "many"],
+        "default" : "standard",
+        "description": "How many edges will be considered strong in the Double Thresholding step"
+      }
+    ]
+  },
   "Flip": {
     "function": "geometric.axes.flip",
     "type": "one-to-one",
