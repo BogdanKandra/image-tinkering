@@ -15,14 +15,23 @@
 15. https://pdfs.semanticscholar.org/4660/5d83877c33b54d749c7f5f1b1329e2c81a55.pdf -- Photomosaicking
 16. https://www.photo-mosaic.co.uk/how-it-works/what-is-a-photo-mosaic/ -- Photomosaicking
 17. https://worldwide.espacenet.com/publicationDetails/biblio?CC=US&NR=6137498A&KC=A&FT=D&ND=&date=20001024&DB=&locale=en_EP -- Photomosaicking
-18. http://alumni.media.mit.edu/~maov/classes/vision09/lect/09_Image_Filtering_Edge_Detection_09.pdf -- Convolution (Blur, Sharpen, Edge)
+18. http://alumni.media.mit.edu/~maov/classes/vision09/lect/09_Image_Filtering_Edge_Detection_09.pdf -- Convolution Theory (Blur, Sharpen, Edge)
 19. http://setosa.io/ev/image-kernels/ -- Vizualizare de kernels
 20. https://www.researchgate.net/publication/330502797_Image_Processing_Filtering_Edge_detection_and_Template_matching -- Convolution (Theory)
 21. https://www.taylorpetrick.com/blog/post/convolution-part3 -- Convolution, kernels
 22. http://aishack.in/tutorials/image-convolution-examples/ -- Kernels
-23. http://eeweb.poly.edu/~yao/EE3414/image_filtering.pdf -- Filtering, Kernels
-24. https://en.wikipedia.org/wiki/Kernel_(image_processing) -- Kernels
-25. https://docs.opencv.org/3.4/d7/d4d/tutorial_py_thresholding.html -- Binarization Techniques
+23. http://www.aishack.in/tutorials/sobel-laplacian-edge-detectors/ -- Sobel, Laplace kernels
+24. http://eeweb.poly.edu/~yao/EE3414/image_filtering.pdf -- Filtering, Kernels
+25. https://en.wikipedia.org/wiki/Kernel_(image_processing) -- Kernels
+26. https://docs.opencv.org/3.4/d7/d4d/tutorial_py_thresholding.html -- Binarization Techniques
+27. https://towardsdatascience.com/canny-edge-detection-step-by-step-in-python-computer-vision-b49c3a2d8123 -- Gaussian Kernel, Edge Detection with Canny algorithm
+28. https://stackoverflow.com/questions/53544983/how-is-laplacian-filter-calculated -- Laplace Kernel how-to
+29. https://homepages.inf.ed.ac.uk/rbf/HIPR2/log.htm -- Laplacian / Laplacian of Gaussian
+30. https://en.wikipedia.org/wiki/Discrete_Laplace_operator#Image_Processing -- Laplace Operator blablas
+31. https://docs.opencv.org/3.4/d7/de1/tutorial_js_canny.html -- Canny Edge (Theory; what the thresholds apply to)
+32. https://rosettacode.org/wiki/Canny_edge_detector -- Canny Edge implementation
+33. https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/ -- Canny parameter setting inspiration
+
 
 - La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
 	{
@@ -92,14 +101,24 @@
 - Sa vorbesc despre structura serverului - fisiere, module, etc
 - Sa vorbesc despre functiile din utils; pentru ce au fost folosite
 
+
+
+To be mentioned:
+=============================
 - Negative Filter: Pagina 108 din carte
 - Grayscale Filter: Vezi referintele 07 si 08
 - Sepia Filter: Vezi referinta 09
 - ASCII Filter: Vezi referintele 10 si 11
-
 - Kintsugi Filter: Edge points detection brute force approach - If the point located in ANY of the adjacent positions is not contained in the polygon, then the current point is on the edge - is much too slow
-
-
-		
-
-
+- Edge Detection: Also mention Prewitt, Sobel, Roberts kernels
+	#prewitt_3x3_x = np.array([[-1, 0, 1],
+	#                          [-1, 0, 1],
+	#                          [-1, 0, 1]])
+	#prewitt_3x3_y = np.array([[1, 1, 1],
+	#                          [0, 0, 0],
+	#                          [-1, -1, -1]])
+	#
+	#roberts_2x2_x = np.array([[0, 1],
+	#                          [-1, 0]])
+	#roberts_2x2_y = np.array([[1, 0],
+	#                          [0, -1]])
