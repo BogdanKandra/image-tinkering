@@ -171,19 +171,6 @@
       }
     ]
   },
-  "ASCII Art": {
-    "function": "filtering.spatial.ascii_art",
-    "type": "one-to-one",
-    "parameters": [
-      {
-        "name": "charset",
-        "type": "lookup",
-        "values": ["standard", "alternate", "full"],
-        "default": "alternate",
-        "description": "The set of characters to be used when rendering the ASCII image"
-      }
-    ]
-  },
   "Edge Detection": {
     "function": "filtering.spatial.edge",
     "type": "one-to-one",
@@ -209,6 +196,19 @@
         "values": ["standard", "many"],
         "default" : "standard",
         "description": "How many edges will be considered strong in the Double Thresholding step"
+      }
+    ]
+  },
+  "Sketchify": {
+    "function": "filtering.spatial.sketch",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "pencil_Stroke_Size",
+        "type": "lookup",
+        "values": ["small", "medium", "large"],
+        "default": "large",
+        "description": "Describes the width of the pencil stroke used for the sketch"
       }
     ]
   },
@@ -273,6 +273,19 @@
         "values": ["channels", "lines", "columns", "pixels"],
         "default": "channels",
         "description": "The criterion to shuffle the image data by"
+      }
+    ]
+  },
+  "ASCII Art": {
+    "function": "miscellaneous.lego.ascii_art",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "charset",
+        "type": "lookup",
+        "values": ["standard", "alternate", "full"],
+        "default": "alternate",
+        "description": "The set of characters to be used when rendering the ASCII image"
       }
     ]
   },
