@@ -31,6 +31,8 @@
 31. https://docs.opencv.org/3.4/d7/de1/tutorial_js_canny.html -- Canny Edge (Theory; what the thresholds apply to)
 32. https://rosettacode.org/wiki/Canny_edge_detector -- Canny Edge implementation
 33. https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/ -- Canny parameter setting inspiration
+34. Michael Beyeler - OpenCV with Python Blueprints-Packt Publishing (2015) -- Sketch Filter
+35. 
 
 
 - La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
