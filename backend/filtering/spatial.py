@@ -445,6 +445,49 @@ def edge(image, extra_inputs, parameters):
 
         return [thresholded.astype(np.uint8)]
 
+def emboss(image, extra_inputs, parameters):
+    '''Applies an **Emboss Filter** onto an image. \n
+
+    Arguments:
+        *image* (NumPy array) -- the image to be filtered
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *direction* (str) -- the direction of the embossing; possible values
+            are *horizontal*, *vertical* and *diagonal*
+
+            *type* (str) -- the type of resulting image; possible values are
+            *mask* and *filter*
+    Returns:
+        list of NumPy array uint8 -- list containing the filtered image
+    '''
+    # Parameters extraction
+    direction = parameters['direction']
+    type = parameters['type']
+    
+    if direction == 'horizontal':
+        if type == 'mask':
+            kernel_1 = np.array([[0, 1, 0], [0, 0, 0], [0, -1, 0]])
+            kernel_2 = np.array([[0, -1, 0], [0, 0, 0], [0, 1, 0]])
+        elif type == 'filter':
+            kernel_1 = np.array([[0, 1, 0], [0, 1, 0], [0, -1, 0]])
+            kernel_2 = np.array([[0, -1, 0], [0, 1, 0], [0, 1, 0]])
+    elif direction == 'vertical':
+        if type == 'mask':
+            kernel_1 = np.array([[0, 0, 0], [-1, 0, 1], [0, 0, 0]])
+            kernel_2 = np.array([[0, 0, 0], [1, 0, -1], [0, 0, 0]])
+        elif type == 'filter':
+            kernel_1 = np.array([[0, 0, 0], [-1, 1, 1], [0, 0, 0]])
+            kernel_2 = np.array([[0, 0, 0], [1, 1, -1], [0, 0, 0]])
+
+    temp_1 = helpers.apply_kernel(image, kernel_1)
+    temp_2 = helpers.apply_kernel(image, kernel_2)
+    result = temp_1 + temp_2
+
+    return [result]
+
 def sketch(image, extra_inputs, parameters):
     '''Converts an image to a pencil sketch. \n
 
