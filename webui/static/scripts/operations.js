@@ -415,19 +415,23 @@ function checkAcceptCondition() {
             
             // For each dropdown, check if a value was set; if not, break (return false)
             $.each(dropdowns, function(_index) {
-                let options = $(this).find('.menu').children()
-                let parameterSet = false
+                // Only consider relevant parameters (which are currently visible to the user)
+                var styleAttribute = $(this).attr("style")
+                if (typeof styleAttribute === typeof undefined || styleAttribute === "display: block;") {
+                    let options = $(this).find('.menu').children()
+                    let parameterSet = false
 
-                $.each(options, function() {
-                    if (this.classList.contains('selected')) {
-                        parameterSet = true
+                    $.each(options, function() {
+                        if (this.classList.contains('selected')) {
+                            parameterSet = true
+                            return false
+                        }
+                    })
+
+                    if (!parameterSet) {
+                        dropdownsOk = false
                         return false
                     }
-                })
-
-                if (!parameterSet) {
-                    dropdownsOk = false
-                    return false
                 }
             })
 
