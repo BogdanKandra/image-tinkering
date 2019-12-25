@@ -272,8 +272,8 @@ def pixelate(image, extra_inputs, parameters):
         list of NumPy array uint8 -- list containing the pixelated image
     '''
     # Parameters extraction
-    if 'resolution' in parameters:
-        resolution = parameters['resolution']
+    if 'fidelity' in parameters:
+        resolution = parameters['fidelity']
     else:
         resolution = 'standard'
 
@@ -288,6 +288,8 @@ def pixelate(image, extra_inputs, parameters):
         resolution = 10
     elif resolution == 'very high':
         resolution = 5
+    elif resolution == 'ultra high':
+        resolution = 3
 
     # Determine the number of pixel-blocks to be used for both dimensions
     image_height, image_width = image.shape[:2]

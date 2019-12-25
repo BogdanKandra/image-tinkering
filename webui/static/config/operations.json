@@ -331,7 +331,7 @@
       {
         "name": "fidelity",
         "type": "lookup",
-        "values": ["very low", "low", "standard", "high", "very high"],
+        "values": ["very low", "low", "standard", "high", "very high", "ultra high"],
         "default": "standard",
         "description": "How close the resulting image will look compared to the original (inverse proportional to the size of the composing pixels)"
       }
