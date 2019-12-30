@@ -304,8 +304,8 @@ def pixelate(image, extra_inputs, parameters):
             *standard*, *high* and *very high*; default value is *standard*
             
             *colour_Space* (str, optional) -- the colour space used to represent
-            the pixelated image; possible values are *RGB* and *RAL*; default
-            value is *RGB*
+            the pixelated image; possible values are *rgb* and *ral*; default
+            value is *rgb*
     Returns:
         list of NumPy array uint8 -- list containing the pixelated image
     '''
@@ -318,7 +318,7 @@ def pixelate(image, extra_inputs, parameters):
     if 'colour_Space' in parameters:
         space = parameters['colour_Space']
     else:
-        space = 'RGB'
+        space = 'rgb'
 
     # Determine the resolution of the pixel-blocks used (the length of the square)
     if resolution == 'very low':
@@ -362,7 +362,7 @@ def pixelate(image, extra_inputs, parameters):
                     pixel_tile[:, :, i] = colour_component
 
                 # Convert RGB colour to closest RAL colour if needed
-                if space == 'RAL':
+                if space == 'ral':
                     ral_colour = get_closest_ral_colour(colour_used)
                     for i in range(3):
                         pixel_tile[:, :, i] = ral_colour[i]
