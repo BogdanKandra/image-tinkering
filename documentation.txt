@@ -76,6 +76,8 @@
 							   -> elementele sunt de forma operator|valoare (exemplu '==butterworth')
 		- 'description' -> string optional, descrierea parametrului, apare ca popup la hover pe parametru
 	
+	- Parameter values are case insensitive when written in operations.json, but they must be lower case when referring to them in the backend
+	
 - Contractul semnaturilor operatiilor:
 	operation(image, extra_inputs_dict, parameters_dict), returns list of images
 		- one-to-one: extra_inputs_list = [], returns [image]
