@@ -41,8 +41,8 @@ def get_closest_usable_tile_index(distances, tile_usage_grid, line, column):
             return closest_tile_index
 
 def get_closest_ral_colour(rgb_list):
-    ''' Function takes a standard RGB colour as argument, computes and returns
-    the closest RAL colour '''
+    ''' Function takes a standard RGB colour as argument, computes the closest
+    RAL space colour and returns its code and value '''
     # Read the JSON file containing mappings between the RAL colours and their RGB representation
     ral_mappings_path = os.path.join(project_path, 'webui', 'static', 'config', 'ral_colours.json')
 
@@ -53,15 +53,15 @@ def get_closest_ral_colour(rgb_list):
         our_colour = np.array(rgb_list).reshape((1, 3))
         ral_colours = np.zeros((len(ral_mappings), 3))
         ral_mappings_keys = list(ral_mappings.keys())
-        
+
         for index, colour_id in enumerate(ral_mappings.keys()):
             ral_colours[index] = np.array(ral_mappings[colour_id])
-        
+
         distances = cdist(our_colour, ral_colours)
         closest_ral_index = np.where(distances == np.min(distances))[1][0]
         closest_ral_key = ral_mappings_keys[closest_ral_index]
-        
-    return ral_mappings[closest_ral_key]
+
+    return closest_ral_key, ral_mappings[closest_ral_key]
 
 def build_mosaic(image, technique, alpha_level, resolution, redundancy):
     ''' Helper function which actually builds the mosaic '''
@@ -288,7 +288,9 @@ def photomosaic(image, extra_inputs, parameters):
 
 def pixelate(image, extra_inputs, parameters):
     ''' Uses a form of downscaling in order to achieve an 8-bit-like filter
-    appearance of an image.
+    appearance of an image. The colours used for representing the result can be
+    from the RGB or the RAL colour spaces. When using the RAL space, a text
+    file containing extra information is created
 
     Arguments:
         *image* (NumPy array) -- the image to be pixelated
@@ -302,7 +304,7 @@ def pixelate(image, extra_inputs, parameters):
             look compared to the original (inverse proportional to the size of
             the composing pixels); possible values are *very low*, *low*,
             *standard*, *high* and *very high*; default value is *standard*
-            
+
             *colour_Space* (str, optional) -- the colour space used to represent
             the pixelated image; possible values are *rgb* and *ral*; default
             value is *rgb*
@@ -314,7 +316,7 @@ def pixelate(image, extra_inputs, parameters):
         resolution = parameters['fidelity']
     else:
         resolution = 'standard'
-    
+
     if 'colour_Space' in parameters:
         space = parameters['colour_Space']
     else:
@@ -343,6 +345,7 @@ def pixelate(image, extra_inputs, parameters):
         channels_count = image.shape[2]
         pixel_tile = np.zeros((resolution, resolution, channels_count))
         pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype='uint8')
+        colours_frequencies = {}
     else:
         pixel_tile = np.zeros((resolution, resolution))
         pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution), dtype='uint8')
@@ -363,13 +366,32 @@ def pixelate(image, extra_inputs, parameters):
 
                 # Convert RGB colour to closest RAL colour if needed
                 if space == 'ral':
-                    ral_colour = get_closest_ral_colour(colour_used)
+                    # Get closest RAL colour, record its use and replace it in result image
+                    ral_code, ral_colour = get_closest_ral_colour(colour_used)
+
+                    if ral_code in colours_frequencies:
+                        colours_frequencies[ral_code] += 1
+                    else:
+                        colours_frequencies[ral_code] = 1
+
                     for i in range(3):
                         pixel_tile[:, :, i] = ral_colour[i]
             else:
                 pixel_tile = int(round(np.mean(block)))
 
             pixelated_image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution] = pixel_tile
+
+    # If using RAL colour space, write colour usage information into a file
+    if space == 'ral':
+        ral_colour_usage_path = os.path.join(project_path, 'webui', 'static', 'tempdata', 'ral_info.txt')
+        with open(ral_colour_usage_path, 'w') as f:
+            f.write('USED COLOURS INFORMATION:\n')
+            f.write('==============================\n')
+            f.write('NUMBER OF COLOURS USED: ' + str(len(colours_frequencies)) + '\n')
+            f.write('NUMBER OF TILES USED: ' + str(lines_count * columns_count) + '\n')
+            f.write('COLOUR FREQUENCIES:\n')
+            for code in colours_frequencies:
+                f.write('>> ' + code + ': ' + str(colours_frequencies[code]) + '\n')
 
     return [pixelated_image]
 
