@@ -389,9 +389,9 @@ def pixelate(image, extra_inputs, parameters):
             f.write('==============================\n')
             f.write('NUMBER OF COLOURS USED: ' + str(len(colours_frequencies)) + '\n')
             f.write('NUMBER OF TILES USED: ' + str(lines_count * columns_count) + '\n')
-            f.write('COLOUR FREQUENCIES:\n')
+            f.write('COLOUR FREQUENCIES: [RAL_COLOUR_ID: NUMBER OF PIECES]\n')
             for code in colours_frequencies:
-                f.write('>> ' + code + ': ' + str(colours_frequencies[code]) + '\n')
+                f.write('>> ' + code + ': ' + str(colours_frequencies[code]) + ' pcs\n')
 
     return [pixelated_image]
 
