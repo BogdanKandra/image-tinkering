@@ -75,6 +75,44 @@
     ],
     "description": "Sharpens an image using the FFT"
   },
+  "Blur (Spatial Domain)": {
+    "function": "filtering.spatial.blur",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["box", "gaussian"],
+        "default": "gaussian",
+        "description": "The type of kernel to be used"
+      },
+      {
+        "name": "strength",
+        "type": "lookup",
+        "values": ["weak", "medium", "strong"],
+        "description": "The strength of the blur effect"
+      }
+    ]
+  },
+  "Sharpen (Spatial Domain)": {
+    "function": "filtering.spatial.sharpen",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["box", "gaussian"],
+        "default": "gaussian",
+        "description": "The type of kernel to be used"
+      },
+      {
+        "name": "strength",
+        "type": "lookup",
+        "values": ["weak", "medium", "strong"],
+        "description": "The strength of the blur effect"
+      }
+    ]
+  },
   "Negative": {
     "function": "filtering.spatial.negative",
     "type": "one-to-one",
@@ -133,44 +171,6 @@
       }
     ]
   },
-  "Blur (Spatial Domain)": {
-    "function": "filtering.spatial.blur",
-    "type": "one-to-one",
-    "parameters": [
-      {
-        "name": "type",
-        "type": "lookup",
-        "values": ["box", "gaussian"],
-        "default": "gaussian",
-        "description": "The type of kernel to be used"
-      },
-      {
-        "name": "strength",
-        "type": "lookup",
-        "values": ["weak", "medium", "strong"],
-        "description": "The strength of the blur effect"
-      }
-    ]
-  },
-  "Sharpen (Spatial Domain)": {
-    "function": "filtering.spatial.sharpen",
-    "type": "one-to-one",
-    "parameters": [
-      {
-        "name": "type",
-        "type": "lookup",
-        "values": ["box", "gaussian"],
-        "default": "gaussian",
-        "description": "The type of kernel to be used"
-      },
-      {
-        "name": "strength",
-        "type": "lookup",
-        "values": ["weak", "medium", "strong"],
-        "description": "The strength of the blur effect"
-      }
-    ]
-  },
   "Edge Detection": {
     "function": "filtering.spatial.edge",
     "type": "one-to-one",
@@ -196,6 +196,32 @@
         "values": ["standard", "many"],
         "default" : "standard",
         "description": "How many edges will be considered strong in the Double Thresholding step"
+      }
+    ]
+  },
+  "Emboss": {
+    "function": "filtering.spatial.emboss",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "direction",
+        "type": "lookup",
+        "values": ["horizontal", "vertical", "diagonal"],
+        "description": "The direction of the embossing"
+      },
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["mask", "filter"],
+        "default": "filter",
+        "description": "The type of resulting image"
+      },
+      {
+        "name": "intensity",
+        "type": "lookup",
+        "values": ["normal", "strong", "very strong"],
+        "default": "normal",
+        "description": "The strength of the embossing (given by the kernel size)"
       }
     ]
   },
