@@ -41,13 +41,13 @@ def apply_kernel(image, kernel):
     return filtered_image
 
 def generate_box_kernel(size):
-    ''' Generates a kernel having the given size and giving equal weights to all elements
-    surrounding the current pixel '''
+    ''' Generates a kernel having the given size and giving equal weights to all
+    elements surrounding the current pixel '''
     return (1 / size ** 2) * np.ones((size, size), dtype=np.uint8)
 
 def generate_gaussian_kernel(size, sigma=3):
-    ''' Generates an one-sum kernel having the given size, containing samples from a gaussian
-    distribution having the given standard deviation '''
+    ''' Generates an one-sum kernel having the given size, containing samples
+    from a gaussian distribution having the given standard deviation '''
     size = size // 2
     x, y = np.mgrid[-size : size + 1, -size : size + 1]
     normalization_factor = 1 / (2.0 * np.pi * sigma**2)
@@ -57,8 +57,8 @@ def generate_gaussian_kernel(size, sigma=3):
     return g
 
 def get_thresholds(image, method, kernel_size):
-    ''' Performs convolution between the image and the kernel of the specified size. The resulting
-    values are the thresholds used in binarization '''
+    ''' Performs convolution between the image and the kernel of the specified
+    size. The resulting values are the thresholds used in binarization '''
     if method == 'mean':
         kernel = generate_box_kernel(kernel_size)
     else:
@@ -67,3 +67,35 @@ def get_thresholds(image, method, kernel_size):
     thresholds = apply_kernel(image, kernel)
 
     return thresholds
+
+def generate_emboss_kernels(size, direction, type):
+    ''' Generates the kernels of the specified type (mask or filter), size and
+    direction, needed for the embossing operation '''
+    kernel1 = np.zeros((size, size), dtype=np.int8)
+
+    if direction == 'horizontal':
+        kernel1[: size // 2, size // 2] = 1
+        kernel1[size // 2 + 1 :, size // 2] = -1
+        if type == 'filter':
+            kernel1[size // 2, size // 2] = 1
+
+        kernel2 = np.flipud(kernel1)
+    elif direction == 'vertical':
+        kernel1[size // 2, : size // 2] = 1
+        kernel1[size // 2, size // 2 + 1 :] = -1
+        if type == 'filter':
+            kernel1[size // 2, size // 2] = 1
+
+        kernel2 = np.fliplr(kernel1)
+    elif direction == 'diagonal':
+        for i in range(size):
+            if i < size // 2:
+                kernel1[i, i] = 1
+            elif i > size // 2:
+                kernel1[i, i] = -1
+            elif type == 'filter':
+                kernel1[i, i] = 1
+
+        kernel2 = np.flipud(kernel1)
+
+    return kernel1, kernel2
