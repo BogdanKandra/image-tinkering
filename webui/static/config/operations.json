@@ -14,9 +14,8 @@
         "name": "type",
         "type": "lookup",
         "values": ["ideal", "butterworth", "gaussian"],
-        "default": "gaussian",
-        "presenceDependency": "order",
-        "presenceCondition": "==butterworth",
+        "presenceDependencies": ["order"],
+        "presenceConditions": ["==butterworth"],
         "description": "The type of filter to be used for filtering the input image"
       },
       {
@@ -61,9 +60,8 @@
         "name": "type",
         "type": "lookup",
         "values": ["ideal", "butterworth", "gaussian"],
-        "default": "gaussian",
-        "presenceDependency": "order",
-        "presenceCondition": "==butterworth",
+        "presenceDependencies": ["order"],
+        "presenceConditions": ["==butterworth"],
         "description": "The type of filter to be used for filtering the input image"
       },
       {
@@ -76,6 +74,44 @@
       }
     ],
     "description": "Sharpens an image using the FFT"
+  },
+  "Blur (Spatial Domain)": {
+    "function": "filtering.spatial.blur",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["box", "gaussian"],
+        "default": "gaussian",
+        "description": "The type of kernel to be used"
+      },
+      {
+        "name": "strength",
+        "type": "lookup",
+        "values": ["weak", "medium", "strong"],
+        "description": "The strength of the blur effect"
+      }
+    ]
+  },
+  "Sharpen (Spatial Domain)": {
+    "function": "filtering.spatial.sharpen",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["box", "gaussian"],
+        "default": "gaussian",
+        "description": "The type of kernel to be used"
+      },
+      {
+        "name": "strength",
+        "type": "lookup",
+        "values": ["weak", "medium", "strong"],
+        "description": "The strength of the blur effect"
+      }
+    ]
   },
   "Negative": {
     "function": "filtering.spatial.negative",
@@ -92,16 +128,113 @@
     "type": "one-to-one",
     "parameters": []
   },
-  "ASCII Art": {
-    "function": "filtering.spatial.ascii_art",
+  "Binarize": {
+    "function": "filtering.spatial.binarize",
     "type": "one-to-one",
     "parameters": [
       {
-        "name": "charset",
+        "name": "thresholding_Method",
         "type": "lookup",
-        "values": ["standard", "alternate", "full"],
-        "default": "alternate",
-        "description": "The set of characters to be used when rendering the ASCII image"
+        "values": ["simple", "adaptive"],
+        "presenceDependencies": ["threshold", "adaptive_Method", "neighbourhood_Size"],
+        "presenceConditions": ["==simple", "==adaptive", "==adaptive"],
+        "description": "Specifies whether the threshold is computed automatically or specified by the user"
+      },
+      {
+        "name": "threshold",
+        "type": "lookup",
+        "values": ["median", "127"],
+        "default": "median",
+        "description": "The value which separates the two pixel values"
+      },
+      {
+        "name": "maximum_Value",
+        "type": "range",
+        "minimum": 1,
+        "maximum": 255,
+        "default": 255,
+        "description": "The value with which to replace pixel values greater than the threshold"
+      },
+      {
+        "name": "adaptive_Method",
+        "type": "lookup",
+        "values": ["mean", "gaussian"],
+        "default": "gaussian",
+        "description": "Describes how the thresholds are computed"
+      },
+      {
+        "name": "neighbourhood_Size",
+        "type": "lookup",
+        "values": [5, 9, 15],
+        "default": 15,
+        "description": "Specifies the size of the square from which to consider values when computing thresholds"
+      }
+    ]
+  },
+  "Edge Detection": {
+    "function": "filtering.spatial.edge",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "method",
+        "type": "lookup",
+        "values": ["laplacian", "gradient", "non-max suppression", "canny"],
+        "presenceDependencies": ["pre-Blur", "edge_Count"],
+        "presenceConditions": ["==laplacian", "==canny"],
+        "description": "The edge detection algorithm to be applied"
+      },
+      {
+        "name": "pre-Blur",
+        "type": "lookup",
+        "values": ["yes", "no"],
+        "default": "yes",
+        "description": "Whether to blur the input image before convolving with the laplacian kernel; the result will have less noise but lesser edges"
+      },
+      {
+        "name": "edge_Count",
+        "type": "lookup",
+        "values": ["standard", "many"],
+        "default" : "standard",
+        "description": "How many edges will be considered strong in the Double Thresholding step"
+      }
+    ]
+  },
+  "Emboss": {
+    "function": "filtering.spatial.emboss",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "direction",
+        "type": "lookup",
+        "values": ["horizontal", "vertical", "diagonal"],
+        "description": "The direction of the embossing"
+      },
+      {
+        "name": "type",
+        "type": "lookup",
+        "values": ["mask", "filter"],
+        "default": "filter",
+        "description": "The type of resulting image"
+      },
+      {
+        "name": "intensity",
+        "type": "lookup",
+        "values": ["normal", "strong", "very strong"],
+        "default": "normal",
+        "description": "The strength of the embossing (given by the kernel size)"
+      }
+    ]
+  },
+  "Sketchify": {
+    "function": "filtering.spatial.sketch",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "pencil_Stroke_Size",
+        "type": "lookup",
+        "values": ["small", "medium", "large"],
+        "default": "large",
+        "description": "Describes the width of the pencil stroke used for the sketch"
       }
     ]
   },
@@ -169,6 +302,19 @@
       }
     ]
   },
+  "ASCII Art": {
+    "function": "miscellaneous.lego.ascii_art",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "charset",
+        "type": "lookup",
+        "values": ["standard", "alternate", "full"],
+        "default": "alternate",
+        "description": "The set of characters to be used when rendering the ASCII image"
+      }
+    ]
+  },
   "Photomosaic": {
     "function": "miscellaneous.lego.photomosaic",
     "type": "one-to-one",
@@ -177,9 +323,8 @@
         "name": "technique",
         "type": "lookup",
         "values": ["original", "alternative"],
-        "default": "original",
-        "presenceDependency": "transparency",
-        "presenceCondition": "==alternative",
+        "presenceDependencies": ["transparency"],
+        "presenceConditions": ["==alternative"],
         "description": "The technique used when building the photomosaic"
       },
       {
@@ -212,9 +357,16 @@
       {
         "name": "fidelity",
         "type": "lookup",
-        "values": ["very low", "low", "standard", "high", "very high"],
+        "values": ["very low", "low", "standard", "high", "very high", "ultra high"],
         "default": "standard",
         "description": "How close the resulting image will look compared to the original (inverse proportional to the size of the composing pixels)"
+      },
+      {
+        "name": "colour_Space",
+        "type": "lookup",
+        "values": ["RGB", "RAL"],
+        "default": "RGB",
+        "description": "The colour space used for representing the colours in the pixelated image"
       }
     ]
   },
