@@ -125,6 +125,7 @@ def binarize(image, extra_inputs={}, parameters={}):
             to consider when computing adaptive thresholds; possible values are *5*, *9* and *15*;
             default value is 15
     '''
+    # Parameters extraction
     if utils.is_color(image):
         image = grayscale(image, {}, {})[0]
 
@@ -237,8 +238,8 @@ def sharpen(image, extra_inputs, parameters):
     # Removing the blurred image from the original results in an image containing only the details
     # Adding the details image to the original results in a sharpened image
     blurred_image = blur(image, {}, {'type': kernel, 'strength': strength})[0]
-    details_image = np.where(image - blurred_image < 0, 0, image - blurred_image)
-    sharpened_image = np.where(image + details_image > 255, 255, image + details_image)
+    details_image = cv2.subtract(image, blurred_image)
+    sharpened_image = cv2.add(image, details_image)
 
 ##### Alternative implementation using kernels
 #    sharp_3x3_1 = np.array([[0, -1, 0],
@@ -343,11 +344,11 @@ def edge(image, extra_inputs, parameters):
 
         derivative_x_left = helpers.apply_kernel(blurred, sobel_x_left)
         derivative_x_right = helpers.apply_kernel(blurred, sobel_x_right)
-        derivative_x = derivative_x_left + derivative_x_right
+        derivative_x = cv2.add(derivative_x_left, derivative_x_right)
 
         derivative_y_bottom = helpers.apply_kernel(blurred, sobel_y_bottom)
         derivative_y_top = helpers.apply_kernel(blurred, sobel_y_top)
-        derivative_y = derivative_y_bottom + derivative_y_top
+        derivative_y = cv2.add(derivative_y_bottom, derivative_y_top)
 
         gradient_magnitude = np.hypot(derivative_x, derivative_y)
         gradient_magnitude = gradient_magnitude / gradient_magnitude.max() * 255
@@ -458,35 +459,42 @@ def emboss(image, extra_inputs, parameters):
             *direction* (str) -- the direction of the embossing; possible values
             are *horizontal*, *vertical* and *diagonal*
 
-            *type* (str) -- the type of resulting image; possible values are
-            *mask* and *filter*
+            *type* (str, optional) -- the type of resulting image; possible
+            values are *mask* and *filter*; default value is *filter*
+
+            *intensity* (str, optional) -- the strength of the embossing;
+            possible values are *normal*, *strong*, *very strong*; default
+            value is *normal*
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
     '''
     # Parameters extraction
     direction = parameters['direction']
-    type = parameters['type']
-    
-    if direction == 'horizontal':
-        if type == 'mask':
-            kernel_1 = np.array([[0, 1, 0], [0, 0, 0], [0, -1, 0]])
-            kernel_2 = np.array([[0, -1, 0], [0, 0, 0], [0, 1, 0]])
-        elif type == 'filter':
-            kernel_1 = np.array([[0, 1, 0], [0, 1, 0], [0, -1, 0]])
-            kernel_2 = np.array([[0, -1, 0], [0, 1, 0], [0, 1, 0]])
-    elif direction == 'vertical':
-        if type == 'mask':
-            kernel_1 = np.array([[0, 0, 0], [-1, 0, 1], [0, 0, 0]])
-            kernel_2 = np.array([[0, 0, 0], [1, 0, -1], [0, 0, 0]])
-        elif type == 'filter':
-            kernel_1 = np.array([[0, 0, 0], [-1, 1, 1], [0, 0, 0]])
-            kernel_2 = np.array([[0, 0, 0], [1, 1, -1], [0, 0, 0]])
 
-    temp_1 = helpers.apply_kernel(image, kernel_1)
-    temp_2 = helpers.apply_kernel(image, kernel_2)
-    result = temp_1 + temp_2
+    if 'type' in parameters:
+        type = parameters['type']
+    else:
+        type = 'filter'
 
-    return [result]
+    if 'intensity' in parameters:
+        intensity = parameters['intensity']
+    else:
+        intensity = 'normal'
+
+    if intensity == 'normal':
+        size = 3
+    elif intensity == 'strong':
+        size = 5
+    elif intensity == 'very strong':
+        size = 7
+
+    # Generate the kernels and convolve them with input image
+    kernel_1, kernel_2 = helpers.generate_emboss_kernels(size, direction, type)
+
+    temp = helpers.apply_kernel(image, kernel_1)
+    embossed_image = helpers.apply_kernel(temp, kernel_2)
+
+    return [embossed_image]
 
 def sketch(image, extra_inputs, parameters):
     '''Converts an image to a pencil sketch. \n
@@ -510,7 +518,7 @@ def sketch(image, extra_inputs, parameters):
         blur_strength = parameters['pencil_Stroke_Size']
     else:
         blur_strength = 'strong'
-    
+
     if blur_strength == 'small':
         blur_strength = 'weak'
     elif blur_strength == 'large':
