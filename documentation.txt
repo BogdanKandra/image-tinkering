@@ -32,7 +32,8 @@
 32. https://rosettacode.org/wiki/Canny_edge_detector -- Canny Edge implementation
 33. https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/ -- Canny parameter setting inspiration
 34. Michael Beyeler - OpenCV with Python Blueprints-Packt Publishing (2015) -- Sketch Filter
-35. 
+35. https://en.wikipedia.org/wiki/Image_embossing -- Embossing Filter
+36. https://stackoverflow.com/questions/2034037/image-embossing-in-python-with-pil-adding-depth-azimuth-etc -- Embossing Filter
 
 
 - La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
