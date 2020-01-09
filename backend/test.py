@@ -52,7 +52,7 @@ def point_is_on_frontier(point, cell_points):
         return False
 
 
-### Kintsugi Filter test -- brute force detection, very slow
+##### Kintsugi Filter test -- brute force detection, very slow
 #width = 300
 #height = 300
 #num_cells = 15
@@ -107,7 +107,7 @@ def point_is_on_frontier(point, cell_points):
 
 
 
-### Stained Glass Overlay test -- blending Voronoi Diagram with input image
+##### Stained Glass Overlay test -- blending Voronoi Diagram with input image
 #image_path = '../webui/static/testinputs/ileana.jpg'
 #image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
 #image_height, image_width = image.shape[:2]
@@ -118,23 +118,3 @@ def point_is_on_frontier(point, cell_points):
 #print(end - start)
 #
 #cv2.imwrite('VorScale.png', voronoi)
-
-
-image_path = '../webui/static/testinputs/ileana.jpg'
-image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-
-emboss_horiz_mask = f.emboss(image, {}, {'direction': 'horizontal', 'type': 'mask'})[0]
-emboss_horiz_filter = f.emboss(image, {}, {'direction': 'horizontal', 'type': 'filter'})[0]
-print('MIN:', np.min(emboss_horiz_filter))
-print('MAX:', np.max(emboss_horiz_filter))
-print('SHAPE:', emboss_horiz_filter.shape)
-
-cv2.imshow('Emboss Horizontal Mask', emboss_horiz_mask + 128)
-cv2.imshow('Emboss Horizontal Filter', emboss_horiz_filter)
-cv2.waitKey()
-cv2.destroyAllWindows()
-
-
-
-
-
