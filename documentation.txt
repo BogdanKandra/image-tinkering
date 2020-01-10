@@ -34,6 +34,7 @@
 34. Michael Beyeler - OpenCV with Python Blueprints-Packt Publishing (2015) -- Sketch Filter
 35. https://en.wikipedia.org/wiki/Image_embossing -- Embossing Filter
 36. https://stackoverflow.com/questions/2034037/image-embossing-in-python-with-pil-adding-depth-azimuth-etc -- Embossing Filter
+37. https://towardsdatascience.com/introduction-to-image-segmentation-with-k-means-clustering-83fd0a9e2fc3 -- KMeans Clustering on Images
 
 
 - La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
