@@ -360,15 +360,13 @@
         "values": ["very low", "low", "standard", "high", "very high", "ultra high"],
         "default": "standard",
         "description": "How close the resulting image will look compared to the original (inverse proportional to the size of the composing pixels)"
-      },
-      {
-        "name": "colour_Space",
-        "type": "lookup",
-        "values": ["RGB", "RAL"],
-        "default": "RGB",
-        "description": "The colour space used for representing the colours in the pixelated image"
       }
     ]
+  },
+  "Pixelate RAL": {
+    "function": "miscellaneous.lego.pixelate_ral",
+    "type": "one-to-one",
+    "parameters": []
   },
   "Visible Watermark": {
     "function": "watermarking.spatial.visible_watermark",

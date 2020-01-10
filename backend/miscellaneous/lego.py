@@ -288,9 +288,7 @@ def photomosaic(image, extra_inputs, parameters):
 
 def pixelate(image, extra_inputs, parameters):
     ''' Uses a form of downscaling in order to achieve an 8-bit-like filter
-    appearance of an image. The colours used for representing the result can be
-    from the RGB or the RAL colour spaces. When using the RAL space, a text
-    file containing extra information is created
+    appearance of an image.
 
     Arguments:
         *image* (NumPy array) -- the image to be pixelated
@@ -303,11 +301,9 @@ def pixelate(image, extra_inputs, parameters):
             *fidelity* (str, optional) -- how close the resulting image will
             look compared to the original (inverse proportional to the size of
             the composing pixels); possible values are *very low*, *low*,
-            *standard*, *high* and *very high*; default value is *standard*
+            *standard*, *high*, *very high* and *ultra high*; default value is
+            *standard*
 
-            *colour_Space* (str, optional) -- the colour space used to represent
-            the pixelated image; possible values are *rgb* and *ral*; default
-            value is *rgb*
     Returns:
         list of NumPy array uint8 -- list containing the pixelated image
     '''
@@ -316,11 +312,6 @@ def pixelate(image, extra_inputs, parameters):
         resolution = parameters['fidelity']
     else:
         resolution = 'standard'
-
-    if 'colour_Space' in parameters:
-        space = parameters['colour_Space']
-    else:
-        space = 'rgb'
 
     # Determine the resolution of the pixel-blocks used (the length of the square)
     if resolution == 'very low':
@@ -345,7 +336,6 @@ def pixelate(image, extra_inputs, parameters):
         channels_count = image.shape[2]
         pixel_tile = np.zeros((resolution, resolution, channels_count))
         pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype='uint8')
-        colours_frequencies = {}
     else:
         pixel_tile = np.zeros((resolution, resolution))
         pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution), dtype='uint8')
@@ -363,38 +353,95 @@ def pixelate(image, extra_inputs, parameters):
                     colour_component = int(round(np.mean(block[:, :, i])))
                     colour_used.append(colour_component)
                     pixel_tile[:, :, i] = colour_component
-
-                # Convert RGB colour to closest RAL colour if needed
-                if space == 'ral':
-                    # Get closest RAL colour, record its use and replace it in result image
-                    ral_code, ral_colour = get_closest_ral_colour(colour_used)
-
-                    if ral_code in colours_frequencies:
-                        colours_frequencies[ral_code] += 1
-                    else:
-                        colours_frequencies[ral_code] = 1
-
-                    for i in range(3):
-                        pixel_tile[:, :, i] = ral_colour[i]
             else:
                 pixel_tile = int(round(np.mean(block)))
 
             pixelated_image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution] = pixel_tile
 
-    # If using RAL colour space, write colour usage information into a file
-    if space == 'ral':
-        ral_colour_usage_path = os.path.join(project_path, 'webui', 'static', 'tempdata', 'ral_info.txt')
-        with open(ral_colour_usage_path, 'w') as f:
-            f.write('USED COLOURS INFORMATION:\n')
-            f.write('==============================\n')
-            f.write('NUMBER OF COLOURS USED: ' + str(len(colours_frequencies)) + '\n')
-            f.write('NUMBER OF TILES USED: ' + str(lines_count * columns_count) + '\n')
-            f.write('COLOUR FREQUENCIES: [RAL_COLOUR_ID: NUMBER OF PIECES]\n')
-            for code in colours_frequencies:
-                f.write('>> ' + code + ': ' + str(colours_frequencies[code]) + ' pcs\n')
-
     return [pixelated_image]
 
-def collage():
-    ''' Google "photo collage maker" '''
-    pass # TODO
+def pixelate_ral(image, extra_inputs, parameters):
+    ''' A modified version of the pixelate operation, used for converting images
+    into a version suitable for mosaicing. The colour representation used is a
+    subset of RGB called RAL, a standard used for paint colours. In addition, a
+    text file containing extra information is created.
+
+    Arguments:
+        *image* (NumPy array) -- the image to be pixelated
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for
+        the call (empty)
+
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *TBA*
+
+    Returns:
+        list of NumPy array uint8 -- list containing the pixelated image
+    '''
+    # Initialisations; constants are measured in centimeters
+    tile_size = 3
+    mosaic_width = 190
+    mosaic_height = 250
+
+    image_height, image_width = image.shape[:2]
+    lines_count = mosaic_height // tile_size
+    columns_count = mosaic_width // tile_size
+
+    assert image_height // lines_count == image_width // columns_count
+    resolution = image_height // lines_count
+
+    if utils.is_color(image):
+        channels_count = image.shape[2]
+        pixel_tile = np.zeros((resolution, resolution, channels_count))
+        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype='uint8')
+        colours_frequencies = {}
+    else:
+        pixel_tile = np.zeros((resolution, resolution))
+        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution), dtype='uint8')
+
+    # For each block:
+    #    Compute the average r, g, b values of the block and put them in a vector
+    #    Replace the current block with a tile coloured as the closest RAL colour
+    #    in relation to the average vector
+    for line in range(lines_count):
+        for column in range(columns_count):
+            block = image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution]
+            if utils.is_color(image):
+                colour_used = []
+                for i in range(channels_count):
+                    colour_component = int(round(np.mean(block[:, :, i])))
+                    colour_used.append(colour_component)
+
+                # Convert RGB colour to closest RAL colour and record its use
+                ral_code, ral_colour = get_closest_ral_colour(colour_used)
+
+                for i in range(channels_count):
+                    pixel_tile[:, :, i] = ral_colour[i]
+
+                if ral_code in colours_frequencies:
+                    colours_frequencies[ral_code] += 1
+                else:
+                    colours_frequencies[ral_code] = 1
+            else:
+                pixel_tile = int(round(np.mean(block)))
+
+            pixelated_image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution] = pixel_tile
+
+    # Write colour usage information into a file
+    ral_colour_usage_path = os.path.join(project_path, 'webui', 'static', 'tempdata', 'ral_info.txt')
+    with open(ral_colour_usage_path, 'w') as f:
+        f.write('INFORMATII MOZAIC:\n')
+        f.write('==============================\n')
+        f.write('NUMAR CULORI FOLOSITE: ' + str(len(colours_frequencies)) + '\n')
+        f.write('NUMAR BUCATI FOLOSITE PE ORIZONTALA: ' + str(columns_count) + '\n')
+        f.write('NUMAR BUCATI FOLOSITE PE VERTICALA: ' + str(lines_count) + '\n')
+        f.write('NUMAR TOTAL BUCATI FOLOSITE: ' + str(lines_count * columns_count) + '\n')
+        f.write('FRECVENTE CULORI: [ID_CULOARE_RAL: NUMAR DE PIESE]\n')
+        for code in colours_frequencies:
+            pieces_suffix = 'PIESE'
+            if colours_frequencies[code] == 1:
+                pieces_suffix = 'PIESA'
+            f.write('>> ' + code + ': ' + str(colours_frequencies[code]) + ' ' + pieces_suffix + '\n')
+
+    return [pixelated_image]
