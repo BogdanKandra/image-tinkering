@@ -365,16 +365,8 @@
   },
   "Pixelate RAL": {
     "function": "miscellaneous.lego.pixelate_ral",
-    "type": "one-to-one",
-    "parameters": [
-      {
-        "name": "output_Type",
-        "type": "lookup",
-        "values": ["colour", "grid"],
-        "default": "grid",
-        "description": "Whether the resulting image should be coloured or white with the colour codes written in the center of tiles"
-      }
-    ]
+    "type": "one-to-many",
+    "parameters": []
   },
   "Visible Watermark": {
     "function": "watermarking.spatial.visible_watermark",

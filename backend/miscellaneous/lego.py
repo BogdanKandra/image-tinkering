@@ -372,12 +372,7 @@ def pixelate_ral(image, extra_inputs, parameters):
         *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for
         the call (empty)
 
-        *parameters* (dictionary) -- a dictionary containing following keys:
-
-            *output_Type* (str, optional) -- whether the result should be a
-            colour image or a white grid with colour codes written in the center
-            of cells; possible values are *colour* and *grid*; default value is
-            *grid*
+        *parameters* (dictionary) -- a dictionary holding parameter values (empty)
 
     Returns:
         list of NumPy array uint8 -- list containing the pixelated image
@@ -394,28 +389,24 @@ def pixelate_ral(image, extra_inputs, parameters):
     assert image_height // lines_count == image_width // columns_count
     resolution = image_height // lines_count
 
-    if 'output_Type' in parameters:
-        output_type = parameters['output_Type']
-    else:
-        output_type = 'grid'
-
-    if output_type == 'grid':
-        # Configure the text to be used for writing
-        font_face = cv2.FONT_HERSHEY_DUPLEX
-        font_scale = 0.6
-        thickness = 1
-        upscaling_factor = 6
-    else:
-        upscaling_factor = 1
+    # Configure the text to be used for writing
+    font_face = cv2.FONT_HERSHEY_DUPLEX
+    font_scale = 0.6
+    thickness = 1
+    upscaling_factor = 6
 
     if utils.is_color(image):
         channels_count = image.shape[2]
         pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
+        grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
         pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype='uint8')
+        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype='uint8')
         colours_frequencies = {}
     else:
         pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
+        grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
         pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype='uint8')
+        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype='uint8')
 
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
@@ -423,7 +414,8 @@ def pixelate_ral(image, extra_inputs, parameters):
     #    in relation to the average vector
     for line in range(lines_count):
         for column in range(columns_count):
-            block = image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution]
+            block = image[line * resolution : (line + 1) * resolution,
+                          column * resolution : (column + 1) * resolution]
             if utils.is_color(image):
                 colour_used = []
                 for i in range(channels_count):
@@ -433,33 +425,35 @@ def pixelate_ral(image, extra_inputs, parameters):
                 # Convert RGB colour to closest RAL colour and record its use
                 ral_code, ral_colour = get_closest_ral_colour(colour_used)
 
-                if output_type == 'colour':
-                    for i in range(channels_count):
-                        pixel_tile[:, :, i] = ral_colour[i]
-                elif output_type == 'grid':
-                    pixel_tile[:, :, :] = 255
-                    pixel_tile[0, :, :] = 0
-                    pixel_tile[-1, :, :] = 0
-                    pixel_tile[:, 0, :] = 0
-                    pixel_tile[:, -1, :] = 0
-
-                    # Write the colour code in the center of the tile
-                    text_size = cv2.getTextSize(ral_code, font_face, font_scale, thickness)[0]
-                    text_x = (resolution * upscaling_factor - text_size[0]) // 2
-                    text_y = (resolution * upscaling_factor + text_size[1]) // 2
-                    cv2.putText(pixel_tile, ral_code, (text_x, text_y), font_face, font_scale, (0, 0, 0), thickness)
                 if ral_code in colours_frequencies:
                     colours_frequencies[ral_code] += 1
                 else:
                     colours_frequencies[ral_code] = 1
+
+                # Set the pixel tile and the grid tile
+                for i in range(channels_count):
+                    pixel_tile[:, :, i] = ral_colour[i]
+
+                grid_tile[:, :, :] = 255
+                grid_tile[0, :, :] = 0
+                grid_tile[-1, :, :] = 0
+                grid_tile[:, 0, :] = 0
+                grid_tile[:, -1, :] = 0
+
+                # Write the colour code in the center of the tile
+                text_size = cv2.getTextSize(ral_code, font_face, font_scale, thickness)[0]
+                text_x = (resolution * upscaling_factor - text_size[0]) // 2
+                text_y = (resolution * upscaling_factor + text_size[1]) // 2
+                cv2.putText(grid_tile, ral_code, (text_x, text_y), font_face, font_scale, (0, 0, 0), thickness)
             else:
                 pixel_tile = int(round(np.mean(block)))
 
             pixelated_image[line * resolution * upscaling_factor : (line + 1) * resolution * upscaling_factor, column * resolution * upscaling_factor : (column + 1) * resolution * upscaling_factor] = pixel_tile
+            grid_image[line * resolution * upscaling_factor : (line + 1) * resolution * upscaling_factor, column * resolution * upscaling_factor : (column + 1) * resolution * upscaling_factor] = grid_tile
 
     # Write colour usage information into a file
-    ral_colour_usage_path = os.path.join(project_path, 'webui', 'static', 'tempdata', 'ral_info.txt')
-    with open(ral_colour_usage_path, 'w') as f:
+    tempdata_path = os.path.join(project_path, 'webui', 'static', 'tempdata')
+    with open(os.path.join(tempdata_path, 'ral_info.txt'), 'w') as f:
         f.write('INFORMATII MOZAIC:\n')
         f.write('==============================\n')
         f.write('NUMAR CULORI FOLOSITE: ' + str(len(colours_frequencies)) + '\n')
@@ -473,4 +467,59 @@ def pixelate_ral(image, extra_inputs, parameters):
                 pieces_suffix = 'PIESA'
             f.write('>> ' + code + ': ' + str(colours_frequencies[code]) + ' ' + pieces_suffix + '\n')
 
-    return [pixelated_image]
+    # Crop grid image into A4-sized images (size 29.7 cm x 21.0 cm) and save them to tempdata
+    a4_sheets_lines_count = lines_count // 9
+    a4_sheets_columns_count = columns_count // 7
+    sheet_counter = 1
+
+    for line in range(a4_sheets_lines_count):
+        for column in range(a4_sheets_columns_count):
+            a4_image = grid_image[line * resolution * upscaling_factor * 9 : (line + 1) * resolution * upscaling_factor * 9,
+                                  column * resolution * upscaling_factor * 7 : (column + 1) * resolution * upscaling_factor * 7]
+            cv2.imwrite(os.path.join(tempdata_path, 'sheet_' + str(sheet_counter) + '.jpg'), a4_image)
+            sheet_counter += 1
+
+    # Separately save the remaining tiles, if any, on the horizontal and vertical
+    end_of_horizontal_sheets = a4_sheets_columns_count * resolution * upscaling_factor * 7
+    end_of_vertical_sheets = a4_sheets_lines_count * resolution * upscaling_factor * 9
+    horizontal_rest_counter = 1
+    vertical_rest_counter = 1
+
+    if end_of_horizontal_sheets != grid_image.shape[1]:
+        for line in range(a4_sheets_lines_count):
+            rest = grid_image[line * resolution * upscaling_factor * 9 : (line + 1) * resolution * upscaling_factor * 9,
+                              end_of_horizontal_sheets : ]
+            a4_image = np.zeros((resolution * upscaling_factor * 9, resolution * upscaling_factor * 7, channels_count))
+            a4_image[:, : rest.shape[1]] = rest
+
+            cv2.imwrite(os.path.join(tempdata_path, 'rest_horizontal_' + str(horizontal_rest_counter) + '.jpg'), a4_image)
+            horizontal_rest_counter += 1
+
+    if end_of_vertical_sheets != grid_image.shape[0]:
+        for column in range(a4_sheets_columns_count):
+            rest = grid_image[end_of_vertical_sheets : ,
+                              column * resolution * upscaling_factor * 7 : (column + 1) * resolution * upscaling_factor * 7]
+            a4_image = np.zeros((resolution * upscaling_factor * 9, resolution * upscaling_factor * 7, channels_count))
+            a4_image[: rest.shape[0], :] = rest
+
+            cv2.imwrite(os.path.join(tempdata_path, 'rest_vertical_' + str(vertical_rest_counter) + '.jpg'), a4_image)
+            vertical_rest_counter += 1
+
+    # TODO - If image has rests on both axes, than the intersection of the rests will be left out
+
+    return [pixelated_image, grid_image]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
