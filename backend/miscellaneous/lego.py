@@ -508,18 +508,3 @@ def pixelate_ral(image, extra_inputs, parameters):
     # TODO - If image has rests on both axes, than the intersection of the rests will be left out
 
     return [pixelated_image, grid_image]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
