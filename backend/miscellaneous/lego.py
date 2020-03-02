@@ -505,6 +505,6 @@ def pixelate_ral(image, extra_inputs, parameters):
             cv2.imwrite(os.path.join(tempdata_path, 'rest_vertical_' + str(vertical_rest_counter) + '.jpg'), a4_image)
             vertical_rest_counter += 1
 
-    # TODO - If image has rests on both axes, than the intersection of the rests will be left out
+    # TODO - If image has rests on both axes, then the intersection of the rests will be left out
 
     return [pixelated_image, grid_image]
