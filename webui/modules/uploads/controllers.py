@@ -11,7 +11,7 @@ from flask.blueprints import Blueprint
 from flask.globals import request
 from flask.helpers import make_response
 from flask.json import jsonify
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from werkzeug.exceptions import abort, RequestEntityTooLarge
 
 
