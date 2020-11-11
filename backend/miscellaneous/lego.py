@@ -86,12 +86,12 @@ def build_mosaic(image, technique, alpha_level, resolution, redundancy):
 
     mosaic_lines = int(image_height / tiles_height)
     mosaic_columns = int(image_width / tiles_width)
-    mosaic_image = np.zeros((mosaic_lines * tiles_height, mosaic_columns * tiles_width, 3), dtype='uint8')
-    tile_usage_grid = np.ones((mosaic_lines, mosaic_columns), dtype='uint8') * -1
+    mosaic_image = np.zeros((mosaic_lines * tiles_height, mosaic_columns * tiles_width, 3), dtype=np.uint8)
+    tile_usage_grid = np.ones((mosaic_lines, mosaic_columns), dtype=np.uint8) * -1
 
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
-    #    Compute the distance between the avg vector of the block and each of the avg vectors of the tiles
+    #    Compute the distances between the avg vector of the block and each of the avg vectors of the tiles
     #    Replace the current block with the tile located at the shortest distance from the block
     block_averages = np.zeros((1, 3))
     for line in range(mosaic_lines):
@@ -124,13 +124,14 @@ def ascii_art(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image to be filtered
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for
-        the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
-            *charset* (str, optional) -- the character set to use when rendering
-            ASCII art image; possible values are *standard*, *alternate* and *full*
+            *charset* (str, optional) -- the character set to use when
+            rendering ASCII art image; possible values are *standard*,
+            *alternate* and *full*; default value is *alternate*
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
@@ -199,8 +200,8 @@ def ascii_art(image, extra_inputs, parameters):
     for i, line in enumerate(lines):
         y = i * dy
         for j, char in enumerate(line):
-            cv2.putText(ascii_image, char, (j * maximum_letter_width, y), font_face, 1, \
-                        (0, 0, 0), 1, lineType=cv2.FILLED)
+            cv2.putText(ascii_image, char, (j * maximum_letter_width, y), \
+                        font_face, 1, (0, 0, 0), 1, lineType=cv2.FILLED)
 
     # Resize resulting image to original size of input image
     ascii_image = cv2.resize(ascii_image, original_size, interpolation=cv2.INTER_AREA)
@@ -214,8 +215,8 @@ def photomosaic(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image to be approximated by a photo mosaic
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for
-        the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
@@ -293,8 +294,8 @@ def pixelate(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image to be pixelated
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for
-        the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
@@ -335,10 +336,10 @@ def pixelate(image, extra_inputs, parameters):
     if utils.is_color(image):
         channels_count = image.shape[2]
         pixel_tile = np.zeros((resolution, resolution, channels_count))
-        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype='uint8')
+        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype=np.uint8)
     else:
         pixel_tile = np.zeros((resolution, resolution))
-        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution), dtype='uint8')
+        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution), dtype=np.uint8)
 
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
@@ -369,8 +370,8 @@ def pixelate_ral(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image to be pixelated
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for
-        the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary holding parameter values (empty)
 
@@ -399,14 +400,14 @@ def pixelate_ral(image, extra_inputs, parameters):
         channels_count = image.shape[2]
         pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
         grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
-        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype='uint8')
-        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype='uint8')
+        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
+        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
         colours_frequencies = {}
     else:
         pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
         grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
-        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype='uint8')
-        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype='uint8')
+        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype=np.uint8)
+        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype=np.uint8)
 
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
