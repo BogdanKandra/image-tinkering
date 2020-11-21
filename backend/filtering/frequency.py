@@ -11,7 +11,7 @@ from backend import utils
 
 
 def ideal_filter(mode, size, cutoff):
-    """Generates an **Ideal Filter** which filters out frequencies
+    '''Generates an **Ideal Filter** which filters out frequencies
     higher (*low-pass*) or lower (*high-pass*) than the cutoff frequency\n
     It has the following transfer function:\n
         *low-pass mode:* H(u,v) = 1, if D(u,v) <= cutoff; 0, otherwise\n
@@ -20,13 +20,12 @@ def ideal_filter(mode, size, cutoff):
     Arguments:
         *mode* (str) -- specifies whether low-pass or high-pass filtering is desired
 
-        *size* (2-tuple) -- a tuple specifying the size of the filter to be
-        generated
+        *size* (2-tuple) -- a tuple specifying the size of the filter to be generated
 
         *cutoff* (int) -- the maximum / minimum frequency to be let through by the filter
     Returns:
         NumPy array uint8 -- the filter image
-    """
+    '''
     center = np.asarray([size[0] // 2, size[1] // 2])  # Center of the filter
 
     I, J = np.ogrid[:size[0], :size[1]]
@@ -48,8 +47,7 @@ def butterworth_filter(mode, size, cutoff, order=2):
     Arguments:
         *mode* (str) -- specifies whether low-pass or high-pass filtering is desired
 
-        *size* (2-tuple) -- a tuple specifying the size of the filter to be
-        generated
+        *size* (2-tuple) -- a tuple specifying the size of the filter to be generated
 
         *cutoff* (int) -- *for low-pass mode*, the frequency after which the pixel
         values will decrease gradually towards zero (the speed of the decrease
@@ -116,14 +114,15 @@ def low_pass(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image on which the filter is to be applied
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
             *cutoff* (int) -- the maximum frequency to be let through by the filter
 
             *type* (str, optional) -- the type of low-pass filter to be applied;
-            possible values are: *ideal*, *butterworth*, *gaussian* and default
+            possible values are: *ideal*, *butterworth*, *gaussian*; default
             value is *gaussian*
 
             *order* (int, optional) -- the order used for Butterworth filtering;
@@ -151,13 +150,13 @@ def low_pass(image, extra_inputs, parameters):
     else:
         filename = ''
 
-    image_h, image_w = image.shape[:2]          # Take image dimensions
+    image_h, image_w = image.shape[:2]  # Take image dimensions
 
     # Compute the cutoff frequency as a percentage from the smaller dimension of the image
     cutoff_dimension = image_h if image_h < image_w else image_w
     cutoff = parameters['cutoff'] / 100 * cutoff_dimension
 
-    padded_h, padded_w = 2 * image_h, 2 * image_w # Obtain the padding parameters
+    padded_h, padded_w = 2 * image_h, 2 * image_w  # Obtain the padding parameters
 
     # Check whether the FFTs of the image have been serialized or not
     deserializing, file_not_found = False, False
@@ -213,7 +212,7 @@ def low_pass(image, extra_inputs, parameters):
     if len(result_components) == 1:
         result_image = result_components[0]
     else:
-        result_image = cv2.merge(result_components)
+        result_image = utils.merge_channels(result_components)
 
     # Trim values lower than 0 or higher than 255
     result_image = np.where(result_image > 255, 255, result_image)
@@ -240,7 +239,8 @@ def high_pass(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image on which the filter is to be applied
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
@@ -293,13 +293,13 @@ def high_pass(image, extra_inputs, parameters):
     else:
         filename = ''
 
-    image_h, image_w = image.shape[:2]          # Take image dimensions
+    image_h, image_w = image.shape[:2]  # Take image dimensions
 
     # Compute the cutoff frequency as a percentage from the smaller dimension of the image
     cutoff_dimension = image_h if image_h < image_w else image_w
     cutoff = parameters['cutoff'] / 100 * cutoff_dimension
 
-    padded_h, padded_w = 2 * image_h, 2 * image_w # Obtain the padding parameters
+    padded_h, padded_w = 2 * image_h, 2 * image_w  # Obtain the padding parameters
 
     # Check whether the FFTs of the image have been serialized or not
     deserializing, file_not_found = False, False
@@ -362,7 +362,7 @@ def high_pass(image, extra_inputs, parameters):
     if len(result_components) == 1:
         result_image = result_components[0]
     else:
-        result_image = cv2.merge(result_components)
+        result_image = utils.merge_channels(result_components)
 
     # Trim values lower than 0 or higher than 255
     result_image = np.where(result_image > 255, 255, result_image)

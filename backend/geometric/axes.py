@@ -12,7 +12,8 @@ def flip(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image to flip
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
@@ -32,11 +33,11 @@ def flip(image, extra_inputs, parameters):
     if axis == 'vertical':
         for i in range(image.shape[0]):
             flipped_image[i] = image[image.shape[0] - i - 1]
-#        flipped_image = np.flipud(image)
+        # flipped_image = np.flipud(image)
     elif axis == 'horizontal':
         for j in range(image.shape[1]):
             flipped_image[:, j] = image[:, image.shape[1] - j - 1]
-#        flipped_image = np.fliplr(image)
+        # flipped_image = np.fliplr(image)
     else:
         # Flip vertically
         result_temp = np.zeros(image.shape, dtype=np.uint8)
@@ -47,25 +48,26 @@ def flip(image, extra_inputs, parameters):
         for j in range(image.shape[1]):
             flipped_image[:, j] = result_temp[:, image.shape[1] - j - 1]
 
-#        flipped_image = np.fliplr(image)
-#        flipped_image = np.flipud(flipped_image)
+        # flipped_image = np.fliplr(image)
+        # flipped_image = np.flipud(flipped_image)
 
     return [flipped_image]
 
 def mirror(image, extra_inputs, parameters):
-    """Mirrors an image along the horizontal, vertical axis or both
-    and pastes the result besides the original image, in the desired location.
+    """Mirrors an image along the horizontal, vertical axis or both and pastes
+    the result besides the original image, in the desired location.
 
     Arguments:
         *image* (NumPy array) -- the image to mirror
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
-            *axis/location* (str, optional) -- the axis along which to flip the
-            image; also, the location where the flipped image will be pasted.
-            Possible values are *horizontal/left*, *horizontal/right*,
+            *axis/location* (str, optional) -- specifies the axis along which
+            to flip the image; also, the location where the flipped image will
+            be pasted. Possible values are *horizontal/left*, *horizontal/right*,
             *vertical/top*, *vertical/bottom*, *both/left/top*, *both/left/bottom*,
             *both/right/top*, *both/right/bottom*; default value is *horizontal/right*
 
@@ -75,7 +77,7 @@ def mirror(image, extra_inputs, parameters):
     if 'axis/location' in parameters:
         components = parameters['axis/location'].split('/')
         axis = components[0]
-        if components[0] == 'both':
+        if axis == 'both':
             location_h = components[1]
             location_v = components[2]
         else:
@@ -85,19 +87,18 @@ def mirror(image, extra_inputs, parameters):
         location = 'right'
 
     # Use the flip function to flip the input image accordingly
-    params = {'axis': axis}
     if axis != 'both':
-        flipped = flip(image, {}, params)[0]
+        flipped_image = flip(image, {}, {'axis': axis})[0]
 
         # Create the mirror image according to the location parameter
         if location == 'left':
-            mirror_image = np.hstack((flipped, image))
+            mirror_image = np.hstack((flipped_image, image))
         elif location == 'right':
-            mirror_image = np.hstack((image, flipped))
+            mirror_image = np.hstack((image, flipped_image))
         elif location == 'top':
-            mirror_image = np.vstack((flipped, image))
+            mirror_image = np.vstack((flipped_image, image))
         else:
-            mirror_image = np.vstack((image, flipped))
+            mirror_image = np.vstack((image, flipped_image))
     else:
         flipped_h = flip(image, {}, {'axis': 'horizontal'})[0]
         flipped_v = flip(image, {}, {'axis': 'vertical'})[0]
