@@ -1,3 +1,26 @@
+- Titlu: Aplicatie web pentru editarea imaginilor folosind tehnici de procesare avansata
+- Organizare: II.3.1 -> Capitolul doi, sectiunea trei, subsectiunea 1
+- Redactare: Times New Roman, 12pt, spatiere 1,5 randuri, aliniere justified
+- Numerotare: Incepand cu pagina de titlu, pana la ultima pagina, dar nu se afiseaza decat incepand cu Introducerea. Se insereaza in subsolul paginii
+- Surse: Trecute in ordinea alfabetica a numelor autorilor
+- Citare: [1] P. F. Felzenszwalb, D. P. Huttenlocher. Efficient graph-based image segmentation. International Journal of Computer Vision, 59(2):167–181, September 2004.
+- [2] Nume Autori. Titlu. Editura, An
+- (Web) [2] A. Vedaldi, K. Lenc. MatConvNet: Comvolutional Neural Network for MATLAB,http://www.vlfeat.org/matconvnet/ (disponibil la data de)
+
+- Titluri prima pagina: LM Roman Caps 10 - 18pt
+- Titluri sectiuni: LM Roman 10 - 24pt - bold
+
+- Rezumat (Abstract)
+	- Descrierea aplicatiei
+	- Tehnologii folosite
+	- Dezvoltari ulterioare
+- Introducere
+- Cuprins
+	- Tehnologii folosite
+- Referinte
+
+
+
 01. http://flask.pocoo.org/docs/1.0/ -- Documentatia Flask
 02. https://www.digitalocean.com/community/tutorials/how-to-structure-large-flask-applications -- Organizarea unui proiect de Flask
 03. https://semantic-ui.com/ -- Documentatia Semantic UI
@@ -37,6 +60,69 @@
 37. https://towardsdatascience.com/introduction-to-image-segmentation-with-k-means-clustering-83fd0a9e2fc3 -- KMeans Clustering on Images
 
 
+
+DEPENDENCIES:
+=======================================
+	NumPy - https://pypi.org/project/numpy/
+	Magic - https://pypi.org/project/python-magic/
+		  - https://pypi.org/project/python-magic-bin/0.4.14/#files
+	OpenCV - https://pypi.org/project/opencv-python/
+	Flask
+	Matplotlib
+	Scipy
+
+
+
+THE FLASK WEB APPLICATION STRUCTURE:
+=======================================
+\image-tinkering\webui
+	\modules
+		\cleanup
+		\initialisations
+		\processing
+		\uploads
+		/// Each module directory can contain the following files:
+		/// -> an __init__.py file (mandatory), which tells Python that the directory should
+		/// be treated as a package (so that we can import from webui.module_name)
+		/// -> a controllers.py file (mandatory), in which the needed models
+		/// and forms are imported, the corresponding Blueprint object is instantiated
+		/// and the routes are defined
+		/// -> a models.py file, which contains mappings of database entity
+		/// tables to classes (related to the current module)
+		/// -> a forms.py file, in which the needed forms are defined, as classes
+		/// In our case, the only files needed are __init__.py and the controllers.py,
+		/// since we don't use a database and do not display forms in our page
+	\static
+		\config
+			about.txt
+			operations.json
+			ral_colours.json
+			/// This directory contains configuration files used throughout the application
+		\images
+		\scripts
+		\styles
+		\tempdata
+		\testinputs
+		\uploads
+	\templates
+		index.html
+		/// Contains the HTML template pages, which can be organized into directories based on their category
+		/// (i.e. authentication templates -> signin, signout, forgot password templates;
+		/// user information templates -> user profile, orders, wishlist templates; etc)
+		/// In our case, the only template is the index template and since the application
+		/// is a Single Page Application, this template provides the content for all screens of the application
+	__init__.py
+		/// It tells Python that this directory should be treated as a package (so that we can import from webui)
+	app.py
+		/// Runs the application server (python app.py in console); this script
+		/// performs the application object and database (if required) instantiantions,
+		/// app configuration, error handlers and routes bindings and blueprints
+		/// registration
+
+
+
+URCAREA DATELOR CATRE SERVER:
+=============================
 - La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
 	{
 		'numeImg_i': [
@@ -57,7 +143,12 @@
 		]
 	}
 
-- Structura fisierului de configurare operations.json:
+
+
+FISIERE DE CONFIGURARE:
+=============================
+- Structura fisierului de configurare webui\static\config\operations.json:
+	- cheile obiectului sunt reprezentate de denumirile operatiilor; i.e. "Blur (Frequency Domain)"
 	- 'function' 		 -> string obligatoriu, cale catre functia de pe server care aplica operatia;
 						 -> este de forma numeDirector.numeScript.numeFunctie
 	- 'type'     		 -> string obligatoriu, tipul de operatie;
@@ -80,11 +171,15 @@
 	
 	- Parameter values are case insensitive when written in operations.json, but they must be lower case when referring to them in the backend
 	
-- Contractul semnaturilor operatiilor:
+
+
+OPERATIILE:
+=============================
+- Sunt functii a caror semnatura respecta urmatorul contract:
 	operation(image, extra_inputs_dict, parameters_dict), returns list of images
-		- one-to-one: extra_inputs_list = [], returns [image]
+		- one-to-one: extra_inputs_dict = {}, returns [image]
 		- many-to-one: returns [image]
-		- one-to-many: extra_inputs_list = []
+		- one-to-many: extra_inputs_dict = {}
 	
 	- extra_inputs_dict:
 		- are ca si cheie numele parametrului extra, asa cum este el precizat in campul 'extraInputsNames' din operations.json
@@ -98,19 +193,18 @@
 	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
 	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
 
-- Ca sa adaug un nou set de imagini pentru utilizare la mozaicare, trebuie sa:
+- Ca sa adaug un nou set de imagini pentru utilizare la operatia de mozaicare, trebuie sa:
 	- Toate imaginile trebuie sa aiba aceleasi dimensiuni (mici, de pana in 36x20, daca se doreste raport 16:9) -> permite rezolutiile de 9x5, 18x10 si 36x20 (facem preprocesare la dataset folosind functia preprocess_image_dataset din utils)
 	- Le pun intr-un director in backend/miscellaneous/database
 	- Creez pickle-ul cu informatii despre dataset, apeland functia pickle_imageset_information
-	- Pun optiunea la parametrul 'texture' al operatiei
+	- Adaug optiunea la parametrul 'texture' al operatiei de mozaicare
 
+
+
+TO BE MENTIONED:
+=============================
 - Sa vorbesc despre structura serverului - fisiere, module, etc
 - Sa vorbesc despre functiile din utils; pentru ce au fost folosite
-
-
-
-To be mentioned:
-=============================
 - Negative Filter: Pagina 108 din carte
 - Grayscale Filter: Vezi referintele 07 si 08
 - Sepia Filter: Vezi referinta 09
