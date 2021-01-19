@@ -344,7 +344,6 @@ def pixelate(image, extra_inputs, parameters):
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
     #    Replace the current block with a tile coloured the same as the average vector
-    #    If using the RAL colour space, the determined colour is converted to RAL
     for line in range(lines_count):
         for column in range(columns_count):
             block = image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution]
