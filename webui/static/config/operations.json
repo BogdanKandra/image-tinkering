@@ -328,6 +328,13 @@
         "description": "The technique used when building the photomosaic"
       },
       {
+        "name": "texture",
+        "type": "lookup",
+        "values": ["cakes", "cars"],
+        "default": "cakes",
+        "description": "The image dataset to use when building the photomosaic"
+      },
+      {
         "name": "transparency",
         "type": "lookup",
         "values": ["low", "medium", "high"],
