@@ -185,6 +185,10 @@ def preprocess_image_dataset(input_directory, new_height, new_width, results_pre
     files = os.listdir(input_directory)
     count = 1
 
+    # Create the destination directory if not already existing
+    if os.path.isdir(destination_directory) is False:
+        os.mkdir(destination_directory)
+
     for file in files:
         image = cv2.imread(os.path.join(input_directory, file), cv2.IMREAD_UNCHANGED)
         if image.shape[2] == 4:
