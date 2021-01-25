@@ -1,8 +1,8 @@
-"""
+'''
 Created on Wed Oct 30 16:57:19 2019
 
 @author: Bogdan
-"""
+'''
 import json
 import os
 import pickle
@@ -63,13 +63,13 @@ def get_closest_ral_colour(rgb_list):
 
     return closest_ral_key, ral_mappings[closest_ral_key]
 
-def build_mosaic(image, technique, alpha_level, resolution, redundancy):
+def build_mosaic(image, texture, technique, alpha_level, resolution, redundancy):
     ''' Helper function which actually builds the mosaic '''
     if utils.is_grayscale(image):
         image = utils.merge_channels([image, image, image])
 
     database_path = os.path.join(project_path, 'backend', 'miscellaneous', 'database')
-    pickle_name = 'cakes_' + resolution + '.pickle'
+    pickle_name = texture + '_' + resolution + '.pickle'
     pickle_path = os.path.join(database_path, pickle_name)
 
     with open(pickle_path, 'rb') as p:
@@ -224,6 +224,10 @@ def photomosaic(image, extra_inputs, parameters):
             photomosaic; possible values are *original* and *alternative*;
             default value is *original*
 
+            *texture* (str, optional) -- the image database used when building
+            the photomosaic; possible values are *cakes* and *cars*; default
+            value is *cakes*
+
             *transparency* (str, optional) -- the level of transparency of the
             mosaic image; possible values are *high*, *medium* and *low*; this
             parameter is ignored unless *technique* == *alternative*; default
@@ -245,6 +249,11 @@ def photomosaic(image, extra_inputs, parameters):
         technique = parameters['technique']
     else:
         technique = 'original'
+    
+    if 'texture' in parameters:
+        texture = parameters['texture']
+    else:
+        texture = 'cakes'
 
     if 'transparency' in parameters:
         transparency = parameters['transparency']
