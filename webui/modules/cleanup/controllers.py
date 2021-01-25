@@ -62,8 +62,8 @@ def cleanup_pickles():
             try:
                 if os.path.exists(pickle_path):
                     os.remove(pickle_path)
-#                else:
-#                    print('>>> [/cleanup/pickles] Pickle does not exist:', pickle_name)
+            #    else:
+            #        print('>>> [/cleanup/pickles] Pickle does not exist:', pickle_name)
             except OSError as err:
                 print('>>> [/cleanup/pickles] Error deleting pickle:', pickle_name)
                 print('>>>', err)
