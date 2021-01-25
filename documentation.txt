@@ -1,23 +1,65 @@
-- Titlu: Aplicatie web pentru editarea imaginilor folosind tehnici de procesare avansata
-- Organizare: II.3.1 -> Capitolul doi, sectiunea trei, subsectiunea 1
-- Redactare: Times New Roman, 12pt, spatiere 1,5 randuri, aliniere justified
-- Numerotare: Incepand cu pagina de titlu, pana la ultima pagina, dar nu se afiseaza decat incepand cu Introducerea. Se insereaza in subsolul paginii
 - Surse: Trecute in ordinea alfabetica a numelor autorilor
 - Citare: [1] P. F. Felzenszwalb, D. P. Huttenlocher. Efficient graph-based image segmentation. International Journal of Computer Vision, 59(2):167–181, September 2004.
 - [2] Nume Autori. Titlu. Editura, An
 - (Web) [2] A. Vedaldi, K. Lenc. MatConvNet: Comvolutional Neural Network for MATLAB,http://www.vlfeat.org/matconvnet/ (disponibil la data de)
 
-- Titluri prima pagina: LM Roman Caps 10 - 18pt
+- Titluri prima pagina: LM Roman Caps 10 - 20pt si LM Roman 10 - 30pt
 - Titluri sectiuni: LM Roman 10 - 24pt - bold
+- Scris normal: LM Roman 10 - 12pt
 
-- Rezumat (Abstract)
-	- Descrierea aplicatiei
-	- Tehnologii folosite
-	- Dezvoltari ulterioare
-- Introducere
-- Cuprins
-	- Tehnologii folosite
-- Referinte
+
+
+Detalii:
+=============================
+	- 1.2. RGB, HSV, HSL, CMYK (conversii intre spatii)
+	- 1.3. Moduri de reprezentare a imaginilor (spectrul vizual, spectrul frecventelor)
+	- 2.1.1.1. La nivel de pixel; canal
+	- 2.1.1.3. Filtre; Masti; Colour Dodge; Convolutia
+	- 2.1.2.1. Manipulari Elementare
+		- Divizarea imaginilor pe canale     -> Split_channels
+		- Eliminarea canalelor unei imagini  -> Remove_channels
+		- Permutarea canalelor unei imagini  -> Shuffle - Versiunea pentru canale
+		- Amestecarea pixelilor unei imagini -> Shuffle - Celelalte versiuni
+		- Conversie in ASCII Art             -> ASCII_art
+		- Fotomozaicarea unei imagini        -> Photomosaic
+		- Pixelizarea unei imagini           -> Pixelate
+		- Aplicarea unui watermark vizibil   -> Visible_watermark
+		- Aplicarea unui watermark pe LSB    -> ??????????
+	- 2.1.2.2. Operatii Geometrice
+		- Simetrizarea imaginilor            -> Flip
+		- Oglindirea imaginilor              -> Mirror
+		- Rotirea imaginilor                 -> ??????????
+	- 2.1.2.3. Operatii de Filtrare
+		- Negativul imaginilor               -> Negative (Filtru Elementar)
+		- Filtrul Grayscale                  -> Grayscale (Filtru Elementar)
+		- Filtrul Sepia                      -> Sepia (Filtru Elementar)
+		- Binarizarea imaginilor             -> Binarize (Filtru Elementar)
+		- Estomparea imaginilor              -> Blur (Filtru cu Convolutie)
+		- Intensificarea imaginilor          -> Sharpen (Filtru cu Convolutie)
+		- Reliefarea imaginilor              -> Emboss (Filtru si Masca cu Convolutie)
+		- Filtru de Schitare                 -> Sketchify (Filtru cu Convolutie si Colour Dodge)
+		- Detectarea Muchiilor               -> Edge Detection (Filtru cu Convolutie)
+	- 2.2.1. Introducere - Transformata Fourier in cazul discret si FFT
+						 - Amintim Transformata Cosinus Discreta si Transformata Wavelet Discreta
+	- 2.2.1.1. La nivel de frecvente
+	- 2.2.1.2. Filtre si Convolutie
+	- 2.2.2.1. Manipulari Elementare
+		- Aplicarea unui watermark invizibil cu FFT -> FFT_Watermark
+		- Aplicarea unui watermark invizibil cu DCT -> ??????????
+		- Aplicarea unui watermark invizibil cu DWT -> ??????????
+	- 2.2.2.2. Operatii de Filtrare
+		- Estomparea imaginilor                     -> Blur_FFT
+		- Intensificarea imaginilor                 -> Sharpen_FFT
+	- 3. Aplicatia Web de procesare a imaginilor
+		- 3.1. DEPENDENCIES
+
+
+
+=================================================
+- Despre STERGEREA FISIERELOR TEMPORARE SI INCARCATE (rutele CLEANUP)
+	- De completat in =Fisierele temporare ale aplicatiei=
+
+
 
 
 
@@ -70,141 +112,14 @@ DEPENDENCIES:
 	Flask
 	Matplotlib
 	Scipy
-
-
-
-THE FLASK WEB APPLICATION STRUCTURE:
-=======================================
-\image-tinkering\webui
-	\modules
-		\cleanup
-		\initialisations
-		\processing
-		\uploads
-		/// Each module directory can contain the following files:
-		/// -> an __init__.py file (mandatory), which tells Python that the directory should
-		/// be treated as a package (so that we can import from webui.module_name)
-		/// -> a controllers.py file (mandatory), in which the needed models
-		/// and forms are imported, the corresponding Blueprint object is instantiated
-		/// and the routes are defined
-		/// -> a models.py file, which contains mappings of database entity
-		/// tables to classes (related to the current module)
-		/// -> a forms.py file, in which the needed forms are defined, as classes
-		/// In our case, the only files needed are __init__.py and the controllers.py,
-		/// since we don't use a database and do not display forms in our page
-	\static
-		\config
-			about.txt
-			operations.json
-			ral_colours.json
-			/// This directory contains configuration files used throughout the application
-		\images
-		\scripts
-		\styles
-		\tempdata
-		\testinputs
-		\uploads
-	\templates
-		index.html
-		/// Contains the HTML template pages, which can be organized into directories based on their category
-		/// (i.e. authentication templates -> signin, signout, forgot password templates;
-		/// user information templates -> user profile, orders, wishlist templates; etc)
-		/// In our case, the only template is the index template and since the application
-		/// is a Single Page Application, this template provides the content for all screens of the application
-	__init__.py
-		/// It tells Python that this directory should be treated as a package (so that we can import from webui)
-	app.py
-		/// Runs the application server (python app.py in console); this script
-		/// performs the application object and database (if required) instantiantions,
-		/// app configuration, error handlers and routes bindings and blueprints
-		/// registration
-
-
-
-URCAREA DATELOR CATRE SERVER:
-=============================
-- La apasarea butonului de Upload se face un AJAX call care are ca date un obiect de forma:
-	{
-		'numeImg_i': [
-			{
-				'function_j': 'nume functie de apelat, luat pe baza numelui operatiei alese,
-				'type': 'tipul operatiei, o valoare dintre one-to-one, one-to-many, many-to-one, many-to-many',
-				'params': {
-					'par_i': val_i
-				}
-			},
-			{
-				'function_k': 'Nume',
-				'type': 'one-to-one',
-				'params': {
-					'par_i': val_i
-				}
-			}
-		]
-	}
-
-
-
-FISIERE DE CONFIGURARE:
-=============================
-- Structura fisierului de configurare webui\static\config\operations.json:
-	- cheile obiectului sunt reprezentate de denumirile operatiilor; i.e. "Blur (Frequency Domain)"
-	- 'function' 		 -> string obligatoriu, cale catre functia de pe server care aplica operatia;
-						 -> este de forma numeDirector.numeScript.numeFunctie
-	- 'type'     		 -> string obligatoriu, tipul de operatie;
-						 -> este una dintre cele 4 valori de mai sus
-	- 'description' 	 -> string optional, descrierea operatiei, va aparea ca popup
-	- 'extraInputsNames' -> lista de strings obligatorie daca 'type' incepe cu 'many-to-', contine denumirile parametrilor suplimentari de input (Exemplu: 'Watermark')
-	- 'parameters'  	 -> o lista de obiecte optionala, fiecare reprezentand configurarea unui parametru
-		Configurarea parametrilor:
-		- 'name'    -> string obligatoriu, numele parametrului
-		- 'type'    -> string obligatoriu, poate avea una dintre valorile: 'range', 'lookup'
-		- 'minimum' -> numar obligatoriu daca 'type' = 'range', valoarea minima pe care o poate avea parametrul
-		- 'maximum' -> numar obligatoriu daca 'type' = 'range', valoarea maxima pe care o poate avea parametrul
-		- 'step'    -> pasul cu care se trece de la o valoare la alta in range (optional, default e 1)
-		- 'values'  -> lista obligatorie daca 'type' = 'lookup', lista de valori pe care o poate avea parametrul
-		- 'default' -> string optional, valoarea parametrului care va fi preselectata in UI
-		- 'presenceDependencies' -> lista de strings optionala, contine numele altor parametri a caror prezenta in UI depinde de valoarea acestui parametru
-		- 'presenceConditions' -> lista de strings obligatorie daca presenceDependencies este prezent; contine conditiile asupra parametrului-dependenta
-							   -> elementele sunt de forma operator|valoare (exemplu '==butterworth')
-		- 'description' -> string optional, descrierea parametrului, apare ca popup la hover pe parametru
-	
-	- Parameter values are case insensitive when written in operations.json, but they must be lower case when referring to them in the backend
-	
-
-
-OPERATIILE:
-=============================
-- Sunt functii a caror semnatura respecta urmatorul contract:
-	operation(image, extra_inputs_dict, parameters_dict), returns list of images
-		- one-to-one: extra_inputs_dict = {}, returns [image]
-		- many-to-one: returns [image]
-		- one-to-many: extra_inputs_dict = {}
-	
-	- extra_inputs_dict:
-		- are ca si cheie numele parametrului extra, asa cum este el precizat in campul 'extraInputsNames' din operations.json
-		- are ca si valoare imaginea, ca NumPy array
-	
-	- parameters_dict:
-		- are ca si cheie numele parametrului, asa cum este el precizat in campul 'name' din fiecare element al listei 'parameters' din operation.json
-		- are ca si valoare valoarea parametrului
-
-- Ca sa adaug o operatie noua in proiect, trebuie sa:
-	- Adaug o intrare in json-ul de mapare intre nume de operatii si datele de configurare a functiilor underlying
-	- Sa creez un modul nou in care sa pun functia sau sa o pun intr-un modul existent
-
-- Ca sa adaug un nou set de imagini pentru utilizare la operatia de mozaicare, trebuie sa:
-	- Toate imaginile trebuie sa aiba aceleasi dimensiuni (mici, de pana in 36x20, daca se doreste raport 16:9) -> permite rezolutiile de 9x5, 18x10 si 36x20 (facem preprocesare la dataset folosind functia preprocess_image_dataset din utils)
-	- Le pun intr-un director in backend/miscellaneous/database
-	- Creez pickle-ul cu informatii despre dataset, apeland functia pickle_imageset_information
-	- Adaug optiunea la parametrul 'texture' al operatiei de mozaicare
+	Semantic UI
+	Noty
+	jQuery
 
 
 
 TO BE MENTIONED:
 =============================
-- Sa vorbesc despre structura serverului - fisiere, module, etc
-- Sa vorbesc despre functiile din utils; pentru ce au fost folosite
 - Negative Filter: Pagina 108 din carte
 - Grayscale Filter: Vezi referintele 07 si 08
 - Sepia Filter: Vezi referinta 09
