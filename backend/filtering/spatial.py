@@ -291,7 +291,7 @@ def edge(image, extra_inputs, parameters):
             image before convolving with the laplacian kernel; possible values
             are 'yes' and 'no'; default value is 'yes'
 
-            *edge_Count* (str, optional) -- how many edges wil be considered
+            *edge_Count* (str, optional) -- how many edges will be considered
             strong by the Canny Edge Algorithm; possible values are *standard*
             and *many*; default value is *standard*
 

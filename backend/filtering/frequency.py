@@ -178,9 +178,8 @@ def low_pass(image, extra_inputs, parameters):
     if deserializing:
         padded_image_FFTs = []
         for file_name in files_to_check:
-            file = open(os.path.join(pickles_path, file_name), 'rb')
-            padded_image_FFTs.append(pickle.load(file))
-            file.close()
+            with open(os.path.join(pickles_path, file_name), 'rb') as p:
+                padded_image_FFTs.append(pickle.load(p))
     else:
         # Create padded image
         if utils.is_color(image):
