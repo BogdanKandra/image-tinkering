@@ -107,7 +107,7 @@ def build_mosaic(image, texture, technique, alpha_level, resolution, redundancy)
                 closest_tile_index = get_closest_usable_tile_index(distances, tile_usage_grid, line, column)
 
             closest_tile_name = tiles_averages_keys[closest_tile_index]
-            closest_tile = cv2.imread(os.path.join(database_path, 'cakes_' + resolution, closest_tile_name), cv2.IMREAD_UNCHANGED)
+            closest_tile = cv2.imread(os.path.join(database_path, texture + '_' + resolution, closest_tile_name), cv2.IMREAD_UNCHANGED)
             mosaic_image[line * tiles_height : (line + 1) * tiles_height, column * tiles_width : (column + 1) * tiles_width] = closest_tile
             tile_usage_grid[line][column] = closest_tile_index
 
@@ -137,8 +137,8 @@ def ascii_art(image, extra_inputs, parameters):
         list of NumPy array uint8 -- list containing the filtered image
     '''
     # Small, 11 character ramps
-    STANDARD_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '#', '%', '@']  # "Standard"
-    ALTERNATE_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '%', '@', '#']   # "Alternate"
+    STANDARD_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '#', '%', '@']
+    ALTERNATE_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '%', '@', '#']
 
     # Full, 70 character ramp
     FULL_CHARSET = [' ', '.', '\'', '`', '^', '"', ',', ':', ';', 'I', 'l', '!',
@@ -292,7 +292,7 @@ def photomosaic(image, extra_inputs, parameters):
         elif transparency == 'high':
             alpha_level = 75 / 255
 
-    mosaic_image = build_mosaic(image, technique, alpha_level, resolution, redundancy)
+    mosaic_image = build_mosaic(image, texture, technique, alpha_level, resolution, redundancy)
 
     return [mosaic_image]
 
@@ -357,10 +357,8 @@ def pixelate(image, extra_inputs, parameters):
         for column in range(columns_count):
             block = image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution]
             if utils.is_color(image):
-                colour_used = []
                 for i in range(channels_count):
                     colour_component = int(round(np.mean(block[:, :, i])))
-                    colour_used.append(colour_component)
                     pixel_tile[:, :, i] = colour_component
             else:
                 pixel_tile = int(round(np.mean(block)))
