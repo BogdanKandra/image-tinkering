@@ -1,20 +1,154 @@
 - Surse: Trecute in ordinea alfabetica a numelor autorilor
 - Citare: [1] P. F. Felzenszwalb, D. P. Huttenlocher. Efficient graph-based image segmentation. International Journal of Computer Vision, 59(2):167–181, September 2004.
 - [2] Nume Autori. Titlu. Editura, An
-- (Web) [2] A. Vedaldi, K. Lenc. MatConvNet: Comvolutional Neural Network for MATLAB,http://www.vlfeat.org/matconvnet/ (disponibil la data de)
+- (Web) [2] A. Vedaldi, K. Lenc. MatConvNet: Comvolutional Neural Network for MATLAB, http://www.vlfeat.org/matconvnet/ (disponibil la data de)
 
 - Titluri prima pagina: LM Roman Caps 10 - 20pt si LM Roman 10 - 30pt
 - Titluri sectiuni: LM Roman 10 - 24pt - bold
+- Titluri subsectiuni: LM Roman 10 - 18pt - bold
+- Titluri subsubsectiuni: LM Roman 10 - 15pt - bold
 - Scris normal: LM Roman 10 - 12pt
+- Cod: Consolas - 12pt
 
 
 
 Detalii:
 =============================
-	- 1.2. RGB, HSV, HSL, CMYK (conversii intre spatii)
-	- 1.3. Moduri de reprezentare a imaginilor (spectrul vizual, spectrul frecventelor)
-	- 2.1.1.1. La nivel de pixel; canal
-	- 2.1.1.3. Filtre; Masti; Colour Dodge; Convolutia
+	- Relatii intre pixeli (Pag 91)
+	- Operatii spatiale (Pag 108)
+	
+	- Negativul unei imagini (Pag 130)
+	- Convolutia (Pag 170)
+	- Filtrare in spectrul vizual; derivate (Pag 175; 181)
+
+	- RGB, HSV, HSL, CMYK (Spatii de reprezentare a culorilor) (Pag 424)
+	- Moduri de reprezentare a imaginilor (spectrul vizual, spectrul frecventelor)
+
+
+
+	- Operatii elementare pe pixeli, canale; inversarea coloanelor si a liniilor imaginii; distante intre pixeli;
+	- Adunare, scadere, impartire de imagini
+	- Derivate, gradient, angles, magnitude
+
+
+	
+	- Cap. 2. Introducere: In aceasta lucrare, am impartit tehnicile implementate in functie de spectrul de reprezentare. Aplicatiile din spectrul frecventelor sunt mai limitate decat cele din cel vizual
+
+
+
+Referinte de pus:
+=============================
+- La primul paragraf din Introducere: https://en.wikipedia.org/wiki/Digital_image_processing
+- La definitia 1.1: https://en.wikipedia.org/wiki/Digital_signal
+- In capitolul 3.1. Tehnologii folosite:
+	-> NumPy - https://www.w3schools.com/python/numpy_intro.asp
+			 - https://en.wikipedia.org/wiki/NumPy
+			 - https://numpy.org/
+	-> Magic - https://pypi.org/project/python-magic/
+	-> OpenCV - https://opencv.org/about/
+	-> Flask - https://www.digitalocean.com/community/tutorials/how-to-structure-large-flask-applications
+			 - https://flask.palletsprojects.com/en/1.1.x/foreword/
+			 - https://en.wikipedia.org/wiki/Flask_(web_framework)
+	-> Matplotlib - https://pypi.org/project/matplotlib/
+				  - https://en.wikipedia.org/wiki/Matplotlib
+				  - https://matplotlib.org/
+	-> Scipy - https://en.wikipedia.org/wiki/SciPy
+			 - https://www.scipy.org/scipylib/index.html
+	-> Semantic UI - https://www.freecodecamp.org/news/semantic-ui-guide/
+				   - https://semantic-ui.com/
+	-> Noty - https://github.com/needim/noty
+	-> jQuery - https://jquery.com/
+			  - https://en.wikipedia.org/wiki/JQuery
+	-> Git - https://en.wikipedia.org/wiki/Git
+
+
+
+Bibliografie + Capitolul 2:
+=============================
+	- Operatii elementare pe pixeli si canale
+		- Negative Filter: Pag 130 carte
+		- Grayscale Filter:
+			- http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
+			- https://profs.info.uaic.ro/~ancai/DIP/lab/Lab_2_DIP.pdf
+		- Sepia Filter:
+			- https://www.techrepublic.com/blog/how-do-i/how-do-i-convert-images-to-grayscale-and-sepia-tone-using-c/
+		- Flip si Mirror
+			- Inversarea coloanelor sau a liniilor imaginii
+		- Shuffle
+			- Amestecarea pixelilor, coloanelor, liniilor sau a canalelor imaginii
+		- Split_channels si Remove_channels
+			- Setarea unor canale pe 0
+		- Photomosaic:
+			- https://en.wikipedia.org/wiki/Photographic_mosaic
+			- https://www.picturemosaics.com/true/
+			- https://www.geeksforgeeks.org/implementing-photomosaics/
+			- https://pdfs.semanticscholar.org/4660/5d83877c33b54d749c7f5f1b1329e2c81a55.pdf
+			- https://www.photo-mosaic.co.uk/how-it-works/what-is-a-photo-mosaic/
+			- https://worldwide.espacenet.com/publicationDetails/biblio?CC=US&NR=6137498A&KC=A&FT=D&ND=
+		- Pixelate
+			- Calcularea de distante intre pixeli
+
+	- Convolutie
+		- Binarize Filter:
+			- https://docs.opencv.org/3.4/d7/d4d/tutorial_py_thresholding.html -- Binarization Techniques
+			- Sa vb despre de ce la simple thresholding am ales si mediana ca prag fix
+		- Blur Filter:
+		- Sharpen Filter:
+			- http://alumni.media.mit.edu/~maov/classes/vision09/lect/09_Image_Filtering_Edge_Detection_09.pdf -- Convolution Theory (Blur, Sharpen, Edge)
+			- http://setosa.io/ev/image-kernels/ -- Vizualizare de kernels
+			- https://www.researchgate.net/publication/330502797_Image_Processing_Filtering_Edge_detection_and_Template_matching -- Convolution (Theory)
+			- https://www.taylorpetrick.com/blog/post/convolution-part3 -- Convolution, kernels
+			- http://aishack.in/tutorials/image-convolution-examples/ -- Kernels
+			- http://eeweb.poly.edu/~yao/EE3414/image_filtering.pdf -- Filtering, Kernels
+			- https://en.wikipedia.org/wiki/Kernel_(image_processing) -- Kernels
+		- Edge Filter:
+			- http://www.aishack.in/tutorials/sobel-laplacian-edge-detectors/ -- Sobel, Laplace kernels
+			- https://stackoverflow.com/questions/53544983/how-is-laplacian-filter-calculated -- Laplace Kernel how-to
+			- https://homepages.inf.ed.ac.uk/rbf/HIPR2/log.htm -- Laplacian / Laplacian of Gaussian
+			- https://en.wikipedia.org/wiki/Discrete_Laplace_operator -- Laplace Operator blablas
+			- Also mention Prewitt and Roberts kernels
+				#prewitt_3x3_x = np.array([[-1, 0, 1],
+				#                          [-1, 0, 1],
+				#                          [-1, 0, 1]])
+				#prewitt_3x3_y = np.array([[1, 1, 1],
+				#                          [0, 0, 0],
+				#                          [-1, -1, -1]])
+				#
+				#roberts_2x2_x = np.array([[0, 1],
+				#                          [-1, 0]])
+				#roberts_2x2_y = np.array([[1, 0],
+				#                          [0, -1]])
+		- Emboss Filter:
+			- https://en.wikipedia.org/wiki/Image_embossing -- Embossing Filter
+			- https://stackoverflow.com/questions/2034037/image-embossing-in-python-with-pil-adding-depth-azimuth-etc -- Embossing Filter
+
+	- Adunare si scadere de imagini:
+		- Sharpen Filter
+
+	- Derivate, Gradient (angles, magnitude):
+		- Edge Filter:
+			- http://www.aishack.in/tutorials/sobel-laplacian-edge-detectors/ -- Sobel, Laplace kernels
+			- https://towardsdatascience.com/canny-edge-detection-step-by-step-in-python-computer-vision-b49c3a2d8123 -- Gaussian Kernel, Edge Detection with Canny algorithm
+			- https://docs.opencv.org/3.4/d7/de1/tutorial_js_canny.html -- Canny Edge (Theory; what the thresholds apply to)
+			- https://rosettacode.org/wiki/Canny_edge_detector -- Canny Edge implementation
+			- https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/ -- Canny parameter setting inspiration (Linia 418 in spatial.py)
+
+	- Impartire de imagini:
+		- Sketch Filter:
+			- Michael Beyeler - OpenCV with Python Blueprints-Packt Publishing (2015)
+
+	- Misc:
+		- ASCII Art:
+			- https://en.wikipedia.org/wiki/ASCII_art
+			- http://paulbourke.net/dataformats/asciiart/
+
+
+
+Detalii pe cuprins:
+=============================
+	- 2.1.1.
+		- Operatii la nivel elementar: La nivel de pixel, canal;
+		- Filtre; Masti; Colour Dodge; Convolutia
 	- 2.1.2.1. Manipulari Elementare
 		- Divizarea imaginilor pe canale     -> Split_channels
 		- Eliminarea canalelor unei imagini  -> Remove_channels
@@ -39,10 +173,11 @@ Detalii:
 		- Reliefarea imaginilor              -> Emboss (Filtru si Masca cu Convolutie)
 		- Filtru de Schitare                 -> Sketchify (Filtru cu Convolutie si Colour Dodge)
 		- Detectarea Muchiilor               -> Edge Detection (Filtru cu Convolutie)
-	- 2.2.1. Introducere - Transformata Fourier in cazul discret si FFT
-						 - Amintim Transformata Cosinus Discreta si Transformata Wavelet Discreta
-	- 2.2.1.1. La nivel de frecvente
-	- 2.2.1.2. Filtre si Convolutie
+	- 2.2.1.
+		- Transformata Fourier in cazul discret si FFT
+		- Amintim Transformata Cosinus Discreta si Transformata Wavelet Discreta
+		- Manipulari la nivel de frecvente
+		- Filtre si convolutie
 	- 2.2.2.1. Manipulari Elementare
 		- Aplicarea unui watermark invizibil cu FFT -> FFT_Watermark
 		- Aplicarea unui watermark invizibil cu DCT -> ??????????
@@ -50,90 +185,15 @@ Detalii:
 	- 2.2.2.2. Operatii de Filtrare
 		- Estomparea imaginilor                     -> Blur_FFT
 		- Intensificarea imaginilor                 -> Sharpen_FFT
-	- 3. Aplicatia Web de procesare a imaginilor
-		- 3.1. DEPENDENCIES
 
 
 
-=================================================
-- Despre STERGEREA FISIERELOR TEMPORARE SI INCARCATE (rutele CLEANUP)
-	- De completat in =Fisierele temporare ale aplicatiei=
-
-
-
-
-
-01. http://flask.pocoo.org/docs/1.0/ -- Documentatia Flask
 02. https://www.digitalocean.com/community/tutorials/how-to-structure-large-flask-applications -- Organizarea unui proiect de Flask
-03. https://semantic-ui.com/ -- Documentatia Semantic UI
-04. Despre serializare (pickle) si serializarea fisierelor FFT si RGB
-05. Cartea de image processing
 06. https://stackoverflow.com/questions/55780834/using-numpy-for-more-efficient-filter-generation -- Intrebarea pusa de mine pentru a eficientiza generarea filtrelor
-07. http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/ -- Discutie despre algoritmi de conversie la grayscale
-08. https://profs.info.uaic.ro/~ancai/DIP/lab/Lab_2_DIP.pdf -- Same
-09. https://www.techrepublic.com/blog/how-do-i/how-do-i-convert-images-to-grayscale-and-sepia-tone-using-c/ -- Sepia
-10. https://en.wikipedia.org/wiki/ASCII_art?fbclid=IwAR0XKs0ctQay4bZ7U977cf3rTVTOYmNfwuaglTwHjX_w_CCO_HNJOXPp1XY -- ASCII art
-11. http://paulbourke.net/dataformats/asciiart/ -- ASCII art
-12. https://en.wikipedia.org/wiki/Photographic_mosaic -- Photomosaicking
-13. https://www.picturemosaics.com/true/ -- Photomosaicking
-14. https://www.geeksforgeeks.org/implementing-photomosaics/ -- Photomosaicking
-15. https://pdfs.semanticscholar.org/4660/5d83877c33b54d749c7f5f1b1329e2c81a55.pdf -- Photomosaicking
-16. https://www.photo-mosaic.co.uk/how-it-works/what-is-a-photo-mosaic/ -- Photomosaicking
-17. https://worldwide.espacenet.com/publicationDetails/biblio?CC=US&NR=6137498A&KC=A&FT=D&ND=&date=20001024&DB=&locale=en_EP -- Photomosaicking
-18. http://alumni.media.mit.edu/~maov/classes/vision09/lect/09_Image_Filtering_Edge_Detection_09.pdf -- Convolution Theory (Blur, Sharpen, Edge)
-19. http://setosa.io/ev/image-kernels/ -- Vizualizare de kernels
-20. https://www.researchgate.net/publication/330502797_Image_Processing_Filtering_Edge_detection_and_Template_matching -- Convolution (Theory)
-21. https://www.taylorpetrick.com/blog/post/convolution-part3 -- Convolution, kernels
-22. http://aishack.in/tutorials/image-convolution-examples/ -- Kernels
-23. http://www.aishack.in/tutorials/sobel-laplacian-edge-detectors/ -- Sobel, Laplace kernels
-24. http://eeweb.poly.edu/~yao/EE3414/image_filtering.pdf -- Filtering, Kernels
-25. https://en.wikipedia.org/wiki/Kernel_(image_processing) -- Kernels
-26. https://docs.opencv.org/3.4/d7/d4d/tutorial_py_thresholding.html -- Binarization Techniques
-27. https://towardsdatascience.com/canny-edge-detection-step-by-step-in-python-computer-vision-b49c3a2d8123 -- Gaussian Kernel, Edge Detection with Canny algorithm
-28. https://stackoverflow.com/questions/53544983/how-is-laplacian-filter-calculated -- Laplace Kernel how-to
-29. https://homepages.inf.ed.ac.uk/rbf/HIPR2/log.htm -- Laplacian / Laplacian of Gaussian
-30. https://en.wikipedia.org/wiki/Discrete_Laplace_operator#Image_Processing -- Laplace Operator blablas
-31. https://docs.opencv.org/3.4/d7/de1/tutorial_js_canny.html -- Canny Edge (Theory; what the thresholds apply to)
-32. https://rosettacode.org/wiki/Canny_edge_detector -- Canny Edge implementation
-33. https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/ -- Canny parameter setting inspiration
-34. Michael Beyeler - OpenCV with Python Blueprints-Packt Publishing (2015) -- Sketch Filter
-35. https://en.wikipedia.org/wiki/Image_embossing -- Embossing Filter
-36. https://stackoverflow.com/questions/2034037/image-embossing-in-python-with-pil-adding-depth-azimuth-etc -- Embossing Filter
 37. https://towardsdatascience.com/introduction-to-image-segmentation-with-k-means-clustering-83fd0a9e2fc3 -- KMeans Clustering on Images
-
-
-
-DEPENDENCIES:
-=======================================
-	NumPy - https://pypi.org/project/numpy/
-	Magic - https://pypi.org/project/python-magic/
-		  - https://pypi.org/project/python-magic-bin/0.4.14/#files
-	OpenCV - https://pypi.org/project/opencv-python/
-	Flask
-	Matplotlib
-	Scipy
-	Semantic UI
-	Noty
-	jQuery
 
 
 
 TO BE MENTIONED:
 =============================
-- Negative Filter: Pagina 108 din carte
-- Grayscale Filter: Vezi referintele 07 si 08
-- Sepia Filter: Vezi referinta 09
-- ASCII Filter: Vezi referintele 10 si 11
 - Kintsugi Filter: Edge points detection brute force approach - If the point located in ANY of the adjacent positions is not contained in the polygon, then the current point is on the edge - is much too slow
-- Edge Detection: Also mention Prewitt, Sobel, Roberts kernels
-	#prewitt_3x3_x = np.array([[-1, 0, 1],
-	#                          [-1, 0, 1],
-	#                          [-1, 0, 1]])
-	#prewitt_3x3_y = np.array([[1, 1, 1],
-	#                          [0, 0, 0],
-	#                          [-1, -1, -1]])
-	#
-	#roberts_2x2_x = np.array([[0, 1],
-	#                          [-1, 0]])
-	#roberts_2x2_y = np.array([[1, 0],
-	#                          [0, -1]])
