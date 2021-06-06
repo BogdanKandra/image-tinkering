@@ -1,71 +1,41 @@
+Citare:
+=============================
 - Surse: Trecute in ordinea alfabetica a numelor autorilor
-- Citare: [1] P. F. Felzenszwalb, D. P. Huttenlocher. Efficient graph-based image segmentation. International Journal of Computer Vision, 59(2):167–181, September 2004.
-- [2] Nume Autori. Titlu. Editura, An
-- (Web) [2] A. Vedaldi, K. Lenc. MatConvNet: Comvolutional Neural Network for MATLAB, http://www.vlfeat.org/matconvnet/ (disponibil la data de)
+- Citare Exemplu: [1] P. F. Felzenszwalb, D. P. Huttenlocher. Efficient graph-based image segmentation. International Journal of Computer Vision, 59(2):167–181, September 2004.
+- Citare General: [2] Nume Autori. Titlu. Editura, An
+- Citare Web: [3] A. Vedaldi, K. Lenc. MatConvNet: Comvolutional Neural Network for MATLAB, http://www.vlfeat.org/matconvnet/ (disponibil la data de)
 
+Fonturi folosite:
+=============================
 - Titluri prima pagina: LM Roman Caps 10 - 20pt si LM Roman 10 - 30pt
 - Titluri sectiuni: LM Roman 10 - 24pt - bold
 - Titluri subsectiuni: LM Roman 10 - 18pt - bold
 - Titluri subsubsectiuni: LM Roman 10 - 15pt - bold
 - Scris normal: LM Roman 10 - 12pt
 - Cod: Consolas - 12pt
+- Chestii matematice: Cambria Math - 12pt
 
 
 
-Detalii:
+TO WRITE:
 =============================
-	- Relatii intre pixeli (Pag 91)
-	- Operatii spatiale (Pag 108)
-	
-	- Negativul unei imagini (Pag 130)
-	- Convolutia (Pag 170)
-	- Filtrare in spectrul vizual; derivate (Pag 175; 181)
+	- Capitolul 1.2:
+		- Transformata Fourier a unei matrici (Pag 116)
+		- Spatii de reprezentare a culorilor - RGB, HSV, HSL, CMYK (Pag 424)
 
-	- RGB, HSV, HSL, CMYK (Spatii de reprezentare a culorilor) (Pag 424)
-	- Moduri de reprezentare a imaginilor (spectrul vizual, spectrul frecventelor)
-
-
-
-	- Operatii elementare pe pixeli, canale; inversarea coloanelor si a liniilor imaginii; distante intre pixeli;
-	- Adunare, scadere, impartire de imagini
-	- Derivate, gradient, angles, magnitude
-
-
-	
-	- Cap. 2. Introducere: In aceasta lucrare, am impartit tehnicile implementate in functie de spectrul de reprezentare. Aplicatiile din spectrul frecventelor sunt mai limitate decat cele din cel vizual
-
-
-
-Referinte de pus:
-=============================
-- La primul paragraf din Introducere: https://en.wikipedia.org/wiki/Digital_image_processing
-- La definitia 1.1: https://en.wikipedia.org/wiki/Digital_signal
-- In capitolul 3.1. Tehnologii folosite:
-	-> NumPy - https://www.w3schools.com/python/numpy_intro.asp
-			 - https://en.wikipedia.org/wiki/NumPy
-			 - https://numpy.org/
-	-> Magic - https://pypi.org/project/python-magic/
-	-> OpenCV - https://opencv.org/about/
-	-> Flask - https://www.digitalocean.com/community/tutorials/how-to-structure-large-flask-applications
-			 - https://flask.palletsprojects.com/en/1.1.x/foreword/
-			 - https://en.wikipedia.org/wiki/Flask_(web_framework)
-	-> Matplotlib - https://pypi.org/project/matplotlib/
-				  - https://en.wikipedia.org/wiki/Matplotlib
-				  - https://matplotlib.org/
-	-> Scipy - https://en.wikipedia.org/wiki/SciPy
-			 - https://www.scipy.org/scipylib/index.html
-	-> Semantic UI - https://www.freecodecamp.org/news/semantic-ui-guide/
-				   - https://semantic-ui.com/
-	-> Noty - https://github.com/needim/noty
-	-> jQuery - https://jquery.com/
-			  - https://en.wikipedia.org/wiki/JQuery
-	-> Git - https://en.wikipedia.org/wiki/Git
+	- Capitolul 2:
+		- Introducere: In aceasta lucrare, am impartit tehnicile implementate
+			in functie de domeniul de reprezentare. Aplicatiile din domeniul frecventelor
+			sunt mai limitate decat cele din cel vizual
+		- Moduri de reprezentare a imaginilor (domeniul vizual, domeniul frecventelor)
 
 
 
 Bibliografie + Capitolul 2:
 =============================
 	- Operatii elementare pe pixeli si canale
+		- Despre operatii pe canale (permutarea lor, reducerea la 0, modificarea acestora,
+		prin impartirea imaginii pe canale si apoi unirea lor inapoi)
 		- Negative Filter: Pag 130 carte
 		- Grayscale Filter:
 			- http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
@@ -146,10 +116,10 @@ Bibliografie + Capitolul 2:
 
 Detalii pe cuprins:
 =============================
-	- 2.1.1.
+	- 2.1.
 		- Operatii la nivel elementar: La nivel de pixel, canal;
 		- Filtre; Masti; Colour Dodge; Convolutia
-	- 2.1.2.1. Manipulari Elementare
+	- 2.1.1. Manipulari Elementare
 		- Divizarea imaginilor pe canale     -> Split_channels
 		- Eliminarea canalelor unei imagini  -> Remove_channels
 		- Permutarea canalelor unei imagini  -> Shuffle - Versiunea pentru canale
@@ -159,11 +129,11 @@ Detalii pe cuprins:
 		- Pixelizarea unei imagini           -> Pixelate
 		- Aplicarea unui watermark vizibil   -> Visible_watermark
 		- Aplicarea unui watermark pe LSB    -> ??????????
-	- 2.1.2.2. Operatii Geometrice
+	- 2.1.2. Operatii Geometrice
 		- Simetrizarea imaginilor            -> Flip
 		- Oglindirea imaginilor              -> Mirror
 		- Rotirea imaginilor                 -> ??????????
-	- 2.1.2.3. Operatii de Filtrare
+	- 2.1.3. Operatii de Filtrare
 		- Negativul imaginilor               -> Negative (Filtru Elementar)
 		- Filtrul Grayscale                  -> Grayscale (Filtru Elementar)
 		- Filtrul Sepia                      -> Sepia (Filtru Elementar)
@@ -173,27 +143,71 @@ Detalii pe cuprins:
 		- Reliefarea imaginilor              -> Emboss (Filtru si Masca cu Convolutie)
 		- Filtru de Schitare                 -> Sketchify (Filtru cu Convolutie si Colour Dodge)
 		- Detectarea Muchiilor               -> Edge Detection (Filtru cu Convolutie)
-	- 2.2.1.
+	- 2.2.
 		- Transformata Fourier in cazul discret si FFT
-		- Amintim Transformata Cosinus Discreta si Transformata Wavelet Discreta
 		- Manipulari la nivel de frecvente
 		- Filtre si convolutie
-	- 2.2.2.1. Manipulari Elementare
+	- 2.2.1. Manipulari Elementare
 		- Aplicarea unui watermark invizibil cu FFT -> FFT_Watermark
 		- Aplicarea unui watermark invizibil cu DCT -> ??????????
 		- Aplicarea unui watermark invizibil cu DWT -> ??????????
-	- 2.2.2.2. Operatii de Filtrare
+	- 2.2.2. Operatii de Filtrare
 		- Estomparea imaginilor                     -> Blur_FFT
 		- Intensificarea imaginilor                 -> Sharpen_FFT
 
 
 
-02. https://www.digitalocean.com/community/tutorials/how-to-structure-large-flask-applications -- Organizarea unui proiect de Flask
 06. https://stackoverflow.com/questions/55780834/using-numpy-for-more-efficient-filter-generation -- Intrebarea pusa de mine pentru a eficientiza generarea filtrelor
 37. https://towardsdatascience.com/introduction-to-image-segmentation-with-k-means-clustering-83fd0a9e2fc3 -- KMeans Clustering on Images
 
 
 
+Referinte de pus:
+=============================
+- La primul paragraf din Introducere: https://en.wikipedia.org/wiki/Digital_image_processing
+- La definitia 1.1: https://en.wikipedia.org/wiki/Digital_signal
+- La definitiile 1.7, 1.8: Carte, pagina 68
+- La definitiile 1.9, exemplele 1.1, 1.2, 1.3: Carte, pagina 71
+- La capitolul 1.2, la operatii:
+	-> https://docs.opencv.org/master/d0/d86/tutorial_py_image_arithmetics.html
+	-> https://docs.opencv.org/3.4/d2/de8/group__core__array.html
+- La capitolul 1.2, la convolutie:
+	-> https://en.wikipedia.org/wiki/Kernel_(image_processing)#Convolution
+	-> https://en.wikipedia.org/wiki/Convolution#Properties
+	-> http://www.inf.ed.ac.uk/teaching/courses/cfcs1/lectures/cfcs_l15.pdf
+- La capitolul 1.2, la percentile:
+	-> https://www.statisticshowto.com/probability-and-statistics/percentiles-rank-range/
+- La capitolul 1.2, la derivata in cazul discret:
+	-> http://www.sci.utah.edu/~gerig/CS6640-F2014/Materials/EdgeDetection-Bebis-UNR-I.pdf
+	-> https://www.researchgate.net/publication/306394987_EDGE_DETECTION-APPLICATION_OF_FIRST_AND_SECOND_ORDER_DERIVATIVE_IN_IMAGE_PROCESSING
+	-> http://www.cs.ubbcluj.ro/~lauras/test/docs/school/MIRPR/2018-2019/lectures/04_imageProcessing.pdf
+- In capitolul 3.1. Tehnologii folosite:
+	-> NumPy - https://www.w3schools.com/python/numpy_intro.asp
+			 - https://en.wikipedia.org/wiki/NumPy
+			 - https://numpy.org/
+	-> Magic - https://pypi.org/project/python-magic/
+	-> OpenCV - https://opencv.org/about/
+	-> Flask - https://www.digitalocean.com/community/tutorials/how-to-structure-large-flask-applications
+			 - https://flask.palletsprojects.com/en/1.1.x/foreword/
+			 - https://en.wikipedia.org/wiki/Flask_(web_framework)
+	-> Matplotlib - https://pypi.org/project/matplotlib/
+				  - https://en.wikipedia.org/wiki/Matplotlib
+				  - https://matplotlib.org/
+	-> Scipy - https://en.wikipedia.org/wiki/SciPy
+			 - https://www.scipy.org/scipylib/index.html
+	-> Semantic UI - https://www.freecodecamp.org/news/semantic-ui-guide/
+				   - https://semantic-ui.com/
+	-> Noty - https://github.com/needim/noty
+	-> jQuery - https://jquery.com/
+			  - https://en.wikipedia.org/wiki/JQuery
+	-> Git - https://en.wikipedia.org/wiki/Git
+- In capitolul 3.2.
+	https://www.digitalocean.com/community/tutorials/how-to-structure-large-flask-applications -- Organizarea unui proiect de Flask
+
+
+
 TO BE MENTIONED:
 =============================
-- Kintsugi Filter: Edge points detection brute force approach - If the point located in ANY of the adjacent positions is not contained in the polygon, then the current point is on the edge - is much too slow
+- Kintsugi Filter: Edge points detection brute force approach - If the point
+	located in ANY of the adjacent positions is not contained in the polygon,
+	then the current point is on the edge - is much too slow
