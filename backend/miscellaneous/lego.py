@@ -1,8 +1,8 @@
-"""
+'''
 Created on Wed Oct 30 16:57:19 2019
 
 @author: Bogdan
-"""
+'''
 import json
 import os
 import pickle
@@ -63,13 +63,13 @@ def get_closest_ral_colour(rgb_list):
 
     return closest_ral_key, ral_mappings[closest_ral_key]
 
-def build_mosaic(image, technique, alpha_level, resolution, redundancy):
+def build_mosaic(image, texture, technique, alpha_level, resolution, redundancy):
     ''' Helper function which actually builds the mosaic '''
     if utils.is_grayscale(image):
         image = utils.merge_channels([image, image, image])
 
     database_path = os.path.join(project_path, 'backend', 'miscellaneous', 'database')
-    pickle_name = 'cakes_' + resolution + '.pickle'
+    pickle_name = texture + '_' + resolution + '.pickle'
     pickle_path = os.path.join(database_path, pickle_name)
 
     with open(pickle_path, 'rb') as p:
@@ -86,12 +86,12 @@ def build_mosaic(image, technique, alpha_level, resolution, redundancy):
 
     mosaic_lines = int(image_height / tiles_height)
     mosaic_columns = int(image_width / tiles_width)
-    mosaic_image = np.zeros((mosaic_lines * tiles_height, mosaic_columns * tiles_width, 3), dtype='uint8')
-    tile_usage_grid = np.ones((mosaic_lines, mosaic_columns), dtype='uint8') * -1
+    mosaic_image = np.zeros((mosaic_lines * tiles_height, mosaic_columns * tiles_width, 3), dtype=np.uint8)
+    tile_usage_grid = np.ones((mosaic_lines, mosaic_columns), dtype=np.uint8) * -1
 
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
-    #    Compute the distance between the avg vector of the block and each of the avg vectors of the tiles
+    #    Compute the distances between the avg vector of the block and each of the avg vectors of the tiles
     #    Replace the current block with the tile located at the shortest distance from the block
     block_averages = np.zeros((1, 3))
     for line in range(mosaic_lines):
@@ -107,7 +107,7 @@ def build_mosaic(image, technique, alpha_level, resolution, redundancy):
                 closest_tile_index = get_closest_usable_tile_index(distances, tile_usage_grid, line, column)
 
             closest_tile_name = tiles_averages_keys[closest_tile_index]
-            closest_tile = cv2.imread(os.path.join(database_path, 'cakes_' + resolution, closest_tile_name), cv2.IMREAD_UNCHANGED)
+            closest_tile = cv2.imread(os.path.join(database_path, texture + '_' + resolution, closest_tile_name), cv2.IMREAD_UNCHANGED)
             mosaic_image[line * tiles_height : (line + 1) * tiles_height, column * tiles_width : (column + 1) * tiles_width] = closest_tile
             tile_usage_grid[line][column] = closest_tile_index
 
@@ -124,20 +124,21 @@ def ascii_art(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image to be filtered
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for
-        the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
-            *charset* (str, optional) -- the character set to use when rendering
-            ASCII art image; possible values are *standard*, *alternate* and *full*
+            *charset* (str, optional) -- the character set to use when
+            rendering ASCII art image; possible values are *standard*,
+            *alternate* and *full*; default value is *alternate*
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
     '''
     # Small, 11 character ramps
-    STANDARD_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '#', '%', '@']  # "Standard"
-    ALTERNATE_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '%', '@', '#']   # "Alternate"
+    STANDARD_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '#', '%', '@']
+    ALTERNATE_CHARSET = [' ', '.', ',', ':', '-', '=', '+', '*', '%', '@', '#']
 
     # Full, 70 character ramp
     FULL_CHARSET = [' ', '.', '\'', '`', '^', '"', ',', ':', ';', 'I', 'l', '!',
@@ -199,8 +200,8 @@ def ascii_art(image, extra_inputs, parameters):
     for i, line in enumerate(lines):
         y = i * dy
         for j, char in enumerate(line):
-            cv2.putText(ascii_image, char, (j * maximum_letter_width, y), font_face, 1, \
-                        (0, 0, 0), 1, lineType=cv2.FILLED)
+            cv2.putText(ascii_image, char, (j * maximum_letter_width, y), \
+                        font_face, 1, (0, 0, 0), 1, lineType=cv2.FILLED)
 
     # Resize resulting image to original size of input image
     ascii_image = cv2.resize(ascii_image, original_size, interpolation=cv2.INTER_AREA)
@@ -214,14 +215,18 @@ def photomosaic(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image to be approximated by a photo mosaic
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for
-        the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
             *technique* (str, optional) -- the technique used when building the
             photomosaic; possible values are *original* and *alternative*;
             default value is *original*
+
+            *texture* (str, optional) -- the image database used when building
+            the photomosaic; possible values are *cakes* and *cars*; default
+            value is *cakes*
 
             *transparency* (str, optional) -- the level of transparency of the
             mosaic image; possible values are *high*, *medium* and *low*; this
@@ -244,6 +249,11 @@ def photomosaic(image, extra_inputs, parameters):
         technique = parameters['technique']
     else:
         technique = 'original'
+    
+    if 'texture' in parameters:
+        texture = parameters['texture']
+    else:
+        texture = 'cakes'
 
     if 'transparency' in parameters:
         transparency = parameters['transparency']
@@ -282,32 +292,28 @@ def photomosaic(image, extra_inputs, parameters):
         elif transparency == 'high':
             alpha_level = 75 / 255
 
-    mosaic_image = build_mosaic(image, technique, alpha_level, resolution, redundancy)
+    mosaic_image = build_mosaic(image, texture, technique, alpha_level, resolution, redundancy)
 
     return [mosaic_image]
 
 def pixelate(image, extra_inputs, parameters):
     ''' Uses a form of downscaling in order to achieve an 8-bit-like filter
-    appearance of an image. The colours used for representing the result can be
-    from the RGB or the RAL colour spaces. When using the RAL space, a text
-    file containing extra information is created
+    appearance of an image.
 
     Arguments:
         *image* (NumPy array) -- the image to be pixelated
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for
-        the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
             *fidelity* (str, optional) -- how close the resulting image will
             look compared to the original (inverse proportional to the size of
             the composing pixels); possible values are *very low*, *low*,
-            *standard*, *high* and *very high*; default value is *standard*
+            *standard*, *high*, *very high* and *ultra high*; default value is
+            *standard*
 
-            *colour_Space* (str, optional) -- the colour space used to represent
-            the pixelated image; possible values are *rgb* and *ral*; default
-            value is *rgb*
     Returns:
         list of NumPy array uint8 -- list containing the pixelated image
     '''
@@ -316,11 +322,6 @@ def pixelate(image, extra_inputs, parameters):
         resolution = parameters['fidelity']
     else:
         resolution = 'standard'
-
-    if 'colour_Space' in parameters:
-        space = parameters['colour_Space']
-    else:
-        space = 'rgb'
 
     # Determine the resolution of the pixel-blocks used (the length of the square)
     if resolution == 'very low':
@@ -344,57 +345,173 @@ def pixelate(image, extra_inputs, parameters):
     if utils.is_color(image):
         channels_count = image.shape[2]
         pixel_tile = np.zeros((resolution, resolution, channels_count))
-        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype='uint8')
-        colours_frequencies = {}
+        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype=np.uint8)
     else:
         pixel_tile = np.zeros((resolution, resolution))
-        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution), dtype='uint8')
+        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution), dtype=np.uint8)
 
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
     #    Replace the current block with a tile coloured the same as the average vector
-    #    If using the RAL colour space, the determined colour is converted to RAL
     for line in range(lines_count):
         for column in range(columns_count):
             block = image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution]
             if utils.is_color(image):
-                colour_used = []
                 for i in range(channels_count):
                     colour_component = int(round(np.mean(block[:, :, i])))
-                    colour_used.append(colour_component)
                     pixel_tile[:, :, i] = colour_component
-
-                # Convert RGB colour to closest RAL colour if needed
-                if space == 'ral':
-                    # Get closest RAL colour, record its use and replace it in result image
-                    ral_code, ral_colour = get_closest_ral_colour(colour_used)
-
-                    if ral_code in colours_frequencies:
-                        colours_frequencies[ral_code] += 1
-                    else:
-                        colours_frequencies[ral_code] = 1
-
-                    for i in range(3):
-                        pixel_tile[:, :, i] = ral_colour[i]
             else:
                 pixel_tile = int(round(np.mean(block)))
 
             pixelated_image[line * resolution : (line + 1) * resolution, column * resolution : (column + 1) * resolution] = pixel_tile
 
-    # If using RAL colour space, write colour usage information into a file
-    if space == 'ral':
-        ral_colour_usage_path = os.path.join(project_path, 'webui', 'static', 'tempdata', 'ral_info.txt')
-        with open(ral_colour_usage_path, 'w') as f:
-            f.write('USED COLOURS INFORMATION:\n')
-            f.write('==============================\n')
-            f.write('NUMBER OF COLOURS USED: ' + str(len(colours_frequencies)) + '\n')
-            f.write('NUMBER OF TILES USED: ' + str(lines_count * columns_count) + '\n')
-            f.write('COLOUR FREQUENCIES: [RAL_COLOUR_ID: NUMBER OF PIECES]\n')
-            for code in colours_frequencies:
-                f.write('>> ' + code + ': ' + str(colours_frequencies[code]) + ' pcs\n')
-
     return [pixelated_image]
 
-def collage():
-    ''' Google "photo collage maker" '''
-    pass # TODO
+def pixelate_ral(image, extra_inputs, parameters):
+    ''' A modified version of the pixelate operation, used for converting images
+    into a version suitable for mosaicing. The colour representation used is a
+    subset of RGB called RAL, a standard used for paint colours. In addition, a
+    text file containing extra information is created.
+
+    Arguments:
+        *image* (NumPy array) -- the image to be pixelated
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
+
+        *parameters* (dictionary) -- a dictionary holding parameter values (empty)
+
+    Returns:
+        list of NumPy array uint8 -- list containing the pixelated image
+    '''
+    # Initialisations; constants are measured in centimeters
+    tile_size = 3
+    mosaic_width = 190
+    mosaic_height = 250
+
+    image_height, image_width = image.shape[:2]
+    lines_count = mosaic_height // tile_size
+    columns_count = mosaic_width // tile_size
+
+    assert image_height // lines_count == image_width // columns_count
+    resolution = image_height // lines_count
+
+    # Configure the text to be used for writing
+    font_face = cv2.FONT_HERSHEY_DUPLEX
+    font_scale = 0.6
+    thickness = 1
+    upscaling_factor = 6
+
+    if utils.is_color(image):
+        channels_count = image.shape[2]
+        pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
+        grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
+        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
+        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
+        colours_frequencies = {}
+    else:
+        pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
+        grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
+        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype=np.uint8)
+        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype=np.uint8)
+
+    # For each block:
+    #    Compute the average r, g, b values of the block and put them in a vector
+    #    Replace the current block with a tile coloured as the closest RAL colour
+    #    in relation to the average vector
+    for line in range(lines_count):
+        for column in range(columns_count):
+            block = image[line * resolution : (line + 1) * resolution,
+                          column * resolution : (column + 1) * resolution]
+            if utils.is_color(image):
+                colour_used = []
+                for i in range(channels_count):
+                    colour_component = int(round(np.mean(block[:, :, i])))
+                    colour_used.append(colour_component)
+
+                # Convert RGB colour to closest RAL colour and record its use
+                ral_code, ral_colour = get_closest_ral_colour(colour_used)
+
+                if ral_code in colours_frequencies:
+                    colours_frequencies[ral_code] += 1
+                else:
+                    colours_frequencies[ral_code] = 1
+
+                # Set the pixel tile and the grid tile
+                for i in range(channels_count):
+                    pixel_tile[:, :, i] = ral_colour[i]
+
+                grid_tile[:, :, :] = 255
+                grid_tile[0, :, :] = 0
+                grid_tile[-1, :, :] = 0
+                grid_tile[:, 0, :] = 0
+                grid_tile[:, -1, :] = 0
+
+                # Write the colour code in the center of the tile
+                text_size = cv2.getTextSize(ral_code, font_face, font_scale, thickness)[0]
+                text_x = (resolution * upscaling_factor - text_size[0]) // 2
+                text_y = (resolution * upscaling_factor + text_size[1]) // 2
+                cv2.putText(grid_tile, ral_code, (text_x, text_y), font_face, font_scale, (0, 0, 0), thickness)
+            else:
+                pixel_tile = int(round(np.mean(block)))
+
+            pixelated_image[line * resolution * upscaling_factor : (line + 1) * resolution * upscaling_factor, column * resolution * upscaling_factor : (column + 1) * resolution * upscaling_factor] = pixel_tile
+            grid_image[line * resolution * upscaling_factor : (line + 1) * resolution * upscaling_factor, column * resolution * upscaling_factor : (column + 1) * resolution * upscaling_factor] = grid_tile
+
+    # Write colour usage information into a file
+    tempdata_path = os.path.join(project_path, 'webui', 'static', 'tempdata')
+    with open(os.path.join(tempdata_path, 'ral_info.txt'), 'w') as f:
+        f.write('INFORMATII MOZAIC:\n')
+        f.write('==============================\n')
+        f.write('NUMAR CULORI FOLOSITE: ' + str(len(colours_frequencies)) + '\n')
+        f.write('NUMAR BUCATI FOLOSITE PE ORIZONTALA: ' + str(columns_count) + '\n')
+        f.write('NUMAR BUCATI FOLOSITE PE VERTICALA: ' + str(lines_count) + '\n')
+        f.write('NUMAR TOTAL BUCATI FOLOSITE: ' + str(lines_count * columns_count) + '\n')
+        f.write('FRECVENTE CULORI: [ID_CULOARE_RAL: NUMAR DE PIESE]\n')
+        for code in colours_frequencies:
+            pieces_suffix = 'PIESE'
+            if colours_frequencies[code] == 1:
+                pieces_suffix = 'PIESA'
+            f.write('>> ' + code + ': ' + str(colours_frequencies[code]) + ' ' + pieces_suffix + '\n')
+
+    # Crop grid image into A4-sized images (size 29.7 cm x 21.0 cm) and save them to tempdata
+    a4_sheets_lines_count = lines_count // 9
+    a4_sheets_columns_count = columns_count // 7
+    sheet_counter = 1
+
+    for line in range(a4_sheets_lines_count):
+        for column in range(a4_sheets_columns_count):
+            a4_image = grid_image[line * resolution * upscaling_factor * 9 : (line + 1) * resolution * upscaling_factor * 9,
+                                  column * resolution * upscaling_factor * 7 : (column + 1) * resolution * upscaling_factor * 7]
+            cv2.imwrite(os.path.join(tempdata_path, 'sheet_' + str(sheet_counter) + '.jpg'), a4_image)
+            sheet_counter += 1
+
+    # Separately save the remaining tiles, if any, on the horizontal and vertical
+    end_of_horizontal_sheets = a4_sheets_columns_count * resolution * upscaling_factor * 7
+    end_of_vertical_sheets = a4_sheets_lines_count * resolution * upscaling_factor * 9
+    horizontal_rest_counter = 1
+    vertical_rest_counter = 1
+
+    if end_of_horizontal_sheets != grid_image.shape[1]:
+        for line in range(a4_sheets_lines_count):
+            rest = grid_image[line * resolution * upscaling_factor * 9 : (line + 1) * resolution * upscaling_factor * 9,
+                              end_of_horizontal_sheets : ]
+            a4_image = np.zeros((resolution * upscaling_factor * 9, resolution * upscaling_factor * 7, channels_count))
+            a4_image[:, : rest.shape[1]] = rest
+
+            cv2.imwrite(os.path.join(tempdata_path, 'rest_horizontal_' + str(horizontal_rest_counter) + '.jpg'), a4_image)
+            horizontal_rest_counter += 1
+
+    if end_of_vertical_sheets != grid_image.shape[0]:
+        for column in range(a4_sheets_columns_count):
+            rest = grid_image[end_of_vertical_sheets : ,
+                              column * resolution * upscaling_factor * 7 : (column + 1) * resolution * upscaling_factor * 7]
+            a4_image = np.zeros((resolution * upscaling_factor * 9, resolution * upscaling_factor * 7, channels_count))
+            a4_image[: rest.shape[0], :] = rest
+
+            cv2.imwrite(os.path.join(tempdata_path, 'rest_vertical_' + str(vertical_rest_counter) + '.jpg'), a4_image)
+            vertical_rest_counter += 1
+
+    # TODO - If image has rests on both axes, then the intersection of the rests will be left out
+
+    return [pixelated_image, grid_image]

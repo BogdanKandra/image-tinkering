@@ -1,8 +1,8 @@
-"""
+'''
 Created on Fri May 17 13:10:30 2019
 
 @author: Bogdan
-"""
+'''
 import os
 from flask import current_app as app
 from flask.blueprints import Blueprint
@@ -39,8 +39,8 @@ def cleanup_tempdata():
             try:
                 if os.path.exists(pickle_path):
                     os.remove(pickle_path)
-#                else:
-#                    print('>>> [/cleanup/tempdata] Pickle does not exist:', pickle_name)
+            #    else:
+            #        print('>>> [/cleanup/tempdata] Pickle does not exist:', pickle_name)
             except OSError as err:
                 print('>>> [/cleanup/tempdata] Error deleting pickle:', pickle_name)
                 print('>>>', err)
@@ -62,8 +62,8 @@ def cleanup_pickles():
             try:
                 if os.path.exists(pickle_path):
                     os.remove(pickle_path)
-#                else:
-#                    print('>>> [/cleanup/pickles] Pickle does not exist:', pickle_name)
+            #    else:
+            #        print('>>> [/cleanup/pickles] Pickle does not exist:', pickle_name)
             except OSError as err:
                 print('>>> [/cleanup/pickles] Error deleting pickle:', pickle_name)
                 print('>>>', err)

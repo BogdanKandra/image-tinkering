@@ -15,7 +15,7 @@ from backend import utils
 
 
 def apply_kernel(image, kernel):
-    ''' Performs convolution between the given image and kernel and returns the result '''
+    ''' Performs convolution between the given image and kernel '''
     if utils.is_color(image):
         result_b = convolve2d(image[:,:,0], kernel, mode='same')
         result_g = convolve2d(image[:,:,1], kernel, mode='same')

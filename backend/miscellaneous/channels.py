@@ -21,13 +21,14 @@ def split_channels(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image to be split
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
-            *spectrum* (str, optional) -- the spectrum in which the channels will
-            be represented; possible values are *grayscale* and *color*; default
-            value is *color*
+            *spectrum* (str, optional) -- the spectrum in which the channels
+            will be represented; possible values are *grayscale* and *color*;
+            default value is *color*
 
     Returns:
         list of NumPy array uint8 -- list containing the channels of the image
@@ -43,10 +44,10 @@ def split_channels(image, extra_inputs, parameters):
             spectrum = 'color'
 
         if spectrum == 'color':
-            zeros = np.zeros((image.shape[:2]), dtype='uint8')
-            b = cv2.merge([b, zeros, zeros])
-            g = cv2.merge([zeros, g, zeros])
-            r = cv2.merge([zeros, zeros, r])
+            zeros = np.zeros((image.shape[:2]), dtype=np.uint8)
+            b = utils.merge_channels([b, zeros, zeros])
+            g = utils.merge_channels([zeros, g, zeros])
+            r = utils.merge_channels([zeros, zeros, r])
 
         return [b, g, r]
 
@@ -58,7 +59,8 @@ def remove_channels(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image from which to remove channels
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
@@ -66,7 +68,8 @@ def remove_channels(image, extra_inputs, parameters):
             possible values are *red*, *green*, *blue*, *red & green*, *red &
             blue*, *green & blue*
     Returns:
-        list of NumPy array uint8 -- list containing the image having the requested channels removed
+        list of NumPy array uint8 -- list containing the image having the
+        requested channels removed
     '''
     channels_information = parameters['channel(s)']
     image_copy = copy.deepcopy(image)

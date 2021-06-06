@@ -20,7 +20,8 @@ def pixels_shuffle(channels, state):
         pixel_list = np.ravel(channel) # Flattens the channel matrix to an array
         np.random.shuffle(pixel_list)
         channel = np.reshape(pixel_list, channel.shape)
-        np.random.set_state(state) # Reset the state so that next shuffle is same permutation
+        # Reset the state so that next shuffle is same permutation
+        np.random.set_state(state)
 
     shuffled_image = utils.merge_channels(channels)
 
@@ -33,7 +34,8 @@ def lines_shuffle(channels, state):
     # Shuffle the lines in each channel, with the same permutation
     for channel in channels:
         np.random.shuffle(channel)
-        np.random.set_state(state) # Reset the state so that next shuffle is same permutation
+        # Reset the state so that next shuffle is same permutation
+        np.random.set_state(state)
 
     shuffled_image = utils.merge_channels(channels)
 
@@ -48,7 +50,8 @@ def columns_shuffle(channels, state):
         transpose = np.transpose(channel)
         np.random.shuffle(transpose)
         channel = np.transpose(transpose)
-        np.random.set_state(state) # Reset the state so that next shuffle is same permutation
+        # Reset the state so that next shuffle is same permutation
+        np.random.set_state(state)
 
     shuffled_image = utils.merge_channels(channels)
 
@@ -56,8 +59,8 @@ def columns_shuffle(channels, state):
 
 def channels_shuffle(channels):
     """ Shuffles the channels of an image """
-    # Keep shuffling the indices list until a non-stationary permutation has been
-    # obtained, as to ensure the output image is not the same as the input
+    # Keep shuffling the indices list until a non-stationary permutation has
+    # been obtained, as to ensure the output image is not the same as the input
     indices = np.arange(len(channels))
     while (np.arange(len(channels)) == indices).all() and len(channels) != 1:
         np.random.shuffle(indices)
@@ -77,13 +80,14 @@ def shuffle(image, extra_inputs, parameters):
     Arguments:
         *image* (NumPy array) -- the image to be shuffled
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call (empty)
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
-            *criterion* (str, optional) -- the criterion to shuffle the image by;
-            possible values are *pixels*, *lines*, *columns* and *channels*;
-            default value is *lines*
+            *criterion* (str, optional) -- the criterion to shuffle the image
+            by; possible values are *pixels*, *lines*, *columns* and *channels*;
+            default value is *channels*
 
     Returns:
         list of NumPy array uint8 -- list containing the shuffled image

@@ -75,7 +75,7 @@ function checkUserMedia() {
 						if (!foundVideoInput) {
 							// There are't any videoinput sources, disable the TAKE SELFIE button and notify the user
 							$('#takeSelfie').addClass('disabled')
-							displayNotification({text: 'No video input sources have been found; TAKE SELFIE functionality is disabled', type: 'info'})
+							displayNotification({text: 'No video input sources have been found. TAKE SELFIE functionality is disabled', type: 'info'})
 						}
 					})
 					.catch(err => console.log(err.name + ': ' + err.message))

@@ -1,6 +1,9 @@
 - Bug: daca configurez o imagine, apoi o reconfigurez, se considera doua configurari separate
 	- Da peste cap calculul numarului de imagini configurate
 
+- Implement as an API
+- Implement Logging
+- Implement with classes
 
 - Rotation:
 	https://stackoverflow.com/questions/11764575/python-2-7-3-opencv-2-4-after-rotation-window-doesnt-fit-image

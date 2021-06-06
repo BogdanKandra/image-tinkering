@@ -48,4 +48,4 @@ def index():
 
 # Run the application
 if __name__ == '__main__':
-    APP.run(host='localhost', port=8080, debug=True)
+    APP.run(host='localhost', port=8080, debug=True, use_reloader=False)

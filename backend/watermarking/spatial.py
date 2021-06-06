@@ -14,39 +14,45 @@ from backend import utils as projutils
 
 
 def visible_watermark(image, extra_inputs, parameters):
-    ''' Embeds a watermark image over a host image, using the visible watermarking technique; the
-    watermark is scaled to the selected size and is embedded into the selected location, with the
-    selected transparency
+    ''' Embeds a watermark image over a host image, using the visible
+    watermarking technique; the watermark is scaled to the selected size and is
+    embedded into the selected location, with the selected transparency
 
     Arguments:
         *image* (NumPy array) -- the image to be watermarked
 
-        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs
+        for the call
 
-            *Watermark* (NumPy array) -- the image to be embedded on top of the host image
+            *Watermark* (NumPy array) -- the image to be embedded on top of the
+            host image
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
-            *transparency* (str, optional) -- how will the watermark image be overlayed over the
-            host image; possible values are: *opaque*, *transparent* and *very transparent*; default
-            value is *transparent*
+            *transparency* (str, optional) -- specifies how will the watermark
+            image be overlayed over the host image; possible values are:
+            *opaque*, *transparent* and *very transparent*; default value is
+            *transparent*
 
-            *location* (str, optional) -- the location where the watermark image will be
-            embedded; possible values are: *bottom right*, *bottom left*, *top right*, *top left*,
-            *center*, *everywhere*; default value is *bottom right*
+            *location* (str, optional) -- specifies the location where the
+            watermark image will be embedded; possible values are: *bottom
+            right*, *bottom left*, *top right*, *top left*, *center*,
+            *everywhere*; default value is *bottom right*
 
-            *size* (int, optional) -- the maximum width of the watermark image, as a
-            percentage of the width of the host image; possible values are: 10 to 90, with
-            increments of 10; default value is 20 (%)
+            *size* (int, optional) -- specifies the maximum width of the
+            watermark image, as a percentage of the width of the host image;
+            possible values are: 10 to 90, with increments of 10; default value
+            is 20 (%)
 
     Returns:
         list of NumPy array uint8 -- list containing the watermarked image
 
     Observations:
-        If the watermark image's width is smaller than the maximum width, the image will be left
-        unchanged. If the height of the watermark image (after width adjustment) is greater than the
-        height of the host image, the height of the watermark image will be rescaled as to fit the
-        host image
+        If the watermark image's width is already smaller than the maximum
+        watermark width computed from *size*, the watermark image will be left
+        unchanged. If the height of the watermark image (after width adjustment)
+        is greater than the height of the host image, the watermark image will
+        be rescaled as to fit the host image
     '''
     # Load the extra parameter, the watermark image
     watermark = extra_inputs['Watermark']
@@ -70,13 +76,16 @@ def visible_watermark(image, extra_inputs, parameters):
     # Check if the watermark image needs rescaling
     image_h, image_w = image.shape[:2]
     watermark_h, watermark_w = watermark.shape[:2]
-    maximum_width = int(size / 100 * image_w)
+    maximum_watermark_width = int(size / 100 * image_w)
 
-    if watermark_w > maximum_width: # Resize watermark image by new width
-        watermark = projutils.resize_dimension(watermark, new_width=maximum_width)
-        watermark_h, watermark_w = watermark.shape[:2] # The watermark dimensions need to be updated
+    if watermark_w > maximum_watermark_width:
+        # Resize watermark image by new width
+        watermark = projutils.resize_dimension(watermark, new_width=maximum_watermark_width)
+        # The watermark dimensions need to be updated
+        watermark_h, watermark_w = watermark.shape[:2]
 
-    if watermark_h > image_h:       # Resize watermark image by height of host image
+    if watermark_h > image_h:
+        # Resize watermark image by height of host image
         watermark = projutils.resize_dimension(watermark, new_height=image_h)
 
     # If any of the images are grayscale, convert them to the color equivalent
@@ -88,7 +97,7 @@ def visible_watermark(image, extra_inputs, parameters):
 
     # Verify whether the alpha channel is needed or not and act accordingly
     if mode == 'opaque':
-        # Remove the alpha channels from both images (if present)
+        # Remove the alpha channel from both images (if present)
         if image.shape[2] == 4:
             image = image[:, :, :3]
 
@@ -97,11 +106,11 @@ def visible_watermark(image, extra_inputs, parameters):
     else:
         # Add opaque alpha channels to both images (if not already present)
         if image.shape[2] == 3:
-            alpha_channel = np.ones((image_h, image_w), dtype='uint8') * 255
+            alpha_channel = np.ones((image_h, image_w), dtype=np.uint8) * 255
             image = np.dstack((image, alpha_channel))
 
         if watermark.shape[2] == 3:
-            alpha_channel = np.ones((watermark_h, watermark_w), dtype='uint8') * 255
+            alpha_channel = np.ones((watermark_h, watermark_w), dtype=np.uint8) * 255
             watermark = np.dstack((watermark, alpha_channel))
 
     # Apply the watermark over the host image; alpha blending technique is used
