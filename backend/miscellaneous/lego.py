@@ -63,11 +63,12 @@ def get_closest_ral_colour(rgb_list):
 
     return closest_ral_key, ral_mappings[closest_ral_key]
 
-def build_mosaic(image, texture, technique, alpha_level, resolution, redundancy):
+def build_mosaic(image, texture, technique, alpha, resolution, redundancy):
     ''' Helper function which actually builds the mosaic '''
     if utils.is_grayscale(image):
         image = utils.merge_channels([image, image, image])
 
+    # Load the appropriate image library information
     database_path = os.path.join(project_path, 'backend', 'miscellaneous', 'database')
     pickle_name = texture + '_' + resolution + '.pickle'
     pickle_path = os.path.join(database_path, pickle_name)
@@ -76,6 +77,7 @@ def build_mosaic(image, texture, technique, alpha_level, resolution, redundancy)
         tiles_height, tiles_width = pickle.load(p)
         tiles_averages_dict = pickle.load(p)
 
+    # Initialise necessary variables
     tiles_averages = np.zeros((len(tiles_averages_dict), 3))
     tiles_averages_values = list(tiles_averages_dict.values())
     tiles_averages_keys = list(tiles_averages_dict.keys())
@@ -114,7 +116,7 @@ def build_mosaic(image, texture, technique, alpha_level, resolution, redundancy)
     if technique == 'alternative':
         # Overlay the mosaic on the input image
         image_copy = utils.resize_dimension(image, *mosaic_image.shape[:2])
-        mosaic_image = image_copy * (1 - alpha_level) + mosaic_image * alpha_level
+        mosaic_image = image_copy * (1 - alpha) + mosaic_image * alpha
 
     return mosaic_image
 
@@ -283,16 +285,16 @@ def photomosaic(image, extra_inputs, parameters):
         resolution = '9x5'
 
     # Determine the alpha level needed for alpha blending, if alternative technique is required
-    alpha_level = None
+    alpha = None
     if technique == 'alternative':
         if transparency == 'low':
-            alpha_level = 205 / 255
+            alpha = 205 / 255
         elif transparency == 'medium':
-            alpha_level = 150 / 255
+            alpha = 150 / 255
         elif transparency == 'high':
-            alpha_level = 75 / 255
+            alpha = 75 / 255
 
-    mosaic_image = build_mosaic(image, texture, technique, alpha_level, resolution, redundancy)
+    mosaic_image = build_mosaic(image, texture, technique, alpha, resolution, redundancy)
 
     return [mosaic_image]
 
