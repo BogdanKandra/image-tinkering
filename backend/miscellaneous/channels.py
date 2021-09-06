@@ -77,15 +77,11 @@ def remove_channels(image, extra_inputs, parameters):
     if utils.is_color(image):
         if '&' in channels_information:
             # Zero out the two specified channels
-            channels = channels_information.split(' & ')
-            if channels[0] == 'red':
+            if 'red' in channels_information:
                 image_copy[:, :, 2] = 0
-            elif channels[0] == 'green':
+            if 'green' in channels_information:
                 image_copy[:, :, 1] = 0
-
-            if channels[1] == 'green':
-                image_copy[:, :, 1] = 0
-            elif channels[1] == 'blue':
+            if 'blue' in channels_information:
                 image_copy[:, :, 0] = 0
         else:
             # Zero out the specified channel
