@@ -17,9 +17,9 @@ from backend import utils
 def apply_kernel(image, kernel):
     ''' Performs convolution between the given image and kernel '''
     if utils.is_color(image):
-        result_b = convolve2d(image[:,:,0], kernel, mode='same')
-        result_g = convolve2d(image[:,:,1], kernel, mode='same')
-        result_r = convolve2d(image[:,:,2], kernel, mode='same')
+        result_b = convolve2d(image[:,:,0], kernel, mode='same', fillvalue=np.median(image[:,:,0]))
+        result_g = convolve2d(image[:,:,1], kernel, mode='same', fillvalue=np.median(image[:,:,1]))
+        result_r = convolve2d(image[:,:,2], kernel, mode='same', fillvalue=np.median(image[:,:,2]))
         channels_list = []
 
         # Trim values lower than 0 or higher than 255 and convert to uint8 for openCV compatibility
