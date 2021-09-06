@@ -10,7 +10,7 @@ project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
     project_path = os.path.dirname(project_path)
 sys.path.append(project_path)
-from backend import utils as projutils
+from backend import utils
 
 
 def visible_watermark(image, extra_inputs, parameters):
@@ -80,20 +80,20 @@ def visible_watermark(image, extra_inputs, parameters):
 
     if watermark_w > maximum_watermark_width:
         # Resize watermark image by new width
-        watermark = projutils.resize_dimension(watermark, new_width=maximum_watermark_width)
+        watermark = utils.resize_dimension(watermark, new_width=maximum_watermark_width)
         # The watermark dimensions need to be updated
         watermark_h, watermark_w = watermark.shape[:2]
 
     if watermark_h > image_h:
         # Resize watermark image by height of host image
-        watermark = projutils.resize_dimension(watermark, new_height=image_h)
+        watermark = utils.resize_dimension(watermark, new_height=image_h)
 
     # If any of the images are grayscale, convert them to the color equivalent
-    if projutils.is_grayscale(image):
-        image = projutils.merge_channels([image, image, image])
+    if utils.is_grayscale(image):
+        image = utils.merge_channels([image, image, image])
 
-    if projutils.is_grayscale(watermark):
-        watermark = projutils.merge_channels([watermark, watermark, watermark])
+    if utils.is_grayscale(watermark):
+        watermark = utils.merge_channels([watermark, watermark, watermark])
 
     # Verify whether the alpha channel is needed or not and act accordingly
     if mode == 'opaque':
@@ -119,11 +119,11 @@ def visible_watermark(image, extra_inputs, parameters):
 
     # Compute the alpha level needed for alpha blending
     if mode == 'opaque':
-        alpha_level = 255 / 255
+        alpha = 255 / 255
     elif mode == 'transparent':
-        alpha_level = 170 / 255
+        alpha = 170 / 255
     elif mode == 'very transparent':
-        alpha_level = 85 / 255
+        alpha = 85 / 255
 
     # Compute the region of interest, based on the location specified by user
     if location == 'top left':
@@ -164,8 +164,8 @@ def visible_watermark(image, extra_inputs, parameters):
                 column_end = watermark_w * (x + 1)
 
                 watermarked_image[line_start : line_end, column_start : column_end, : 3] = \
-                    image[line_start : line_end, column_start : column_end, : 3] * (1 - alpha_level) + \
-                    watermark[:, :, : 3] * alpha_level
+                    image[line_start : line_end, column_start : column_end, : 3] * (1 - alpha) + \
+                    watermark[:, :, : 3] * alpha
 
         return [watermarked_image]
     else:
@@ -173,7 +173,7 @@ def visible_watermark(image, extra_inputs, parameters):
 
     # Overlay the watermark on the host image
     watermarked_image[line_start : line_end, column_start : column_end, : 3] = \
-        image[line_start : line_end, column_start : column_end, : 3] * (1 - alpha_level) + \
-        watermark[:, :, : 3] * alpha_level
+        image[line_start : line_end, column_start : column_end, : 3] * (1 - alpha) + \
+        watermark[:, :, : 3] * alpha
 
     return [watermarked_image]
