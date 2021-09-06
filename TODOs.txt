@@ -29,15 +29,8 @@
 	http://people.scs.carleton.ca/~mould/papers/glass.pdf?fbclid=IwAR0gx-LYeG3NYO5J-1jpPlw7murjB2GMHb5mAgV3Lwq5pBPa6qX1RrpJsBE
 	
 - Photographic Mosaic: (Photomosaic algorithm)
-	https://en.wikipedia.org/wiki/Photographic_mosaic
-	https://www.researchgate.net/publication/262264720_A_Review_of_Image_Mosaicing_Techniques?fbclid=IwAR0QndgMIgXnUpEztEni1mHPRHhnbWFdlcOkVyJl2-HE12Vsl6qDvH9PSAg
-	https://www.geeksforgeeks.org/implementing-photomosaics/
-	https://stackoverflow.com/questions/5478519/photo-mosaic-algorithm-how-to-create-a-mosaic-photo-given-the-basic-image-and-a
-	https://github.com/DavideA/photomosaic
-	http://patorjk.com/blog/2007/08/11/alternative-photomosaic-algorithms/
-	https://waset.org/publications/9997759/generation-of-photo-mosaic-images-through-block-matching-and-color-adjustment
-	https://www.nbbmuseum.be/en/2014/12/pointillism-in-the-digital-era-robert-silvers-photomosaic.htm
-	- Plus documente la downloads
+	-> Sa implementez versiunea avansata, in care matching-ul intre tiles si imaginile din baza de date nu este facut
+		prin closest average color, ci prin minimum pixel differences dintre tiles si fiecare bd image
 	
 - Image Stitching:
 	http://home.cse.ust.hk/~cstws/research/641D/mosaic/?fbclid=IwAR1MVb_uae0WEtz4Wn5-YkVkPECvB6FYcOcxIwsx6XfhAOjWOFQ62jMGgOU
@@ -52,24 +45,22 @@
 	https://www.cs.umb.edu/~jreyes/csit114-fall-2007/project4/filters.html?fbclid=IwAR1hZ8WyEed71uNX9ChRXm6noZIrgvsdGldKkWRjWE6ihmHIjT2jYhbH9_E#blur
 	https://www142.lunapic.com/editor/?action=retro
 
-- Sa implementez functia resize din utils altfel (de mana)
+- Sa implementez de mana functia resize din utils
 
 
 Misc Operations:
 -----------------------------
 - Many to one
-	- Photomosaic Algorithm
 	- Image Collage (https://simplecollage.com/)
 	- Panoramation
 
 - One to one
+	- Rotation
 	- Cropping
 	- Resizing
 	- Zooming
-	- Reducing the intensity resolution (downsampling / compression ?)
 	- Kaleidoscope effect
 	- Infinite Mirror
-	- Edge Detection
 	- Mean Filtering
 
 - One to many
@@ -86,6 +77,10 @@ Image Filtering:
 - Splitting into triangles
 - LSD
 - 8-Bit (Image Quantization?)
+- Kintsugi
+	- Edge points detection brute force approach - If the point located in ANY
+	of the adjacent positions is not contained in the polygon, then the current point is on the edge - much too slow
+	- https://towardsdatascience.com/introduction-to-image-segmentation-with-k-means-clustering-83fd0a9e2fc3 -- KMeans Clustering on Images
 
 
 Conversions:
@@ -122,7 +117,7 @@ Meh:
 
 Watermarking:
 -----------------------------
-- Image Watermarking (Visible, LSB, DCT, DFT, DWT)
+- Image Watermarking (LSB, DCT, DFT, DWT)
 
 - Visible Watermarking parameters:
 	- type: text or image
@@ -134,7 +129,3 @@ Watermarking:
 	- dependsOn parameter attribute in UI
 		- for 'value' parameter in Visible Watermarking, the 'dependsOn' attr will have value 'type'
 			- this will attach a handler to the dependsOn value
-
-
-
-
