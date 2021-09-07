@@ -95,23 +95,12 @@ def visible_watermark(image, extra_inputs, parameters):
     if utils.is_grayscale(watermark):
         watermark = utils.merge_channels([watermark, watermark, watermark])
 
-    # Verify whether the alpha channel is needed or not and act accordingly
-    if mode == 'opaque':
-        # Remove the alpha channel from both images (if present)
-        if image.shape[2] == 4:
-            image = image[:, :, :3]
+    # Remove the alpha channel from both images (if present)
+    if image.shape[2] == 4:
+        image = image[:, :, :3]
 
-        if watermark.shape[2] == 4:
-            watermark = watermark[:, :, :3]
-    else:
-        # Add opaque alpha channels to both images (if not already present)
-        if image.shape[2] == 3:
-            alpha_channel = np.ones((image_h, image_w), dtype=np.uint8) * 255
-            image = np.dstack((image, alpha_channel))
-
-        if watermark.shape[2] == 3:
-            alpha_channel = np.ones((watermark_h, watermark_w), dtype=np.uint8) * 255
-            watermark = np.dstack((watermark, alpha_channel))
+    if watermark.shape[2] == 4:
+        watermark = watermark[:, :, :3]
 
     # Apply the watermark over the host image; alpha blending technique is used
     # result = background * (1 - alpha) + foreground * alpha

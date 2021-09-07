@@ -67,6 +67,8 @@ def build_mosaic(image, texture, technique, alpha, resolution, redundancy):
     ''' Helper function which actually builds the mosaic '''
     if utils.is_grayscale(image):
         image = utils.merge_channels([image, image, image])
+    else:
+        image = image[:, :, :3]
 
     # Load the appropriate image library information
     database_path = os.path.join(project_path, 'backend', 'miscellaneous', 'database')
