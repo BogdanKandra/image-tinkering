@@ -5,7 +5,6 @@ Created on Thu Oct  3 19:50:10 2019
 """
 import os
 import sys
-import numpy as np
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
     project_path = os.path.dirname(project_path)
@@ -14,7 +13,7 @@ from backend import utils
 
 
 def visible_watermark(image, extra_inputs, parameters):
-    ''' Embeds a watermark image over a host image, using the visible
+    """ Embeds a watermark image over a host image, using the visible
     watermarking technique; the watermark is scaled to the selected size and is
     embedded into the selected location, with the selected transparency
 
@@ -53,7 +52,7 @@ def visible_watermark(image, extra_inputs, parameters):
         unchanged. If the height of the watermark image (after width adjustment)
         is greater than the height of the host image, the watermark image will
         be rescaled as to fit the host image
-    '''
+    """
     # Load the extra parameter, the watermark image
     watermark = extra_inputs['Watermark']
 
@@ -108,10 +107,10 @@ def visible_watermark(image, extra_inputs, parameters):
 
     # Compute the alpha level needed for alpha blending
     if mode == 'opaque':
-        alpha = 255 / 255
+        alpha = 1
     elif mode == 'transparent':
         alpha = 170 / 255
-    elif mode == 'very transparent':
+    else:
         alpha = 85 / 255
 
     # Compute the region of interest, based on the location specified by user
@@ -152,8 +151,8 @@ def visible_watermark(image, extra_inputs, parameters):
                 column_start = watermark_w * x
                 column_end = watermark_w * (x + 1)
 
-                watermarked_image[line_start : line_end, column_start : column_end, : 3] = \
-                    image[line_start : line_end, column_start : column_end, : 3] * (1 - alpha) + \
+                watermarked_image[line_start: line_end, column_start: column_end, : 3] = \
+                    image[line_start: line_end, column_start: column_end, : 3] * (1 - alpha) + \
                     watermark[:, :, : 3] * alpha
 
         return [watermarked_image]
@@ -161,8 +160,8 @@ def visible_watermark(image, extra_inputs, parameters):
         raise ValueError("'location' parameter value not allowed")
 
     # Overlay the watermark on the host image
-    watermarked_image[line_start : line_end, column_start : column_end, : 3] = \
-        image[line_start : line_end, column_start : column_end, : 3] * (1 - alpha) + \
+    watermarked_image[line_start: line_end, column_start: column_end, : 3] = \
+        image[line_start: line_end, column_start: column_end, : 3] * (1 - alpha) + \
         watermark[:, :, : 3] * alpha
 
     return [watermarked_image]

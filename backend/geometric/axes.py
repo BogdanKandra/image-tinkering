@@ -7,7 +7,7 @@ import numpy as np
 
 
 def flip(image, extra_inputs, parameters):
-    """Flips an image along the horizontal, vertical axis or both.
+    """ Flips an image along the horizontal, vertical axis or both.
 
     Arguments:
         *image* (NumPy array) -- the image to flip
@@ -54,7 +54,7 @@ def flip(image, extra_inputs, parameters):
     return [flipped_image]
 
 def mirror(image, extra_inputs, parameters):
-    """Mirrors an image along the horizontal, vertical axis or both and pastes
+    """ Mirrors an image along the horizontal, vertical axis or both and pastes
     the result besides the original image, in the desired location.
 
     Arguments:

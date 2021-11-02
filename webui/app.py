@@ -38,7 +38,7 @@ APP.register_blueprint(CLEANUP_MOD)
 
 # Error handling
 @APP.errorhandler(413)
-def file_too_large(err):
+def file_too_large(_):
     return make_response(jsonify('File too big'), 413)
 
 # Binding routes

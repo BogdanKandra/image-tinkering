@@ -1,7 +1,6 @@
 import os
 import sys
 import pickle
-import cv2
 import numpy as np
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
@@ -11,7 +10,7 @@ from backend import utils
 
 
 def ideal_filter(mode, size, cutoff):
-    '''Generates an **Ideal Filter** which filters out frequencies
+    """ Generates an **Ideal Filter** which filters out frequencies
     higher (*low-pass*) or lower (*high-pass*) than the cutoff frequency\n
     It has the following transfer function:\n
         *low-pass mode:* H(u,v) = 1, if D(u,v) <= cutoff; 0, otherwise\n
@@ -25,7 +24,7 @@ def ideal_filter(mode, size, cutoff):
         *cutoff* (int) -- the maximum / minimum frequency to be let through by the filter
     Returns:
         NumPy array uint8 -- the filter image
-    '''
+    """
     center = np.asarray([size[0] // 2, size[1] // 2])  # Center of the filter
 
     I, J = np.ogrid[:size[0], :size[1]]
@@ -40,7 +39,7 @@ def ideal_filter(mode, size, cutoff):
     return filter_image
 
 def butterworth_filter(mode, size, cutoff, order=2):
-    """Generates a **Butterworth Filter** which has the transfer function:\n
+    """ Generates a **Butterworth Filter** which has the transfer function:\n
         *low-pass mode:*   H(u,v) = 1 / [1 + (D(u,v) / cutoff) ^ (2 * order)] \n
         *high-pass mode:*  H(u,v) = 1 / [1 + (cutoff / D(u,v)) ^ (2 * order)]
 
@@ -75,7 +74,7 @@ def butterworth_filter(mode, size, cutoff, order=2):
     return filter_image
 
 def gaussian_filter(mode, size, cutoff):
-    """Generates a **Gaussian Filter** which has the transfer function:\n
+    """ Generates a **Gaussian Filter** which has the transfer function:\n
         *low-pass mode:*   H(u,v) = e ^ (-Duv^2 / 2 * cutoff ^ 2) \n
         *high-pass mode:*  H(u,v) = 1 - e ^ (-Duv^2 / 2 * cutoff ^ 2)
 
@@ -106,7 +105,7 @@ def gaussian_filter(mode, size, cutoff):
     return 1 - filter_image
 
 def low_pass(image, extra_inputs, parameters):
-    """Applies a **Low Pass Filter** on an image. \n
+    """ Applies a **Low Pass Filter** on an image. \n
     The image is converted into the frequency domain (using the *Fast Fourier
     Transform*) and only the frequencies smaller than the cutoff frequency are
     let through.
@@ -197,7 +196,7 @@ def low_pass(image, extra_inputs, parameters):
         filter_image = ideal_filter('low', (padded_h, padded_w), cutoff)
     elif filter_type == 'butterworth':
         filter_image = butterworth_filter('low', (padded_h, padded_w), cutoff, order)
-    elif filter_type == 'gaussian':
+    else:
         filter_image = gaussian_filter('low', (padded_h, padded_w), cutoff)
 
     # Apply the filter to the FFTs
@@ -341,10 +340,10 @@ def high_pass(image, extra_inputs, parameters):
         filter_image = ideal_filter('high', (padded_h, padded_w), cutoff)
     elif filter_type == 'butterworth':
         filter_image = butterworth_filter('high', (padded_h, padded_w), cutoff, order)
-    elif filter_type == 'gaussian':
+    else:
         filter_image = gaussian_filter('high', (padded_h, padded_w), cutoff)
 
-	# Perform High-frequency emphasis
+    # Perform High-frequency emphasis
     if multiplier == 1:
         filter_image = offset + filter_image
     else:

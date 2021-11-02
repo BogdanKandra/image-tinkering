@@ -19,7 +19,7 @@ UPLOAD_MOD = Blueprint('uploads', __name__, url_prefix='/uploads')
 
 @UPLOAD_MOD.route('/inputs', methods=['POST'])
 def upload_inputs():
-    ''' Uploads the specified images and/or videos '''
+    """ Uploads the specified images and/or videos """
     files = request.files
     mime = magic.Magic(mime=True)
     saved_files = {
@@ -30,7 +30,7 @@ def upload_inputs():
     for key in files:
         file = files[key]
         mime_type = mime.from_buffer(file.stream.read(1024))
-        file.stream.seek(0) # Move the file pointer back to the start of buffer
+        file.stream.seek(0)  # Move the file pointer back to the start of buffer
 
         # Only save the file if it is an image or a video
         if mime_type.startswith('image/') or mime_type.startswith('video/'):
@@ -43,7 +43,7 @@ def upload_inputs():
 
             # Append the timestamp to the filename
             timestamp = str(time.time())
-            if '.' in timestamp: # Also append the fractional part if available
+            if '.' in timestamp:  # Also append the fractional part if available
                 timestamp = "".join(timestamp.split('.'))
 
             name = secure_filename(file.filename)
@@ -62,10 +62,10 @@ def upload_inputs():
 
 @UPLOAD_MOD.route('/extrainputs', methods=['POST'])
 def upload_extra_inputs():
-    ''' Uploads the specified extra input files, associated to the specified image '''
+    """ Uploads the specified extra input files, associated to the specified image """
     files = request.files
     image_name = request.form['image-name']
-    params_names = request.form['params-names'].split(',') # Convert string to list
+    params_names = request.form['params-names'].split(',')  # Convert string to list
 
     mime = magic.Magic(mime=True)
     saved_files = {
@@ -79,7 +79,7 @@ def upload_extra_inputs():
         param_name = params_names[i]
 
         mime_type = mime.from_buffer(file.stream.read(1024))
-        file.stream.seek(0) # Move the file pointer back to the start of buffer
+        file.stream.seek(0)  # Move the file pointer back to the start of buffer
 
         # Only save the file if it is an image
         if mime_type.startswith('image/'):
