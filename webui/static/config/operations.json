@@ -375,6 +375,34 @@
     "type": "one-to-many",
     "parameters": []
   },
+  "Cross-Stitch": {
+    "function": "miscellaneous.lego.cross_stitch",
+    "type": "one-to-many",
+    "parameters": [
+      {
+        "name": "height",
+        "type": "range",
+        "minimum": 10,
+        "maximum": 500,
+        "description": "The number of points that the cross-stitch will have on each column"
+      },
+      {
+        "name": "width",
+        "type": "range",
+        "minimum": 10,
+        "maximum": 500,
+        "description": "The number of points that the cross-stitch will have on each line"
+      },
+      {
+        "name": "colours",
+        "type": "range",
+        "minimum": 2,
+        "maximum": 64,
+        "default": 20,
+        "description": "The number of colours that the cross-stitch will contain"
+      }
+    ]
+  },
   "Visible Watermark": {
     "function": "watermarking.spatial.visible_watermark",
     "type": "many-to-one",
