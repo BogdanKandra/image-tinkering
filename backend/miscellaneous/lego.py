@@ -8,6 +8,7 @@ import os
 import pickle
 import sys
 import numpy as np
+from numpy.lib.recfunctions import structured_to_unstructured, unstructured_to_structured
 import cv2
 from scipy.spatial.distance import cdist
 project_path = os.getcwd()
@@ -372,6 +373,62 @@ def pixelate(image, extra_inputs, parameters):
 
     return [pixelated_image]
 
+def quantize(image, extra_inputs, parameters):
+    """ Quantizes the colours from an image, using a modified version of the Median Cut algorithm.
+
+    Arguments:
+        *image* (NumPy array) -- the image to be quantized
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *colours* (int, optional) -- the size of the colour palette used in the quantized image;
+            default value is 256
+
+    Returns:
+        list of NumPy array uint8 -- list containing the quantized image
+    """
+    # Parameters extraction
+    if 'colours' in parameters:
+        colours = parameters['colours']
+    else:
+        colours = 256
+
+    # Determine the channel having the greatest range
+    range_b = np.amax(image[:, :, 0]) - np.amin(image[:, :, 0])
+    range_g = np.amax(image[:, :, 1]) - np.amin(image[:, :, 1])
+    range_r = np.amax(image[:, :, 2]) - np.amin(image[:, :, 2])
+    greatest_range_index = np.argmax([range_b, range_g, range_r])
+
+    # Sort the image pixels according to that channel's values
+    pixels = np.reshape(image, (-1, 3))
+    pixels = unstructured_to_structured(pixels, np.dtype([('b', int), ('g', int), ('r', int)]))
+    sorting_indices = np.argsort(pixels, order='bgr'[greatest_range_index])
+    pixels_sorted = pixels[sorting_indices]
+
+    # Split the pixels list into <colours> buckets and compute the average of each bucket
+    buckets = np.array_split(pixels_sorted, colours)
+    bucket_averages = [(int(np.average(bucket['b'])),
+                        int(np.average(bucket['g'])),
+                        int(np.average(bucket['r']))) for bucket in buckets]
+
+    # Assign the averages to the pixels contained in the buckets
+    left_index = 0
+    right_index = len(buckets[0])
+    for i in range(len(buckets)):
+        pixels_sorted[left_index: right_index] = bucket_averages[i]
+        left_index = right_index
+        if i + 1 < len(buckets):
+            right_index += len(buckets[i + 1])
+
+    # Reshape and return the quantized image
+    pixels_sorted = structured_to_unstructured(pixels_sorted)
+    pixels = pixels_sorted[np.argsort(sorting_indices)]
+    quantized = np.reshape(pixels, (image.shape[:2] + (3,)))
+
+    return [quantized]
+
 def pixelate_ral(image, extra_inputs, parameters):
     """ A modified version of the pixelate operation, used for converting images
     into a version suitable for mosaicing. The colour representation used is a
@@ -520,3 +577,29 @@ def pixelate_ral(image, extra_inputs, parameters):
     # TODO - If image has rests on both axes, then the intersection of the rests will be left out
 
     return [pixelated_image, grid_image]
+
+def cross_stitch(image, extra_inputs, parameters):
+    """ Performs color quantization in the input image and generates a template used for cross-stitching.
+
+    Arguments:
+        *image* (NumPy array) -- the image to be pixelated
+
+        *extra_inputs* (dictionary) -- a dictionary holding any extra inputs for the call (empty)
+
+        *parameters* (dictionary) -- a dictionary containing following keys:
+
+            *maximum_Height* (int) -- the maximum number of points that the cross-stitch will have on each column
+
+            *maximum_Width* (int) -- the maximum number of points that the cross-stitch will have on each line
+
+            *colours* (int, optional) -- the number of colours that the cross-stitch will contain; default value is 20
+
+    Returns:
+        list of NumPy array uint8 -- list containing the quantized image and the cross-stitch template
+    """
+    # Compute m = max(h / H, w / W)
+    # Compute resizing dimensions as r_h = h / m and r_w = w / m
+    # Resize the input image to the resizing dimensions
+    # Quantize the resized image in <colours> colours
+    # Create the template
+    pass
