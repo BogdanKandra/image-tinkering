@@ -1,16 +1,11 @@
 import cv2
-import os
 import numpy as np
-import filtering.spatial as f
-import filtering.helpers as h
-import miscellaneous.lego as lego
 import random
 import math
-import time
-import utils
+
 
 def generate_voronoi_diagram(width, height, cells_count):
-    ''' better set indexing and minimum hypot pre calc '''
+    """ better set indexing and minimum hypot pre calc """
     seeds_x_coords, seeds_y_coords, seeds_r_colours, seeds_g_colours, seeds_b_colours = [], [], [], [], []
 
     for i in range(cells_count):
@@ -40,31 +35,32 @@ def generate_voronoi_diagram(width, height, cells_count):
 
     return voronoi
 
+
 def point_is_on_frontier(point, cell_points):
-    ''' Takes a point as an argument (as an (x, y) tuple) and decides whether the point is on the
+    """ Takes a point as an argument (as an (x, y) tuple) and decides whether the point is on the
     edge of the given cell or not; this is done by checking whether any of the surrounding points
     are still in the cell or not. The cell is specified by a list of points in the form of (x, y)
-    tuples '''
-    if (point[0] + 1, point[1]) not in cell_points or (point[0], point[1] + 1) not in cell_points\
-    or (point[0] - 1, point[1]) not in cell_points or (point[0], point[1] - 1) not in cell_points:
+    tuples """
+    if (point[0] + 1, point[1]) not in cell_points or (point[0], point[1] + 1) not in cell_points \
+            or (point[0] - 1, point[1]) not in cell_points or (point[0], point[1] - 1) not in cell_points:
         return True
     else:
         return False
 
 
 ##### Kintsugi Filter test -- brute force detection, very slow
-#width = 300
-#height = 300
-#num_cells = 15
+# width = 300
+# height = 300
+# num_cells = 15
 #
-#image = Image.new("RGB", (width, height))
-#imgx, imgy = image.size
-#nx, ny, nr, ng, nb = [], [], [], [], []
+# image = Image.new("RGB", (width, height))
+# imgx, imgy = image.size
+# nx, ny, nr, ng, nb = [], [], [], [], []
 #
-#points = {}
+# points = {}
 #
 ## Initialisation
-#for i in range(num_cells):
+# for i in range(num_cells):
 #    nx.append(random.randrange(imgx))
 #    ny.append(random.randrange(imgy))
 #    nr.append(random.randrange(256))
@@ -73,7 +69,7 @@ def point_is_on_frontier(point, cell_points):
 #    points[i] = []
 #
 ## Voronoi Diagram creation and building the points dictionary
-#for y in range(imgy):
+# for y in range(imgy):
 #    for x in range(imgx):
 #        dmin = math.hypot(imgx-1, imgy-1) # Initialise with maximum distance
 #        j = -1
@@ -89,32 +85,22 @@ def point_is_on_frontier(point, cell_points):
 #        image.putpixel((x, y), (nr[j], ng[j], nb[j]))
 #
 ## Detecting the points on edges
-#cells = [(i, len(points[i])) for i in range(num_cells)]
-#cells.sort(key=lambda x: x[1])
+# cells = [(i, len(points[i])) for i in range(num_cells)]
+# cells.sort(key=lambda x: x[1])
 #
-#edge_points = {}
-#for i in range(num_cells):
+# edge_points = {}
+# for i in range(num_cells):
 #    edge_points[i] = []
 #
-#for i in range(num_cells):
+# for i in range(num_cells):
 #    print('Cell #{}'.format(str(i)))
 #    for point in points[i]:
 #        if point_is_on_frontier(point, points[i]):
 #            image.putpixel(point, (0, 0, 0))
 #            edge_points[i].append(point)
 #
-#image.show()
+# image.show()
 
 
-
-##### Stained Glass Overlay test -- blending Voronoi Diagram with input image
-#image_path = '../webui/static/testinputs/ileana.jpg'
-#image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-#image_height, image_width = image.shape[:2]
-#
-#start = time.time()
-#voronoi = generate_voronoi_diagram(image_width, image_height, 15)
-#end = time.time()
-#print(end - start)
-#
-#cv2.imwrite('VorScale.png', voronoi)
+image_path = '../webui/static/testinputs/puiucul.jpg'
+img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
