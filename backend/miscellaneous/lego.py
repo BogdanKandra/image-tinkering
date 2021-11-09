@@ -400,39 +400,66 @@ def quantize(image, extra_inputs, parameters):
     else:
         colours = 256
 
-    # Determine the channel having the greatest range
-    range_b = np.amax(image[:, :, 0]) - np.amin(image[:, :, 0])
-    range_g = np.amax(image[:, :, 1]) - np.amin(image[:, :, 1])
-    range_r = np.amax(image[:, :, 2]) - np.amin(image[:, :, 2])
-    greatest_range_index = np.argmax([range_b, range_g, range_r])
+    if utils.is_color(image):
+        # Remove the alpha channel, if present
+        if image.shape[2] == 4:
+            image = image[:, :, :3]
 
-    # Sort the image pixels according to that channel's values
-    pixels = np.reshape(image, (-1, 3))
-    pixels = unstructured_to_structured(pixels, np.dtype([('b', int), ('g', int), ('r', int)]))
-    sorting_indices = np.argsort(pixels, order='bgr'[greatest_range_index])
-    pixels_sorted = pixels[sorting_indices]
+        # Determine the channel having the greatest range
+        range_b = np.amax(image[:, :, 0]) - np.amin(image[:, :, 0])
+        range_g = np.amax(image[:, :, 1]) - np.amin(image[:, :, 1])
+        range_r = np.amax(image[:, :, 2]) - np.amin(image[:, :, 2])
+        greatest_range_index = np.argmax([range_b, range_g, range_r])
 
-    # Split the pixels list into <colours> buckets and compute the average of each bucket
-    buckets = np.array_split(pixels_sorted, colours)
-    bucket_averages = [(int(np.average(bucket['b'])),
-                        int(np.average(bucket['g'])),
-                        int(np.average(bucket['r']))) for bucket in buckets]
+        # Sort the image pixels according to that channel's values
+        pixels = np.reshape(image, (-1, 3))
+        pixels = unstructured_to_structured(pixels, np.dtype([('b', int), ('g', int), ('r', int)]))
+        sorting_indices = np.argsort(pixels, order='bgr'[greatest_range_index])
+        pixels_sorted = pixels[sorting_indices]
 
-    # Assign the averages to the pixels contained in the buckets
-    left_index = 0
-    right_index = len(buckets[0])
-    for i in range(len(buckets)):
-        pixels_sorted[left_index: right_index] = bucket_averages[i]
-        left_index = right_index
-        if i + 1 < len(buckets):
-            right_index += len(buckets[i + 1])
+        # Split the pixels list into <colours> buckets and compute the average of each bucket
+        buckets = np.array_split(pixels_sorted, colours)
+        bucket_averages = [(int(np.average(bucket['b'])),
+                            int(np.average(bucket['g'])),
+                            int(np.average(bucket['r']))) for bucket in buckets]
 
-    # Reshape and return the quantized image
-    pixels_sorted = structured_to_unstructured(pixels_sorted)
-    pixels = pixels_sorted[np.argsort(sorting_indices)]
-    quantized = np.reshape(pixels, (image.shape[:2] + (3,)))
+        # Assign the averages to the pixels contained in the buckets
+        left_index = 0
+        right_index = len(buckets[0])
+        for i in range(len(buckets)):
+            pixels_sorted[left_index: right_index] = bucket_averages[i]
+            left_index = right_index
+            if i + 1 < len(buckets):
+                right_index += len(buckets[i + 1])
 
-    return [quantized]
+        # Reshape and return the quantized image
+        pixels_sorted = structured_to_unstructured(pixels_sorted)
+        pixels = pixels_sorted[np.argsort(sorting_indices)]
+        quantized_image = np.reshape(pixels, image.shape)
+    else:
+        # Sort the image pixels
+        pixels = np.ravel(image)
+        sorting_indices = np.argsort(pixels)
+        pixels_sorted = pixels[sorting_indices]
+
+        # Split the pixels list into <colours> buckets and compute the average of each bucket
+        buckets = np.array_split(pixels_sorted, colours)
+        bucket_averages = [int(np.average(bucket)) for bucket in buckets]
+
+        # Assign the averages to the pixels contained in the buckets
+        left_index = 0
+        right_index = len(buckets[0])
+        for i in range(len(buckets)):
+            pixels_sorted[left_index: right_index] = bucket_averages[i]
+            left_index = right_index
+            if i + 1 < len(buckets):
+                right_index += len(buckets[i + 1])
+
+        # Reshape and return the quantized image
+        pixels = pixels_sorted[np.argsort(sorting_indices)]
+        quantized_image = np.reshape(pixels, image.shape)
+
+    return [quantized_image]
 
 def pixelate_ral(image, extra_inputs, parameters):
     """ A modified version of the pixelate operation, used for converting images
@@ -600,18 +627,33 @@ def cross_stitch(image, extra_inputs, parameters):
 
         *parameters* (dictionary) -- a dictionary containing following keys:
 
-            *maximum_Height* (int) -- the maximum number of points that the cross-stitch will have on each column
+            *target_Height* (int) -- the maximum number of points that the cross-stitch will have on each column
 
-            *maximum_Width* (int) -- the maximum number of points that the cross-stitch will have on each line
+            *target_Width* (int) -- the maximum number of points that the cross-stitch will have on each line
 
             *colours* (int, optional) -- the number of colours that the cross-stitch will contain; default value is 20
 
     Returns:
         list of NumPy array uint8 -- list containing the quantized image and the cross-stitch template
     """
-    # Compute m = max(h / H, w / W)
-    # Compute resizing dimensions as r_h = h / m and r_w = w / m
-    # Resize the input image to the resizing dimensions
-    # Quantize the resized image in <colours> colours
-    # Create the template
-    pass
+    # Parameters extraction
+    target_height = parameters['target_Height']
+    target_width = parameters['target_Width']
+
+    if 'colours' in parameters:
+        colours = parameters['colours']
+    else:
+        colours = 20
+
+    # Resize the input image, keeping its original aspect ratio
+    height, width = image.shape[:2]
+    resizing_constant = max(height / target_height, width / target_width)
+    resized_height = int(height / resizing_constant)
+    resized_width = int(width / resizing_constant)
+    resized_image = utils.resize_dimension(image, resized_height, resized_width)
+
+    # Quantize the resized image
+    quantized_image = quantize(resized_image, {}, {'colours': colours})[0]
+
+    # TODO - Create the template
+    return [quantized_image]
