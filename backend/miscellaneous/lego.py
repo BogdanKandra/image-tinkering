@@ -102,7 +102,8 @@ def build_mosaic(image, texture, technique, alpha, resolution, redundancy):
     block_averages = np.zeros((1, 3))
     for line in range(mosaic_lines):
         for column in range(mosaic_columns):
-            block = image[line * tiles_height: (line + 1) * tiles_height, column * tiles_width: (column + 1) * tiles_width]
+            block = image[line * tiles_height: (line + 1) * tiles_height,
+                          column * tiles_width: (column + 1) * tiles_width]
             block_averages[0] = np.array((np.mean(block[:, :, 0]), np.mean(block[:, :, 1]), np.mean(block[:, :, 2])))
             distances = cdist(block_averages, tiles_averages)
 
@@ -113,8 +114,10 @@ def build_mosaic(image, texture, technique, alpha, resolution, redundancy):
                 closest_tile_index = get_closest_usable_tile_index(distances, tile_usage_grid, line, column)
 
             closest_tile_name = tiles_averages_keys[closest_tile_index]
-            closest_tile = cv2.imread(os.path.join(database_path, texture + '_' + resolution, closest_tile_name), cv2.IMREAD_UNCHANGED)
-            mosaic_image[line * tiles_height: (line + 1) * tiles_height, column * tiles_width: (column + 1) * tiles_width] = closest_tile
+            closest_tile_path = os.path.join(database_path, texture + '_' + resolution, closest_tile_name)
+            closest_tile = cv2.imread(closest_tile_path, cv2.IMREAD_UNCHANGED)
+            mosaic_image[line * tiles_height: (line + 1) * tiles_height,
+                         column * tiles_width: (column + 1) * tiles_width] = closest_tile
             tile_usage_grid[line][column] = closest_tile_index
 
     if technique == 'alternative':
@@ -351,7 +354,8 @@ def pixelate(image, extra_inputs, parameters):
     if utils.is_color(image):
         channels_count = image.shape[2]
         pixel_tile = np.zeros((resolution, resolution, channels_count))
-        pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution, channels_count), dtype=np.uint8)
+        pixelated_image = np.zeros((lines_count * resolution,
+                                    columns_count * resolution, channels_count), dtype=np.uint8)
     else:
         pixel_tile = np.zeros((resolution, resolution))
         pixelated_image = np.zeros((lines_count * resolution, columns_count * resolution), dtype=np.uint8)
@@ -369,7 +373,8 @@ def pixelate(image, extra_inputs, parameters):
             else:
                 pixel_tile = int(round(np.mean(block)))
 
-            pixelated_image[line * resolution: (line + 1) * resolution, column * resolution: (column + 1) * resolution] = pixel_tile
+            pixelated_image[line * resolution: (line + 1) * resolution,
+                            column * resolution: (column + 1) * resolution] = pixel_tile
 
     return [pixelated_image]
 
@@ -468,14 +473,18 @@ def pixelate_ral(image, extra_inputs, parameters):
         channels_count = image.shape[2]
         pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
         grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
-        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
-        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
+        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor,
+                                    columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
+        grid_image = np.zeros((lines_count * resolution * upscaling_factor,
+                               columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
         colours_frequencies = {}
     else:
         pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
         grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
-        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype=np.uint8)
-        grid_image = np.zeros((lines_count * resolution * upscaling_factor, columns_count * resolution * upscaling_factor), dtype=np.uint8)
+        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor,
+                                    columns_count * resolution * upscaling_factor), dtype=np.uint8)
+        grid_image = np.zeros((lines_count * resolution * upscaling_factor,
+                               columns_count * resolution * upscaling_factor), dtype=np.uint8)
 
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
@@ -517,8 +526,10 @@ def pixelate_ral(image, extra_inputs, parameters):
             else:
                 pixel_tile = int(round(np.mean(block)))
 
-            pixelated_image[line * resolution * upscaling_factor: (line + 1) * resolution * upscaling_factor, column * resolution * upscaling_factor: (column + 1) * resolution * upscaling_factor] = pixel_tile
-            grid_image[line * resolution * upscaling_factor: (line + 1) * resolution * upscaling_factor, column * resolution * upscaling_factor: (column + 1) * resolution * upscaling_factor] = grid_tile
+            pixelated_image[line * resolution * upscaling_factor: (line + 1) * resolution * upscaling_factor,
+                            column * resolution * upscaling_factor: (column + 1) * resolution * upscaling_factor] = pixel_tile
+            grid_image[line * resolution * upscaling_factor: (line + 1) * resolution * upscaling_factor,
+                       column * resolution * upscaling_factor: (column + 1) * resolution * upscaling_factor] = grid_tile
 
     # Write colour usage information into a file
     tempdata_path = os.path.join(project_path, 'webui', 'static', 'tempdata')
@@ -561,7 +572,8 @@ def pixelate_ral(image, extra_inputs, parameters):
             a4_image = np.zeros((resolution * upscaling_factor * 9, resolution * upscaling_factor * 7, channels_count))
             a4_image[:, : rest.shape[1]] = rest
 
-            cv2.imwrite(os.path.join(tempdata_path, 'rest_horizontal_' + str(horizontal_rest_counter) + '.jpg'), a4_image)
+            horizontal_rest_path = os.path.join(tempdata_path, 'rest_horizontal_' + str(horizontal_rest_counter) + '.jpg')
+            cv2.imwrite(horizontal_rest_path, a4_image)
             horizontal_rest_counter += 1
 
     if end_of_vertical_sheets != grid_image.shape[0]:
