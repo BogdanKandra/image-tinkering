@@ -102,5 +102,92 @@ def point_is_on_frontier(point, cell_points):
 # image.show()
 
 
-image_path = '../webui/static/testinputs/puiucul.jpg'
+image_path = '../webui/static/testinputs/alpha.png'
 img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+col = 2
+h = 300
+w = 200
+from numpy.lib.recfunctions import structured_to_unstructured, unstructured_to_structured
+from backend import utils
+
+def quantize(image, colours):
+    if utils.is_color(image):
+        # Remove the alpha channel, if present
+        if image.shape[2] == 4:
+            image = image[:, :, :3]
+
+        # Determine the channel having the greatest range
+        range_b = np.amax(image[:, :, 0]) - np.amin(image[:, :, 0])
+        range_g = np.amax(image[:, :, 1]) - np.amin(image[:, :, 1])
+        range_r = np.amax(image[:, :, 2]) - np.amin(image[:, :, 2])
+        greatest_range_index = np.argmax([range_b, range_g, range_r])
+
+        # Sort the image pixels according to that channel's values
+        pixels = np.reshape(image, (-1, 3))
+        pixels = unstructured_to_structured(pixels, np.dtype([('b', int), ('g', int), ('r', int)]))
+        sorting_indices = np.argsort(pixels, order='bgr'[greatest_range_index])
+        pixels_sorted = pixels[sorting_indices]
+
+        # Split the pixels list into <colours> buckets and compute the average of each bucket
+        buckets = np.array_split(pixels_sorted, colours)
+        bucket_averages = [(int(np.average(bucket['b'])),
+                            int(np.average(bucket['g'])),
+                            int(np.average(bucket['r']))) for bucket in buckets]
+
+        # Assign the averages to the pixels contained in the buckets
+        left_index = 0
+        right_index = len(buckets[0])
+        for i in range(len(buckets)):
+            pixels_sorted[left_index: right_index] = bucket_averages[i]
+            left_index = right_index
+            if i + 1 < len(buckets):
+                right_index += len(buckets[i + 1])
+
+        # Reshape and return the quantized image
+        pixels_sorted = structured_to_unstructured(pixels_sorted)
+        pixels = pixels_sorted[np.argsort(sorting_indices)]
+        quantized_image = np.reshape(pixels, image.shape)
+    else:
+        # Sort the image pixels
+        pixels = np.ravel(image)
+        sorting_indices = np.argsort(pixels)
+        pixels_sorted = pixels[sorting_indices]
+
+        # Split the pixels list into <colours> buckets and compute the average of each bucket
+        buckets = np.array_split(pixels_sorted, colours)
+        bucket_averages = [int(np.average(bucket)) for bucket in buckets]
+
+        # Assign the averages to the pixels contained in the buckets
+        left_index = 0
+        right_index = len(buckets[0])
+        for i in range(len(buckets)):
+            pixels_sorted[left_index: right_index] = bucket_averages[i]
+            left_index = right_index
+            if i + 1 < len(buckets):
+                right_index += len(buckets[i + 1])
+
+        # Reshape and return the quantized image
+        pixels = pixels_sorted[np.argsort(sorting_indices)]
+        quantized_image = np.reshape(pixels, image.shape)
+
+    return quantized_image
+
+def cross_stitch(image, target_height, target_width, colours):
+    # Resize the input image, keeping its original aspect ratio
+    height, width = image.shape[:2]
+    resizing_constant = max(height / target_height, width / target_width)
+    resized_height = int(height / resizing_constant)
+    resized_width = int(width / resizing_constant)
+    resized_image = utils.resize_dimension(image, resized_height, resized_width)
+
+    # Quantize the resized image
+    quantized_image = quantize(resized_image, colours)
+
+    # TODO - Create the template
+    # Create a white image having the same size as the quantized image
+    # Create a list of symbols to replace colours with
+    # Replace each colour of the quantized_image with a symbol
+    # Write each symbol
+    return quantized_image
+
+result = cross_stitch(img, h, w, col)
