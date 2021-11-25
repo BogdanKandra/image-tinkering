@@ -3,14 +3,17 @@ Created on Wed Oct 30 16:57:19 2019
 
 @author: Bogdan
 """
+import copy
 import json
 import os
 import pickle
 import sys
+import cv2
 import numpy as np
 from numpy.lib.recfunctions import structured_to_unstructured, unstructured_to_structured
-import cv2
+from PIL import Image, ImageFont, ImageDraw
 from scipy.spatial.distance import cdist
+
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
     project_path = os.path.dirname(project_path)
@@ -28,8 +31,8 @@ def get_closest_usable_tile_index(distances, tile_usage_grid, line, column):
         closest_tile_index = np.argwhere(distances == np.min(distances))[0][-1]
         found = True
 
-        for i in range(line-1, line+1):
-            for j in range(column-1, column+2):
+        for i in range(line - 1, line + 1):
+            for j in range(column - 1, column + 2):
                 if 0 <= i < grid_height and 0 <= j < grid_width and \
                         (i != line or j < column) and \
                         tile_usage_grid[i][j] == closest_tile_index:
@@ -41,6 +44,7 @@ def get_closest_usable_tile_index(distances, tile_usage_grid, line, column):
 
         if found:
             return closest_tile_index
+
 
 def get_closest_ral_colour(rgb_list):
     """ Function takes a standard RGB colour as argument, computes the closest
@@ -64,6 +68,7 @@ def get_closest_ral_colour(rgb_list):
         closest_ral_key = ral_mappings_keys[closest_ral_index]
 
     return closest_ral_key, ral_mappings[closest_ral_key]
+
 
 def build_mosaic(image, texture, technique, alpha, resolution, redundancy):
     """ Helper function which actually builds the mosaic """
@@ -126,6 +131,218 @@ def build_mosaic(image, texture, technique, alpha, resolution, redundancy):
         mosaic_image = image_copy * (1 - alpha) + mosaic_image * alpha
 
     return mosaic_image
+
+
+def _generate_grid_and_legend(image):
+    tile_size = 20  # Controls the size of a grid tile
+    symbols = [u'\u25A0', u'\u25A1', u'\u25B2', u'\u25B3', u'\u25B6', u'\u25B7', u'\u1401', u'\u25C6',
+               u'\u25C7', u'\u25CF', u'\u25CB', u'\u2605', u'\u2606', u'\u262E', u'\u262F', u'\u2660',
+               u'\u2663', u'\u2665', u'\u229E', u'\u22A0', u'\u2A01', u'\u2A02', u'\u2212', u'\u2223',
+               u'\u2215', u'\u002B', u'\u003E', u'\u003D', u'\u0023', u'\u0024', u'\u20A4', u'\u20AC',
+               u'\u0025', u'\u0026', u'\u2217', u'\u0040', u'\u2200', u'\u2203', u'\u2211', u'\u220F',
+               u'\u03A8', u'\u03A9', u'\u00A4', u'\u03DE', u'\u1455', u'\u22C0', u'\u222B', u'\u22C8',
+               u'\u25D0', u'\u25D1', u'\u25D2', u'\u25D3', u'\u25D4', u'\u25D5', u'\u25D6', u'\u25D7',
+               u'\u265A', u'\u265B', u'\u265C', u'\u265D', u'\u265E', u'\u265F', u'\u2690', u'\u2691']
+
+    image_height, image_width = image.shape[:2]
+    grid_image = np.full((tile_size * image_height,
+                          tile_size * image_width), fill_value=255, dtype=np.uint8)
+    grid_tile = np.empty((tile_size, tile_size), dtype=np.uint8)
+
+    # Configure the text to be used for writing the template grid
+    font_path = os.path.join(project_path, 'webui', 'static', 'fonts', 'DejaVuSans.ttf')
+    font = ImageFont.truetype(font_path, 14)
+
+    # Create correspondence between the image colours and symbols used in the grid
+    image_colours = np.unique(image.reshape((-1, 3)), axis=0)
+    colours_to_symbols = {}
+
+    for index, colour in enumerate(image_colours):
+        colours_to_symbols[tuple(colour)] = symbols[index]
+
+    # For each pixel of the quantized image, generate a tile in the grid image
+    for i in range(image_height):
+        for j in range(image_width):
+            # Set a 1-pixel black border around the grid tile
+            grid_tile[:, :] = 255
+            grid_tile[0, :] = 0
+            grid_tile[-1, :] = 0
+            grid_tile[:, 0] = 0
+            grid_tile[:, -1] = 0
+
+            # Write the symbol in the center of the tile
+            symbol = colours_to_symbols[tuple(image[i, j, :])]
+            grid_tile_pil = Image.fromarray(grid_tile)
+            drawer = ImageDraw.Draw(grid_tile_pil)
+            text_size = drawer.textsize(symbol, font=font)
+            text_x = (tile_size - text_size[0]) // 2 + 1
+            text_y = (tile_size - text_size[1]) // 2 - 1
+            drawer.text((text_x, text_y), text=symbol, fill=0, font=font)
+
+            # Store the tile in the grid
+            grid_tile = np.array(grid_tile_pil)
+            grid_image[i * tile_size: (i + 1) * tile_size,
+                       j * tile_size: (j + 1) * tile_size] = grid_tile
+
+    # Split the grid image into subimages for printing
+    tempdata_path = os.path.join(project_path, 'webui', 'static', 'tempdata')
+    grid_height, grid_width = grid_image.shape[:2]
+    sheet_counter = 1
+    subimages_dict = {}
+
+    # Decide how the grid image will be split
+    if image_height > image_width:  # Split into 3 x 2
+        subimages_width = 2
+        subimages_height = 3
+    elif image_height < image_width:  # Split into 2 x 3
+        subimages_width = 3
+        subimages_height = 2
+    else:  # Split into 3 x 3
+        subimages_width = 3
+        subimages_height = 3
+
+    # Set the step as the closest multiple of the tile size * 10, so the subimages will finish at multiples of 10
+    step_x = round((grid_width // subimages_width // tile_size) / 10) * tile_size * 10
+    step_y = round((grid_height // subimages_height // tile_size) / 10) * tile_size * 10
+
+    for top_index in range(0, grid_height, step_y):
+        bottom_index = top_index + step_y
+
+        for left_index in range(0, grid_width, step_x):
+            right_index = left_index + step_x
+
+            subimage = grid_image[top_index: bottom_index, left_index: right_index]
+            subimages_dict[sheet_counter] = copy.copy(subimage)
+            sheet_counter += 1
+
+    # Write line and column counters on the grid subimages
+    font = ImageFont.truetype(font_path, 10)
+    line_number = 0
+    column_number = 0
+    sheet_counter = 1
+
+    for _ in range(subimages_height):
+        for _ in range(subimages_width):
+            subimage = subimages_dict[sheet_counter]
+            numbered_subimage = np.full((tile_size + subimage.shape[0],
+                                         tile_size + subimage.shape[1]), fill_value=255, dtype=np.uint8)
+            numbered_subimage[tile_size:, tile_size:] = subimage
+
+            for i in range(line_number, line_number + (subimage.shape[0] // tile_size), 10):
+                # Write the number in the center of the tile
+                grid_tile[:, :] = 255
+                grid_tile_pil = Image.fromarray(grid_tile)
+                drawer = ImageDraw.Draw(grid_tile_pil)
+                text_size = drawer.textsize(str(i), font=font)
+                text_x = (tile_size - text_size[0]) // 2 + 1
+                text_y = (tile_size - text_size[1]) // 2 - 1
+                drawer.text((text_x, text_y), text=str(i), fill=0, font=font)
+
+                # Store the tile in the grid
+                grid_tile = np.array(grid_tile_pil)
+                numbered_subimage[(i - line_number) * tile_size: (i + 1 - line_number) * tile_size,
+                                  0: tile_size] = grid_tile
+
+            for j in range(column_number, column_number + (subimage.shape[1] // tile_size), 10):
+                # Write the number in the center of the tile
+                grid_tile[:, :] = 255
+                grid_tile_pil = Image.fromarray(grid_tile)
+                drawer = ImageDraw.Draw(grid_tile_pil)
+                text_size = drawer.textsize(str(j), font=font)
+                text_x = (tile_size - text_size[0]) // 2 + 1
+                text_y = (tile_size - text_size[1]) // 2 - 1
+                drawer.text((text_x, text_y), text=str(j), fill=0, font=font)
+
+                # Store the tile in the grid
+                grid_tile = np.array(grid_tile_pil)
+                numbered_subimage[0: tile_size,
+                                  (j - column_number) * tile_size: (j + 1 - column_number) * tile_size] = grid_tile
+
+            column_number += subimage.shape[1] // tile_size
+            subimages_dict[sheet_counter] = copy.copy(numbered_subimage)
+            cv2.imwrite(os.path.join(tempdata_path, 'sheet_' + str(sheet_counter) + '.jpg'), numbered_subimage)
+            sheet_counter += 1
+
+        line_number += subimage.shape[0] // tile_size
+        column_number = 0
+
+    # Generate image containing sheet numbering and colours to symbols
+    # The image will be 1485 x 1050 pixels, a multiple of A4 format
+    legend_image = np.full((1485, 1050, 3), fill_value=255, dtype=np.uint8)
+    diagram_tile = np.full((80, 60, 3), fill_value=255, dtype=np.uint8)
+    colour_tile = np.full((30, 200, 3), fill_value=255, dtype=np.uint8)
+    symbol_tile = np.full((30, 30, 3), fill_value=255, dtype=np.uint8)
+    sheet_counter = 1
+    font = ImageFont.truetype(font_path, 14)
+
+    # Write the cross-stitch diagram
+    legend_image_pil = Image.fromarray(legend_image)
+    drawer = ImageDraw.Draw(legend_image_pil)
+    drawer.text((30, 30), text='DIAGRAMĂ GOBLEN', fill=0, font=font)
+    legend_image = np.array(legend_image_pil)
+
+    for i in range(subimages_height):
+        for j in range(subimages_width):
+            diagram_tile[:, :, :] = 255
+            diagram_tile[0, :, :] = 0
+            diagram_tile[-1, :, :] = 0
+            diagram_tile[:, 0, :] = 0
+            diagram_tile[:, -1, :] = 0
+
+            diagram_tile_pil = Image.fromarray(diagram_tile)
+            drawer = ImageDraw.Draw(diagram_tile_pil)
+            drawer.text((10, 10), text=str(sheet_counter), fill=0, font=font)
+            diagram_tile = np.array(diagram_tile_pil)
+
+            legend_image[50 + i * diagram_tile.shape[0]: 50 + (i + 1) * diagram_tile.shape[0],
+                         30 + j * diagram_tile.shape[1]: 30 + (j + 1) * diagram_tile.shape[1]] = diagram_tile
+
+            sheet_counter += 1
+
+    # Write the colours-to-symbols legend
+    vertical_index = 100 + subimages_height * diagram_tile.shape[0]
+    legend_image_pil = Image.fromarray(legend_image)
+    drawer = ImageDraw.Draw(legend_image_pil)
+    drawer.text((30, vertical_index), text='LEGENDĂ CULORI', fill=0, font=font)
+    legend_image = np.array(legend_image_pil)
+
+    entry_index = 1
+    vertical_index = 100 + subimages_height * diagram_tile.shape[0]
+    font = ImageFont.truetype(font_path, 18)
+
+    for colour, symbol in colours_to_symbols.items():
+        colour_tile[:, :, :] = colour
+        colour_tile[0, :, :] = 0
+        colour_tile[-1, :, :] = 0
+        colour_tile[:, 0, :] = 0
+        colour_tile[:, -1, :] = 0
+
+        symbol_tile[:, :, :] = 255
+        symbol_tile[0, :, :] = 0
+        symbol_tile[-1, :, :] = 0
+        symbol_tile[:, 0, :] = 0
+        symbol_tile[:, -1, :] = 0
+
+        symbol_tile_pil = Image.fromarray(symbol_tile)
+        drawer = ImageDraw.Draw(symbol_tile_pil)
+        text_size = drawer.textsize(symbol, font=font)
+        text_x = (symbol_tile.shape[0] - text_size[0]) // 2
+        text_y = (symbol_tile.shape[1] - text_size[1]) // 2 - 2
+        drawer.text((text_x, text_y), text=symbol, fill=0, font=font)
+        symbol_tile = np.array(symbol_tile_pil)
+
+        legend_image[vertical_index + entry_index * symbol_tile.shape[0]:
+                     vertical_index + (entry_index + 1) * symbol_tile.shape[0],
+                     30: 30 + symbol_tile.shape[1]] = symbol_tile
+        legend_image[vertical_index + entry_index * symbol_tile.shape[0]:
+                     vertical_index + (entry_index + 1) * symbol_tile.shape[0],
+                     40 + symbol_tile.shape[1]: 40 + symbol_tile.shape[1] + colour_tile.shape[1]] = colour_tile
+
+        entry_index += 1
+        vertical_index += 10
+
+    return grid_image, legend_image
+
 
 def ascii_art(image, extra_inputs, parameters):
     """ Applies an **ASCII Art Filter** onto an image. \n
@@ -217,6 +434,7 @@ def ascii_art(image, extra_inputs, parameters):
 
     return [ascii_image]
 
+
 def photomosaic(image, extra_inputs, parameters):
     """ Builds a photomosaic which approximates the given image, using the
     database image tiles.
@@ -258,7 +476,7 @@ def photomosaic(image, extra_inputs, parameters):
         technique = parameters['technique']
     else:
         technique = 'original'
-    
+
     if 'texture' in parameters:
         texture = parameters['texture']
     else:
@@ -304,6 +522,7 @@ def photomosaic(image, extra_inputs, parameters):
     mosaic_image = build_mosaic(image, texture, technique, alpha, resolution, redundancy)
 
     return [mosaic_image]
+
 
 def pixelate(image, extra_inputs, parameters):
     """ Uses a form of downscaling in order to achieve an 8-bit-like filter
@@ -377,6 +596,7 @@ def pixelate(image, extra_inputs, parameters):
                             column * resolution: (column + 1) * resolution] = pixel_tile
 
     return [pixelated_image]
+
 
 def quantize(image, extra_inputs, parameters):
     """ Quantizes the colours from an image, using a modified version of the Median Cut algorithm.
@@ -461,6 +681,7 @@ def quantize(image, extra_inputs, parameters):
 
     return [quantized_image]
 
+
 def pixelate_ral(image, extra_inputs, parameters):
     """ A modified version of the pixelate operation, used for converting images
     into a version suitable for mosaicing. The colour representation used is a
@@ -482,15 +703,15 @@ def pixelate_ral(image, extra_inputs, parameters):
     tile_size = 3
     mosaic_width = 190
     mosaic_height = 250
+    mosaic_lines_count = mosaic_height // tile_size
+    mosaic_columns_count = mosaic_width // tile_size
 
+    # Compute how many pixels will each block contain
     image_height, image_width = image.shape[:2]
-    lines_count = mosaic_height // tile_size
-    columns_count = mosaic_width // tile_size
+    block_width = image_width // mosaic_columns_count
+    block_height = image_height // mosaic_lines_count
 
-    assert image_height // lines_count == image_width // columns_count
-    resolution = image_height // lines_count
-
-    # Configure the text to be used for writing
+    # Configure the text to be used for writing the template grid
     font_face = cv2.FONT_HERSHEY_DUPLEX
     font_scale = 0.6
     thickness = 1
@@ -498,29 +719,29 @@ def pixelate_ral(image, extra_inputs, parameters):
 
     if utils.is_color(image):
         channels_count = image.shape[2]
-        pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
-        grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor, channels_count))
-        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor,
-                                    columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
-        grid_image = np.zeros((lines_count * resolution * upscaling_factor,
-                               columns_count * resolution * upscaling_factor, channels_count), dtype=np.uint8)
+        pixel_tile = np.zeros((block_height * upscaling_factor, block_width * upscaling_factor, channels_count))
+        grid_tile = np.zeros((block_height * upscaling_factor, block_width * upscaling_factor, channels_count))
+        pixelated_image = np.zeros((image_height * upscaling_factor,
+                                    image_width * upscaling_factor, channels_count), dtype=np.uint8)
+        grid_image = np.zeros((image_height * upscaling_factor,
+                               image_width * upscaling_factor, channels_count), dtype=np.uint8)
         colours_frequencies = {}
     else:
-        pixel_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
-        grid_tile = np.zeros((resolution * upscaling_factor, resolution * upscaling_factor))
-        pixelated_image = np.zeros((lines_count * resolution * upscaling_factor,
-                                    columns_count * resolution * upscaling_factor), dtype=np.uint8)
-        grid_image = np.zeros((lines_count * resolution * upscaling_factor,
-                               columns_count * resolution * upscaling_factor), dtype=np.uint8)
+        pixel_tile = np.zeros((block_height * upscaling_factor, block_width * upscaling_factor))
+        grid_tile = np.zeros((block_height * upscaling_factor, block_width * upscaling_factor))
+        pixelated_image = np.zeros((image_height * upscaling_factor,
+                                    image_width * upscaling_factor), dtype=np.uint8)
+        grid_image = np.zeros((image_height * upscaling_factor,
+                               image_width * upscaling_factor), dtype=np.uint8)
 
     # For each block:
     #    Compute the average r, g, b values of the block and put them in a vector
     #    Replace the current block with a tile coloured as the closest RAL colour
     #    in relation to the average vector
-    for line in range(lines_count):
-        for column in range(columns_count):
-            block = image[line * resolution: (line + 1) * resolution,
-                          column * resolution: (column + 1) * resolution]
+    for line in range(mosaic_lines_count):
+        for column in range(mosaic_columns_count):
+            block = image[line * block_height: (line + 1) * block_height,
+                          column * block_width: (column + 1) * block_width]
             if utils.is_color(image):
                 colour_used = []
                 for i in range(channels_count):
@@ -547,26 +768,26 @@ def pixelate_ral(image, extra_inputs, parameters):
 
                 # Write the colour code in the center of the tile
                 text_size = cv2.getTextSize(ral_code, font_face, font_scale, thickness)[0]
-                text_x = (resolution * upscaling_factor - text_size[0]) // 2
-                text_y = (resolution * upscaling_factor + text_size[1]) // 2
+                text_x = (block_width * upscaling_factor - text_size[0]) // 2
+                text_y = (block_height * upscaling_factor + text_size[1]) // 2
                 cv2.putText(grid_tile, ral_code, (text_x, text_y), font_face, font_scale, (0, 0, 0), thickness)
             else:
                 pixel_tile = int(round(np.mean(block)))
 
-            pixelated_image[line * resolution * upscaling_factor: (line + 1) * resolution * upscaling_factor,
-                            column * resolution * upscaling_factor: (column + 1) * resolution * upscaling_factor] = pixel_tile
-            grid_image[line * resolution * upscaling_factor: (line + 1) * resolution * upscaling_factor,
-                       column * resolution * upscaling_factor: (column + 1) * resolution * upscaling_factor] = grid_tile
+            pixelated_image[line * block_height * upscaling_factor: (line + 1) * block_height * upscaling_factor,
+                            column * block_width * upscaling_factor: (column + 1) * block_width * upscaling_factor] = pixel_tile
+            grid_image[line * block_height * upscaling_factor: (line + 1) * block_height * upscaling_factor,
+                       column * block_width * upscaling_factor: (column + 1) * block_width * upscaling_factor] = grid_tile
 
     # Write colour usage information into a file
     tempdata_path = os.path.join(project_path, 'webui', 'static', 'tempdata')
     with open(os.path.join(tempdata_path, 'ral_info.txt'), 'w') as f:
         f.write('INFORMATII MOZAIC:\n')
         f.write('==============================\n')
-        f.write('NUMAR CULORI FOLOSITE: ' + str(len(colours_frequencies)) + '\n')
-        f.write('NUMAR BUCATI FOLOSITE PE ORIZONTALA: ' + str(columns_count) + '\n')
-        f.write('NUMAR BUCATI FOLOSITE PE VERTICALA: ' + str(lines_count) + '\n')
-        f.write('NUMAR TOTAL BUCATI FOLOSITE: ' + str(lines_count * columns_count) + '\n')
+        f.write('NUMAR CULORI: ' + str(len(colours_frequencies)) + '\n')
+        f.write('NUMAR BUCATI PE ORIZONTALA: ' + str(mosaic_columns_count) + '\n')
+        f.write('NUMAR BUCATI PE VERTICALA: ' + str(mosaic_lines_count) + '\n')
+        f.write('NUMAR TOTAL BUCATI: ' + str(mosaic_lines_count * mosaic_columns_count) + '\n')
         f.write('FRECVENTE CULORI: [ID_CULOARE_RAL: NUMAR DE PIESE]\n')
         for code in colours_frequencies:
             pieces_suffix = 'PIESE'
@@ -575,39 +796,44 @@ def pixelate_ral(image, extra_inputs, parameters):
             f.write('>> ' + code + ': ' + str(colours_frequencies[code]) + ' ' + pieces_suffix + '\n')
 
     # Crop grid image into A4-sized images (size 29.7 cm x 21.0 cm) and save them to tempdata
-    a4_sheets_lines_count = lines_count // 9
-    a4_sheets_columns_count = columns_count // 7
+    a4_sheets_lines_count = mosaic_lines_count // 9
+    a4_sheets_columns_count = mosaic_columns_count // 7
     sheet_counter = 1
 
     for line in range(a4_sheets_lines_count):
         for column in range(a4_sheets_columns_count):
-            a4_image = grid_image[line * resolution * upscaling_factor * 9: (line + 1) * resolution * upscaling_factor * 9,
-                                  column * resolution * upscaling_factor * 7: (column + 1) * resolution * upscaling_factor * 7]
+            a4_image = grid_image[
+                       line * block_height * upscaling_factor * 9: (line + 1) * block_height * upscaling_factor * 9,
+                       column * block_width * upscaling_factor * 7: (column + 1) * block_width * upscaling_factor * 7]
             cv2.imwrite(os.path.join(tempdata_path, 'sheet_' + str(sheet_counter) + '.jpg'), a4_image)
             sheet_counter += 1
 
     # Separately save the remaining tiles, if any, on the horizontal and vertical
-    end_of_horizontal_sheets = a4_sheets_columns_count * resolution * upscaling_factor * 7
-    end_of_vertical_sheets = a4_sheets_lines_count * resolution * upscaling_factor * 9
+    end_of_horizontal_sheets = a4_sheets_columns_count * block_width * upscaling_factor * 7
+    end_of_vertical_sheets = a4_sheets_lines_count * block_height * upscaling_factor * 9
     horizontal_rest_counter = 1
     vertical_rest_counter = 1
 
     if end_of_horizontal_sheets != grid_image.shape[1]:
         for line in range(a4_sheets_lines_count):
-            rest = grid_image[line * resolution * upscaling_factor * 9: (line + 1) * resolution * upscaling_factor * 9,
-                              end_of_horizontal_sheets:]
-            a4_image = np.zeros((resolution * upscaling_factor * 9, resolution * upscaling_factor * 7, channels_count))
+            rest = grid_image[
+                   line * block_height * upscaling_factor * 9: (line + 1) * block_height * upscaling_factor * 9,
+                   end_of_horizontal_sheets:]
+            a4_image = np.zeros(
+                (block_height * upscaling_factor * 9, block_width * upscaling_factor * 7, channels_count))
             a4_image[:, : rest.shape[1]] = rest
 
-            horizontal_rest_path = os.path.join(tempdata_path, 'rest_horizontal_' + str(horizontal_rest_counter) + '.jpg')
+            horizontal_rest_path = os.path.join(tempdata_path,
+                                                'rest_horizontal_' + str(horizontal_rest_counter) + '.jpg')
             cv2.imwrite(horizontal_rest_path, a4_image)
             horizontal_rest_counter += 1
 
     if end_of_vertical_sheets != grid_image.shape[0]:
         for column in range(a4_sheets_columns_count):
             rest = grid_image[end_of_vertical_sheets:,
-                              column * resolution * upscaling_factor * 7: (column + 1) * resolution * upscaling_factor * 7]
-            a4_image = np.zeros((resolution * upscaling_factor * 9, resolution * upscaling_factor * 7, channels_count))
+                              column * block_width * upscaling_factor * 7: (column + 1) * block_width * upscaling_factor * 7]
+            a4_image = np.zeros(
+                (block_height * upscaling_factor * 9, block_width * upscaling_factor * 7, channels_count))
             a4_image[: rest.shape[0], :] = rest
 
             cv2.imwrite(os.path.join(tempdata_path, 'rest_vertical_' + str(vertical_rest_counter) + '.jpg'), a4_image)
@@ -616,6 +842,7 @@ def pixelate_ral(image, extra_inputs, parameters):
     # TODO - If image has rests on both axes, then the intersection of the rests will be left out
 
     return [pixelated_image, grid_image]
+
 
 def cross_stitch(image, extra_inputs, parameters):
     """ Performs color quantization in the input image and generates a template used for cross-stitching.
@@ -655,5 +882,7 @@ def cross_stitch(image, extra_inputs, parameters):
     # Quantize the resized image
     quantized_image = quantize(resized_image, {}, {'colours': colours})[0]
 
-    # TODO - Create the template
-    return [quantized_image]
+    # Generate the cross-stitch template and legent
+    grid_image, legend_image = _generate_grid_and_legend(quantized_image)
+
+    return [quantized_image, grid_image, legend_image]
