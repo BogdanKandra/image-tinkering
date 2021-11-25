@@ -6,7 +6,6 @@ Created on Thu Oct  3 19:51:06 2019
 import os
 import sys
 import numpy as np
-import cv2
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
     project_path = os.path.dirname(project_path)
@@ -15,7 +14,7 @@ from backend import utils
 
 
 def fft_watermark_embed(image, extra_inputs, parameters):
-    ''' Embeds a watermark image into a host image, using the Fast Fourier Transform
+    """ Embeds a watermark image into a host image, using the Fast Fourier Transform
 
     Arguments:
         *image* (NumPy array) -- the image to be watermarked
@@ -29,9 +28,8 @@ def fft_watermark_embed(image, extra_inputs, parameters):
             *alpha* (float) -- the embedding strength factor
 
     Returns:
-        list of NumPy array float64 -- list containing the watermarked image (float, but converted
-        to int when saved)
-    '''
+        list of NumPy array float64 -- list containing the watermarked image (float, but converted to int when saved)
+    """
     # Load the extra parameter, the watermark image
     watermark = extra_inputs['Watermark']
 
@@ -47,7 +45,7 @@ def fft_watermark_embed(image, extra_inputs, parameters):
     else:
         watermark = utils.resize_dimension(watermark, image_h, image_w)
 
-    watermark_h, watermark_w = watermark.shape[:2] # Recompute the watermark dimensions
+    watermark_h, watermark_w = watermark.shape[:2]  # Recompute the watermark dimensions
 
     # Take the FFT of the host and watermark images and center them
     image_fft = np.fft.fftshift(np.fft.fft2(image))
@@ -57,7 +55,7 @@ def fft_watermark_embed(image, extra_inputs, parameters):
     result_fft = image_fft + alpha * watermark_fft
     
     # Take its Inverse FFT and convert the resulting values into floats
-    result_image = np.fft.ifft2(np.fft.ifftshift(result_fft)) # dtype = 'complex128'
+    result_image = np.fft.ifft2(np.fft.ifftshift(result_fft))  # dtype = 'complex128'
     result_image = np.real(result_image)
 
     return result_image

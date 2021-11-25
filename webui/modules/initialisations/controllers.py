@@ -7,13 +7,11 @@ import os
 import pickle
 import sys
 import cv2
-import numpy as np
 from flask import current_app as app
 from flask.blueprints import Blueprint
 from flask.globals import request
 from flask.helpers import make_response
 from flask.json import jsonify
-from flask.templating import render_template
 # Import backend module
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':

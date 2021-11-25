@@ -370,10 +370,52 @@
       }
     ]
   },
+  "Quantize": {
+    "function": "miscellaneous.lego.quantize",
+    "type": "one-to-one",
+    "parameters": [
+      {
+        "name": "colours",
+        "type": "range",
+        "minimum": 2,
+        "maximum": 1024,
+        "default": 256,
+        "description": "The size of the colour palette used"
+      }
+    ]
+  },
   "Pixelate RAL": {
     "function": "miscellaneous.lego.pixelate_ral",
     "type": "one-to-many",
     "parameters": []
+  },
+  "Cross-Stitch": {
+    "function": "miscellaneous.lego.cross_stitch",
+    "type": "one-to-many",
+    "parameters": [
+      {
+        "name": "target_Height",
+        "type": "range",
+        "minimum": 20,
+        "maximum": 500,
+        "description": "The maximum number of points that the cross-stitch will have on each column"
+      },
+      {
+        "name": "target_Width",
+        "type": "range",
+        "minimum": 20,
+        "maximum": 500,
+        "description": "The maximum number of points that the cross-stitch will have on each line"
+      },
+      {
+        "name": "colours",
+        "type": "range",
+        "minimum": 2,
+        "maximum": 64,
+        "default": 20,
+        "description": "The number of colours that the cross-stitch will contain"
+      }
+    ]
   },
   "Visible Watermark": {
     "function": "watermarking.spatial.visible_watermark",

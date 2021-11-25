@@ -17,7 +17,7 @@ def pixels_shuffle(channels, state):
     """ Shuffles the pixels of an image """
     # Shuffle the pixels in each channel, with the same permutation
     for channel in channels:
-        pixel_list = np.ravel(channel) # Flattens the channel matrix to an array
+        pixel_list = np.ravel(channel)  # Flattens the channel matrix to an array
         np.random.shuffle(pixel_list)
         channel = np.reshape(pixel_list, channel.shape)
         # Reset the state so that next shuffle is same permutation
@@ -28,9 +28,7 @@ def pixels_shuffle(channels, state):
     return shuffled_image
 
 def lines_shuffle(channels, state):
-    """ Shuffles the lines of an image (The pixels on each line are left
-    unchanged)
-    """
+    """ Shuffles the lines of an image (The pixels on each line are left unchanged) """
     # Shuffle the lines in each channel, with the same permutation
     for channel in channels:
         np.random.shuffle(channel)
@@ -42,9 +40,7 @@ def lines_shuffle(channels, state):
     return shuffled_image
 
 def columns_shuffle(channels, state):
-    """ Shuffles the columns of an image (The pixels on each column are left
-    unchanged)
-    """
+    """ Shuffles the columns of an image (The pixels on each column are left unchanged) """
     # Shuffle the columns in each channel, with the same permutation
     for channel in channels:
         transpose = np.transpose(channel)
@@ -102,7 +98,7 @@ def shuffle(image, extra_inputs, parameters):
             shuffled_image = lines_shuffle(channels, state)
         elif parameters['criterion'] == 'columns':
             shuffled_image = columns_shuffle(channels, state)
-        elif parameters['criterion'] == 'channels':
+        else:
             shuffled_image = channels_shuffle(channels)
     else:
         shuffled_image = channels_shuffle(channels)

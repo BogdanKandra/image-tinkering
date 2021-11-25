@@ -1,8 +1,8 @@
-'''
+"""
 Created on Fri May 17 13:10:30 2019
 
 @author: Bogdan
-'''
+"""
 import os
 from flask import current_app as app
 from flask.blueprints import Blueprint
@@ -15,8 +15,8 @@ CLEANUP_MOD = Blueprint('cleanup', __name__, url_prefix='/cleanup')
 
 @CLEANUP_MOD.route('/tempdata', methods=['POST'])
 def cleanup_tempdata():
-    ''' Deletes the resulting images (processed images and pickles)
-    for each of the given list of processed files '''
+    """ Deletes the resulting images (processed images and pickles)
+    for each of the given list of processed files """
     filenames = request.get_json()['filenames']
 
     for filename in filenames:
@@ -49,8 +49,8 @@ def cleanup_tempdata():
 
 @CLEANUP_MOD.route('/pickles', methods=['POST'])
 def cleanup_pickles():
-    ''' Deletes the pickle files which resulted after the initialisation process,
-    for each of the given keys in the data to process or list of filenames to process '''
+    """ Deletes the pickle files which resulted after the initialisation process,
+    for each of the given keys in the data to process or list of filenames to process """
     filenames = request.get_json()['filenames']
 
     for filename in filenames:
@@ -72,8 +72,8 @@ def cleanup_pickles():
 
 @CLEANUP_MOD.route('/uploads', methods=['POST'])
 def cleanup_uploads():
-    ''' Deletes uploaded images (input image and extra input images, if any),
-    for each of the given keys in the data to process or list of filenames to process '''
+    """ Deletes uploaded images (input image and extra input images, if any),
+    for each of the given keys in the data to process or list of filenames to process """
     data = request.get_json()['data']
 
     for file_name in data:
@@ -103,7 +103,7 @@ def cleanup_uploads():
 
 @CLEANUP_MOD.route('/extras', methods=['POST'])
 def cleanup_extras():
-    ''' Deletes extra input images associated to a particular input image '''
+    """ Deletes extra input images associated to a particular input image """
     image_name = request.get_json()['name']
     extra_inputs = [file for file in os.listdir(app.config['EXTRA_IMAGES_DIR'])
                     if file.startswith(image_name.split('.')[0] + '_')]

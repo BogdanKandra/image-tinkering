@@ -32,11 +32,11 @@ def process():
         operation_list = data[file_name]
         first_operation_type = operation_list[0]['type']
         file_name, extension = file_name.split('.')
-        multiple_outputs = False # Helps in deciding how to store the results
+        multiple_outputs = False  # Helps in deciding how to store the results
 
         if first_operation_type in ('one-to-one', 'many-to-one'):
             # Only one-to-one operations will follow, so operation chaining is possible
-            starting_index = 0 # Stores the starting index for chaining the operations
+            starting_index = 0  # Stores the starting index for chaining the operations
 
             # Load the extra inputs, if this is a many-to- operation
             if first_operation_type == 'many-to-one':
@@ -86,9 +86,8 @@ def process():
     return make_response(jsonify(results_names), 200)
 
 def call_module_function(*arguments):
-    """ Dynamically calls specified function from specified package and module,
-    on the given image. The three arguments of the function represent, in order:
-    the input image, any extra input images (necessary in the case of many-to-
+    """ Dynamically calls specified function from specified package and module, on the given image. The three arguments
+    of the function represent, in order: the input image, any extra input images (necessary in the case of many-to-
     operations, empty otherwise) and the parameters dictionary to be given to the call
     """
     # Unwind parameters and gather the operation details
@@ -108,7 +107,8 @@ def load_extra_inputs(file_name, extra_inputs_names):
 
     for i in range(len(extra_inputs_names)):
         extra_file_name = file_name + '_' + extra_inputs_names[i]
-        extra_file_extension = [file.split('.')[1] for file in os.listdir(app.config['EXTRA_IMAGES_DIR']) if file.startswith(extra_file_name)][0]
+        extra_file_extension = [file.split('.')[1] for file in os.listdir(app.config['EXTRA_IMAGES_DIR'])
+                                if file.startswith(extra_file_name)][0]
         extra_image_path = os.path.join(app.config['EXTRA_IMAGES_DIR'], extra_file_name + '.' + extra_file_extension)
         extra_image = cv2.imread(extra_image_path, cv2.IMREAD_UNCHANGED)
 

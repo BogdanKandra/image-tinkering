@@ -1,8 +1,8 @@
-'''
+"""
 Created on Sat May 18 16:58:05 2019
 
 @author: Bogdan
-'''
+"""
 import os
 import sys
 import cv2
@@ -16,7 +16,7 @@ from backend import utils
 
 
 def negative(image, extra_inputs={}, parameters={}):
-    '''Applies a **Negative Filter** onto an image. \n
+    """ Applies a **Negative Filter** onto an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be filtered
@@ -28,14 +28,14 @@ def negative(image, extra_inputs={}, parameters={}):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    '''
+    """
     # Negative is defined as complementary to maximum intensity value
     negative_image = 255 - image
 
     return [negative_image]
 
 def grayscale(image, extra_inputs={}, parameters={}):
-    '''Applies a **Grayscale Filter** onto an image. \n
+    """ Applies a **Grayscale Filter** onto an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be filtered
@@ -47,7 +47,7 @@ def grayscale(image, extra_inputs={}, parameters={}):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    '''
+    """
     if utils.is_grayscale(image):
         gray_image = image
     else:
@@ -57,7 +57,7 @@ def grayscale(image, extra_inputs={}, parameters={}):
     return [gray_image]
 
 def sepia(image, extra_inputs={}, parameters={}):
-    '''Applies a **Sepia Filter** onto an image. \n
+    """ Applies a **Sepia Filter** onto an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be filtered
@@ -69,7 +69,7 @@ def sepia(image, extra_inputs={}, parameters={}):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    '''
+    """
     # Apply the Sepia formulas
     if utils.is_color(image):
         result_red = image[:, :, 2] * 0.393 + image[:, :, 1] * 0.769 + image[:, :, 0] * 0.189
@@ -95,7 +95,7 @@ def sepia(image, extra_inputs={}, parameters={}):
     return [sepia_image]
 
 def binarize(image, extra_inputs={}, parameters={}):
-    ''' Binarizes an image. \n
+    """ Binarizes an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be binarized
@@ -131,7 +131,7 @@ def binarize(image, extra_inputs={}, parameters={}):
             *neighbourhood_Size* (int, optional) -- the square size of the
             neighbourhood of values to consider when computing adaptive thresholds;
             possible values are *5*, *9* and *15*; default value is 15
-    '''
+    """
     # Parameters extraction
     if utils.is_color(image):
         image = grayscale(image, {}, {})[0]
@@ -175,7 +175,7 @@ def binarize(image, extra_inputs={}, parameters={}):
     return [binary_image]
 
 def blur(image, extra_inputs, parameters):
-    '''Applies a **Blur Filter** onto an image. \n
+    """ Applies a **Blur Filter** onto an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be blurred
@@ -193,7 +193,7 @@ def blur(image, extra_inputs, parameters):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    '''
+    """
     # Parameters extraction
     if 'type' in parameters:
         kernel = parameters['type']
@@ -205,7 +205,7 @@ def blur(image, extra_inputs, parameters):
         size = 5
     elif strength == 'medium':
         size = 11
-    elif strength == 'strong':
+    else:
         size = 17
 
     if 'backend.filtering.helpers' in sys.modules:
@@ -219,7 +219,7 @@ def blur(image, extra_inputs, parameters):
     return [blurred_image]
 
 def sharpen(image, extra_inputs, parameters):
-    ''' Applies a **Sharpen Filter** onto an image \n
+    """ Applies a **Sharpen Filter** onto an image \n
 
     Arguments:
         *image* (NumPy array) -- the image to be sharpened
@@ -237,7 +237,7 @@ def sharpen(image, extra_inputs, parameters):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    '''
+    """
     if 'type' in parameters:
         kernel = parameters['type']
     else:
@@ -252,7 +252,7 @@ def sharpen(image, extra_inputs, parameters):
     details_image = cv2.subtract(image, blurred_image)
     sharpened_image = cv2.add(image, details_image)
 
-    ##### Alternative implementation using kernels
+    # Alternative implementation using kernels
     #    sharp_3x3_1 = np.array([[0, -1, 0],
     #                            [-1, 5, -1],
     #                            [0, -1, 0]])
@@ -262,7 +262,7 @@ def sharpen(image, extra_inputs, parameters):
     #    sharp_3x3_3 = np.array([[-1/8, -1/8, -1/8],
     #                            [-1/8, 2, -1/8],
     #                            [-1/8, -1/8, -1/8]])
-        # Unsharp masking kernel
+    # Unsharp masking kernel
     #    sharp_5x5 = np.array([[-0.00391, -0.01563, -0.02344, -0.01563, -0.00391],
     #                          [-0.01563, -0.06250, -0.09375, -0.06250, -0.01563],
     #                          [-0.02344, -0.09375, 1.85980, -0.09375, -0.02344],
@@ -274,7 +274,7 @@ def sharpen(image, extra_inputs, parameters):
     return [sharpened_image]
 
 def edge(image, extra_inputs, parameters):
-    '''Performs edge detection onto an image and returns the edge image. \n
+    """ Performs edge detection onto an image and returns the edge image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be filtered
@@ -297,7 +297,7 @@ def edge(image, extra_inputs, parameters):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    '''
+    """
     # Parameters extraction
     method = parameters['method']
 
@@ -337,12 +337,12 @@ def edge(image, extra_inputs, parameters):
 
         return [laplacian_image]
     else:  # The Canny Edge Algorithm is implemented
-        ### Preprocess the input image -- blurring is necessary so noise is removed
+        # Preprocess the input image -- blurring is necessary so noise is removed
         gray = grayscale(image, {}, {})[0]
         blur_kernel = helpers.generate_gaussian_kernel(3, 1)
         blurred = helpers.apply_kernel(gray, blur_kernel)
 
-        ### Image Gradient computation (Angles and Normalized Magnitudes)
+        # Image Gradient computation (Angles and Normalized Magnitudes)
         sobel_x_left = np.array([[-1, 0, 1],
                                  [-2, 0, 2],
                                  [-1, 0, 1]])
@@ -370,7 +370,7 @@ def edge(image, extra_inputs, parameters):
         if method == 'gradient':
             return [gradient_magnitude.astype(np.uint8)]
 
-        ### Non-Maximum Suppression step
+        # Non-Maximum Suppression step
         height, width = image.shape[:2]
 
         gradient_radians = np.arctan2(derivative_y, derivative_x)
@@ -403,7 +403,7 @@ def edge(image, extra_inputs, parameters):
                 elif current_angle == 90:  # 90' direction
                     same_direction_pixel_1 = gradient_magnitude[px + 1, py]
                     same_direction_pixel_2 = gradient_magnitude[px - 1, py]
-                elif current_angle == 135: # 135' direction
+                else:  # 135' direction
                     same_direction_pixel_1 = gradient_magnitude[px - 1, py - 1]
                     same_direction_pixel_2 = gradient_magnitude[px + 1, py + 1]
 
@@ -414,12 +414,12 @@ def edge(image, extra_inputs, parameters):
         if method == 'non-max suppression':
             return [suppressed.astype(np.uint8)]
 
-        ### Hysteresis-Thresholding step
+        # Hysteresis-Thresholding step
         # Thresholds are determined automatically, based on percentiles from the gradient magnitudes
         sigma = 0.33
         if count == 'standard':
             percentile = 75
-        elif count == 'many':
+        else:
             percentile = 50
 
         while True:
@@ -450,7 +450,7 @@ def edge(image, extra_inputs, parameters):
 
         for [x, y] in mask:
             try:
-                pixel_neighbourhood_maximum = thresholded[x - 1 : x + 2, y - 1 : y + 2].max()
+                pixel_neighbourhood_maximum = thresholded[x - 1: x + 2, y - 1: y + 2].max()
                 if pixel_neighbourhood_maximum == strong_intensity:
                     thresholded[x, y] = strong_intensity
                 else:
@@ -461,7 +461,7 @@ def edge(image, extra_inputs, parameters):
         return [thresholded.astype(np.uint8)]
 
 def emboss(image, extra_inputs, parameters):
-    '''Applies an **Emboss Filter** onto an image. \n
+    """ Applies an **Emboss Filter** onto an image. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be embossed
@@ -482,14 +482,14 @@ def emboss(image, extra_inputs, parameters):
             value is *normal*
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    '''
+    """
     # Parameters extraction
     direction = parameters['direction']
 
     if 'type' in parameters:
-        type = parameters['type']
+        image_type = parameters['type']
     else:
-        type = 'filter'
+        image_type = 'filter'
 
     if 'intensity' in parameters:
         intensity = parameters['intensity']
@@ -500,11 +500,11 @@ def emboss(image, extra_inputs, parameters):
         size = 3
     elif intensity == 'strong':
         size = 5
-    elif intensity == 'very strong':
+    else:
         size = 7
 
     # Generate the kernels and convolve them with input image
-    kernel_1, kernel_2 = helpers.generate_emboss_kernels(size, direction, type)
+    kernel_1, kernel_2 = helpers.generate_emboss_kernels(size, direction, image_type)
 
     temp = helpers.apply_kernel(image, kernel_1)
     embossed_image = helpers.apply_kernel(temp, kernel_2)
@@ -512,7 +512,7 @@ def emboss(image, extra_inputs, parameters):
     return [embossed_image]
 
 def sketch(image, extra_inputs, parameters):
-    '''Converts an image to a pencil sketch. \n
+    """ Converts an image to a pencil sketch. \n
 
     Arguments:
         *image* (NumPy array) -- the image to be sketchified
@@ -528,7 +528,7 @@ def sketch(image, extra_inputs, parameters):
 
     Returns:
         list of NumPy array uint8 -- list containing the filtered image
-    '''
+    """
     # Parameter extraction
     if 'pencil_Stroke_Size' in parameters:
         blur_strength = parameters['pencil_Stroke_Size']
