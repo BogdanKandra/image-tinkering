@@ -381,6 +381,13 @@
         "maximum": 1024,
         "default": 256,
         "description": "The size of the colour palette used"
+      },
+      {
+        "name": "algorithm",
+        "type": "lookup",
+        "values": ["median cut", "k-means"],
+        "default": "k-means",
+        "description": "The algorithm to be used"
       }
     ]
   },
