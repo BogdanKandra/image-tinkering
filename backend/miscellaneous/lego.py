@@ -411,12 +411,20 @@ def _median_cut(image, colours):
 
 def _k_means(image, colours):
     """ K-Means clustering applied to an image """
-    pixels = np.reshape(image, (-1, 3))
+    if utils.is_color(image):
+        # Remove the alpha channel, if present
+        if image.shape[2] == 4:
+            image = image[:, :, :3]
+
+        pixels = np.reshape(image, (-1, image.shape[2]))
+    else:
+        pixels = np.reshape(image, (image.shape[0] * image.shape[1]))
+
     kmeans_estimator = KMeans(n_clusters=colours).fit(pixels)
     labels = kmeans_estimator.labels_
     centers = kmeans_estimator.cluster_centers_
     pixels = centers[labels].astype(np.uint8)
-    quantized_image = np.reshape(pixels, image.shape[:2] + (3,))
+    quantized_image = np.reshape(pixels, image.shape)
 
     return quantized_image
 
