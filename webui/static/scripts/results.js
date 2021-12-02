@@ -42,7 +42,7 @@ function populateResultsContainer(data) {
 // Downloads the file to the 'downloads' directory of the user
 function downloadFile(path) {
 
-    let download_name = path.substring(path.lastIndexOf("/") + 1).split("_")[0] + "_processed"
+    let download_name = path.substring(path.lastIndexOf("/") + 1)
     let link = $('<a>')
     link.prop('href', path)
     link.prop('download', download_name)
