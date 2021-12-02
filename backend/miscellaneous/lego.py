@@ -13,6 +13,7 @@ import numpy as np
 from numpy.lib.recfunctions import structured_to_unstructured, unstructured_to_structured
 from PIL import Image, ImageFont, ImageDraw
 from scipy.spatial.distance import cdist
+from sklearn.cluster import KMeans
 
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
@@ -410,7 +411,14 @@ def _median_cut(image, colours):
 
 def _k_means(image, colours):
     """ K-Means clustering applied to an image """
-    pass
+    pixels = np.reshape(image, (-1, 3))
+    kmeans_estimator = KMeans(n_clusters=colours).fit(pixels)
+    labels = kmeans_estimator.labels_
+    centers = kmeans_estimator.cluster_centers_
+    pixels = centers[labels].astype(np.uint8)
+    quantized_image = np.reshape(pixels, image.shape[:2] + (3,))
+
+    return quantized_image
 
 
 def ascii_art(image, extra_inputs, parameters):
