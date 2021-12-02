@@ -14,6 +14,7 @@ from numpy.lib.recfunctions import structured_to_unstructured, unstructured_to_s
 from PIL import Image, ImageFont, ImageDraw
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
+from sklearn.utils import shuffle
 
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
@@ -420,8 +421,10 @@ def _k_means(image, colours):
     else:
         pixels = np.reshape(image, (image.shape[0] * image.shape[1]))
 
-    kmeans_estimator = KMeans(n_clusters=colours).fit(pixels)
-    labels = kmeans_estimator.labels_
+    sample_count = int(0.01 * len(pixels))
+    pixels_sample = shuffle(pixels, n_samples=sample_count)
+    kmeans_estimator = KMeans(n_clusters=colours).fit(pixels_sample)
+    labels = kmeans_estimator.predict(pixels)
     centers = kmeans_estimator.cluster_centers_
     pixels = centers[labels].astype(np.uint8)
     quantized_image = np.reshape(pixels, image.shape)
