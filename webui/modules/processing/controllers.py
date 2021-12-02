@@ -65,19 +65,21 @@ def process():
             
             # Make the operation call
             images = call_module_function(image, extra_inputs, operation_list[0])
-            
+
+        # Save the results in tempdata
+        result_suffix = '_'.join([operation_list[i]['function'].split('.')[-1]
+                                  for i in range(len(operation_list))])
+
         if multiple_outputs:
-            # Save the results in temp zone
             i = 1
             for result in images:
-                result_name = file_name + '_processed_' + str(i) + '.' + extension
+                result_name = file_name + '_' + result_suffix + '_' + str(i) + '.' + extension
                 result_path = os.path.join(app.config['TEMP_DATA'], result_name)
                 cv2.imwrite(result_path, result)
                 results_names.append(result_name)
                 i += 1
         else:
-            # Save the result in temp zone, with name key + '_processed'
-            result_name = file_name + '_processed.' + extension
+            result_name = file_name + '_' + result_suffix + '.' + extension
             result_path = os.path.join(app.config['TEMP_DATA'], result_name)
             cv2.imwrite(result_path, image)
             results_names.append(result_name)
