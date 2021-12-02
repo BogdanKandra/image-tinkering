@@ -13,6 +13,7 @@ import numpy as np
 from numpy.lib.recfunctions import structured_to_unstructured, unstructured_to_structured
 from PIL import Image, ImageFont, ImageDraw
 from scipy.spatial.distance import cdist
+from sklearn.cluster import KMeans
 
 project_path = os.getcwd()
 while os.path.basename(project_path) != 'image-tinkering':
@@ -344,6 +345,90 @@ def _generate_grid_and_legend(image):
     return grid_image, legend_image
 
 
+def _median_cut(image, colours):
+    """ An improved version of the Median Cut quantization algorithm """
+    if utils.is_color(image):
+        # Remove the alpha channel, if present
+        if image.shape[2] == 4:
+            image = image[:, :, :3]
+
+        # Determine the channel having the greatest range
+        range_b = np.amax(image[:, :, 0]) - np.amin(image[:, :, 0])
+        range_g = np.amax(image[:, :, 1]) - np.amin(image[:, :, 1])
+        range_r = np.amax(image[:, :, 2]) - np.amin(image[:, :, 2])
+        greatest_range_index = np.argmax([range_b, range_g, range_r])
+
+        # Sort the image pixels according to that channel's values
+        pixels = np.reshape(image, (-1, 3))
+        pixels = unstructured_to_structured(pixels, np.dtype([('b', int), ('g', int), ('r', int)]))
+        sorting_indices = np.argsort(pixels, order='bgr'[greatest_range_index])
+        pixels_sorted = pixels[sorting_indices]
+
+        # Split the pixels list into <colours> buckets and compute the average of each bucket
+        buckets = np.array_split(pixels_sorted, colours)
+        bucket_averages = [(int(np.average(bucket['b'])),
+                            int(np.average(bucket['g'])),
+                            int(np.average(bucket['r']))) for bucket in buckets]
+
+        # Assign the averages to the pixels contained in the buckets
+        left_index = 0
+        right_index = len(buckets[0])
+        for i in range(len(buckets)):
+            pixels_sorted[left_index: right_index] = bucket_averages[i]
+            left_index = right_index
+            if i + 1 < len(buckets):
+                right_index += len(buckets[i + 1])
+
+        # Return the quantized image
+        pixels_sorted = structured_to_unstructured(pixels_sorted)
+        pixels = pixels_sorted[np.argsort(sorting_indices)]
+        quantized_image = np.reshape(pixels, image.shape)
+    else:
+        # Sort the image pixels
+        pixels = np.ravel(image)
+        sorting_indices = np.argsort(pixels)
+        pixels_sorted = pixels[sorting_indices]
+
+        # Split the pixels list into <colours> buckets and compute the average of each bucket
+        buckets = np.array_split(pixels_sorted, colours)
+        bucket_averages = [int(np.average(bucket)) for bucket in buckets]
+
+        # Assign the averages to the pixels contained in the buckets
+        left_index = 0
+        right_index = len(buckets[0])
+        for i in range(len(buckets)):
+            pixels_sorted[left_index: right_index] = bucket_averages[i]
+            left_index = right_index
+            if i + 1 < len(buckets):
+                right_index += len(buckets[i + 1])
+
+        # Return the quantized image
+        pixels = pixels_sorted[np.argsort(sorting_indices)]
+        quantized_image = np.reshape(pixels, image.shape)
+
+    return quantized_image
+
+
+def _k_means(image, colours):
+    """ K-Means clustering applied to an image """
+    if utils.is_color(image):
+        # Remove the alpha channel, if present
+        if image.shape[2] == 4:
+            image = image[:, :, :3]
+
+        pixels = np.reshape(image, (-1, image.shape[2]))
+    else:
+        pixels = np.reshape(image, (image.shape[0] * image.shape[1]))
+
+    kmeans_estimator = KMeans(n_clusters=colours).fit(pixels)
+    labels = kmeans_estimator.labels_
+    centers = kmeans_estimator.cluster_centers_
+    pixels = centers[labels].astype(np.uint8)
+    quantized_image = np.reshape(pixels, image.shape)
+
+    return quantized_image
+
+
 def ascii_art(image, extra_inputs, parameters):
     """ Applies an **ASCII Art Filter** onto an image. \n
 
@@ -599,7 +684,7 @@ def pixelate(image, extra_inputs, parameters):
 
 
 def quantize(image, extra_inputs, parameters):
-    """ Quantizes the colours from an image, using a modified version of the Median Cut algorithm.
+    """ Quantizes an image (Reduces the number of colours present in it).
 
     Arguments:
         *image* (NumPy array) -- the image to be quantized
@@ -611,6 +696,9 @@ def quantize(image, extra_inputs, parameters):
             *colours* (int, optional) -- the size of the colour palette used in the quantized image;
             default value is 256
 
+            *algorithm* (str, optional) -- the algorithm to be used for quantization; possible values are *median cut*
+            and *k-means*; default value is *k-means*
+
     Returns:
         list of NumPy array uint8 -- list containing the quantized image
     """
@@ -620,64 +708,15 @@ def quantize(image, extra_inputs, parameters):
     else:
         colours = 256
 
-    if utils.is_color(image):
-        # Remove the alpha channel, if present
-        if image.shape[2] == 4:
-            image = image[:, :, :3]
-
-        # Determine the channel having the greatest range
-        range_b = np.amax(image[:, :, 0]) - np.amin(image[:, :, 0])
-        range_g = np.amax(image[:, :, 1]) - np.amin(image[:, :, 1])
-        range_r = np.amax(image[:, :, 2]) - np.amin(image[:, :, 2])
-        greatest_range_index = np.argmax([range_b, range_g, range_r])
-
-        # Sort the image pixels according to that channel's values
-        pixels = np.reshape(image, (-1, 3))
-        pixels = unstructured_to_structured(pixels, np.dtype([('b', int), ('g', int), ('r', int)]))
-        sorting_indices = np.argsort(pixels, order='bgr'[greatest_range_index])
-        pixels_sorted = pixels[sorting_indices]
-
-        # Split the pixels list into <colours> buckets and compute the average of each bucket
-        buckets = np.array_split(pixels_sorted, colours)
-        bucket_averages = [(int(np.average(bucket['b'])),
-                            int(np.average(bucket['g'])),
-                            int(np.average(bucket['r']))) for bucket in buckets]
-
-        # Assign the averages to the pixels contained in the buckets
-        left_index = 0
-        right_index = len(buckets[0])
-        for i in range(len(buckets)):
-            pixels_sorted[left_index: right_index] = bucket_averages[i]
-            left_index = right_index
-            if i + 1 < len(buckets):
-                right_index += len(buckets[i + 1])
-
-        # Reshape and return the quantized image
-        pixels_sorted = structured_to_unstructured(pixels_sorted)
-        pixels = pixels_sorted[np.argsort(sorting_indices)]
-        quantized_image = np.reshape(pixels, image.shape)
+    if 'algorithm' in parameters:
+        algorithm = parameters['algorithm']
     else:
-        # Sort the image pixels
-        pixels = np.ravel(image)
-        sorting_indices = np.argsort(pixels)
-        pixels_sorted = pixels[sorting_indices]
+        algorithm = 'k-means'
 
-        # Split the pixels list into <colours> buckets and compute the average of each bucket
-        buckets = np.array_split(pixels_sorted, colours)
-        bucket_averages = [int(np.average(bucket)) for bucket in buckets]
-
-        # Assign the averages to the pixels contained in the buckets
-        left_index = 0
-        right_index = len(buckets[0])
-        for i in range(len(buckets)):
-            pixels_sorted[left_index: right_index] = bucket_averages[i]
-            left_index = right_index
-            if i + 1 < len(buckets):
-                right_index += len(buckets[i + 1])
-
-        # Reshape and return the quantized image
-        pixels = pixels_sorted[np.argsort(sorting_indices)]
-        quantized_image = np.reshape(pixels, image.shape)
+    if algorithm == 'median cut':
+        quantized_image = _median_cut(image, colours)
+    else:
+        quantized_image = _k_means(image, colours)
 
     return [quantized_image]
 

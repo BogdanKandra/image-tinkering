@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import random
 import math
-import copy
 
 
 def generate_voronoi_diagram(width, height, cells_count):
@@ -104,37 +103,10 @@ def point_is_on_frontier(point, cell_points):
 
 
 
-image_path = '../webui/static/testinputs/puiucul_rgb.jpg'
+image_path = '../webui/static/testinputs/rainbow.jpg'
 img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-col = 20
-h = 300
-w = 200
-from backend import utils
 
-def quantize(image, colours):
-    if utils.is_color(image):
-        # Remove the alpha channel, if present
-        if image.shape[2] == 4:
-            image = image[:, :, :3]
-    else:
-        pass
 
-    pass
-
-def cross_stitch(image, target_height, target_width, colours):
-    # Resize the input image, keeping its original aspect ratio
-    height, width = image.shape[:2]
-    resizing_constant = max(height / target_height, width / target_width)
-    resized_height = int(height / resizing_constant)
-    resized_width = int(width / resizing_constant)
-    resized_image = utils.resize_dimension(image, resized_height, resized_width)
-
-    # Quantize the resized image (this also removes the alpha channel, if present)
-    quantized_image = quantize(resized_image, colours)
-
-    return quantized_image
-
-quantized = cross_stitch(img, h, w, col)
-cv2.imshow('Template', quantized)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.imshow('', )
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
